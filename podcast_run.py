@@ -486,8 +486,8 @@ def extract_article(url: str, limit: int = 4000) -> str:
     return re.sub(r"\s+", " ", " ".join(paras))[:limit]
 
 
-def gather_source_text(story: dict, cfg: dict) -> str:
-    limit = int(cfg["fetch"].get("source_chars_per_story", 2400))
+def gather_source_text(story: dict, cfg: dict, limit: int | None = None) -> str:
+    limit = int(limit or cfg["fetch"].get("source_chars_per_story", 2400))
     ordered = sorted(story["items"], key=lambda i: (-i["weight"], i["rank"]))
     parts, used = [], 0
     for it in ordered[:3]:
@@ -542,10 +542,35 @@ PAUSE TAGS (use these exact strings)
 - Between beats inside a story: <break time="0.6s" />"""
 
 
-def section_prompt(section: dict, stories: list[dict], cfg: dict, today: dt.date, first: bool) -> str:
+def section_lengths(section: dict, n: int, cfg: dict) -> tuple[int, int, int]:
+    """(target, floor, ceiling) in spoken characters for a section with n stories."""
     L = cfg["length"]
-    target = L["target_chars_per_story"] * len(stories)
-    floor = L["min_chars_per_story"] * len(stories)
+    if section.get("style") == "roundup":
+        target = int(section.get("roundup_chars", 1600))
+        return target, int(target * 0.7), int(target * 1.5)
+    return (L["target_chars_per_story"] * n, L["min_chars_per_story"] * n, L["max_chars_per_story"] * n)
+
+
+ROUNDUP_SHAPE = """Write this part as ONE flowing roundup, not a separate segment per item. Shape, with the \
+beat pause tag between the three parts and no story pause tags:
+1. The headline: the biggest result or news, with enough detail to be useful (the winner, how, \
+what it means).
+2. Around the scene: the other notable results and news, a sentence or two each, linked naturally.
+3. Where it's heading: the storylines and feuds to watch and the next big event or show, \
+only as far as the sources say. Never invent a date or a match."""
+
+STORY_SHAPE = """Each story gets three beats, in order, separated by the beat pause tag:
+1. What happened: the news itself, plain and specific.
+2. The context: what led here, why it matters, who it affects.
+3. What's next: the next date, decision, match or consequence to watch. If the source doesn't say, \
+name the open question instead. Never invent a date.
+
+Each beat is two to four sentences. Put the story pause tag between stories."""
+
+
+def section_prompt(section: dict, stories: list[dict], cfg: dict, today: dt.date, first: bool) -> str:
+    target, floor, _ = section_lengths(section, len(stories), cfg)
+    shape = ROUNDUP_SHAPE if section.get("style") == "roundup" else STORY_SHAPE
     blocks = []
     for n, s in enumerate(stories, 1):
         cov = ""
@@ -563,14 +588,9 @@ def section_prompt(section: dict, stories: list[dict], cfg: dict, today: dt.date
 
 About the listener: {section.get('listener_note', '')}
 
-Each story gets three beats, in order, separated by the beat pause tag:
-1. What happened: the news itself, plain and specific.
-2. The context: what led here, why it matters, who it affects.
-3. What's next: the next date, decision, match or consequence to watch. If the source doesn't say, \
-name the open question instead. Never invent a date.
+{shape}
 
-Each beat is two to four sentences. Put the story pause tag between stories. Aim for about \
-{target:,} characters of spoken text for this part, and no fewer than {floor:,}.
+Aim for about {target:,} characters of spoken text for this part, and no fewer than {floor:,}.
 
 {opening}
 
@@ -594,9 +614,7 @@ def clean_script(text: str) -> str:
 
 
 def write_section(section: dict, stories: list[dict], cfg: dict, today: dt.date, first: bool) -> str:
-    L = cfg["length"]
-    floor = L["min_chars_per_story"] * len(stories)
-    ceiling = L["max_chars_per_story"] * len(stories)
+    _, floor, ceiling = section_lengths(section, len(stories), cfg)
     messages = [{"role": "system", "content": WRITER_SYSTEM},
                 {"role": "user", "content": section_prompt(section, stories, cfg, today, first)}]
     script = clean_script(groq_chat(messages, cfg, max_tokens=6000))
@@ -627,6 +645,192 @@ def write_section(section: dict, stories: list[dict], cfg: dict, today: dt.date,
 def assemble(intro: str, sections: list[str], outro: str) -> str:
     body = f" {STORY_BREAK}\n".join(s for s in sections if s)
     return f"{intro} {BEAT_BREAK}\n{body} {STORY_BREAK}\n{outro}".strip()
+
+
+# ------------------------------------------------------------------ fantasy
+
+FPL_BASE = os.environ.get("FPL_BASE", "https://fantasy.premierleague.com/api")
+
+
+def fpl_get(path: str):
+    r = requests.get(f"{FPL_BASE}/{path}", headers=UA, timeout=25)
+    r.raise_for_status()
+    if "json" not in r.headers.get("Content-Type", "") and not r.text.lstrip().startswith(("{", "[")):
+        raise ValueError("FPL returned a non-data page (the game may be updating)")
+    return r.json()
+
+
+def fpl_facts(team_id: int, tz: ZoneInfo, now: dt.datetime) -> tuple[str, dict]:
+    """Collect the facts about the listener's FPL team. Returns (facts text, small summary dict)."""
+    boot = fpl_get("bootstrap-static/")
+    players = {e["id"]: e for e in boot["elements"]}
+    teams = {t["id"]: t for t in boot["teams"]}
+    events = boot["events"]
+    current = next((e for e in events if e.get("is_current")), None)
+    upcoming = next((e for e in events if e.get("is_next")), None)
+    if current is None and upcoming is None:
+        raise ValueError("no current or upcoming gameweek (off-season)")
+    entry = fpl_get(f"entry/{team_id}/")
+    lines = [f"Team name: {entry.get('name')}"]
+    info = {"team": entry.get("name")}
+
+    def pname(pid: int) -> str:
+        pl = players[pid]
+        return f"{pl['web_name']} ({teams[pl['team']]['short_name']})"
+
+    squad: list[int] = []
+    if current:
+        gw = current["id"]
+        state = "finished" if current.get("finished") else "in progress"
+        picks = fpl_get(f"entry/{team_id}/event/{gw}/picks/")
+        live = {e["id"]: e["stats"] for e in fpl_get(f"event/{gw}/live/")["elements"]}
+        hist = fpl_get(f"entry/{team_id}/history/").get("current", [])
+        mine = next((h for h in hist if h["event"] == gw), {})
+        prev = next((h for h in hist if h["event"] == gw - 1), {})
+        squad = [pk["element"] for pk in picks["picks"]]
+        lines.append(f"Gameweek {gw} ({state}): {mine.get('points', '?')} points. Average manager: "
+                     f"{current.get('average_entry_score')}. Highest: {current.get('highest_score')}.")
+        if mine.get("overall_rank"):
+            move = ""
+            if prev.get("overall_rank"):
+                move = f" (was {prev['overall_rank']:,} after gameweek {gw - 1})"
+            lines.append(f"Overall rank: {mine['overall_rank']:,}{move}.")
+        if mine.get("event_transfers"):
+            lines.append(f"Transfers this gameweek: {mine['event_transfers']}, points hit: {mine.get('event_transfers_cost', 0)}.")
+        if picks.get("active_chip"):
+            lines.append(f"Chip played: {picks['active_chip']}.")
+        xi, bench = [], []
+        for pk in picks["picks"]:
+            st = live.get(pk["element"], {})
+            pts = st.get("total_points", 0)
+            tag = " (captain)" if pk.get("is_captain") else " (vice-captain)" if pk.get("is_vice_captain") else ""
+            desc = f"{pname(pk['element'])}{tag}: {pts} pts, {st.get('minutes', 0)} mins"
+            if st.get("goals_scored"):
+                desc += f", {st['goals_scored']} goal(s)"
+            if st.get("assists"):
+                desc += f", {st['assists']} assist(s)"
+            if st.get("bonus"):
+                desc += f", {st['bonus']} bonus"
+            (xi if pk["multiplier"] > 0 else bench).append(desc)
+            if pk.get("is_captain"):
+                lines.append(f"Captain: {pname(pk['element'])} scored {pts}, counted x{pk['multiplier']}.")
+        lines.append("Starting players: " + "; ".join(xi))
+        lines.append("Bench: " + "; ".join(bench))
+        info.update(gameweek=gw, finished=bool(current.get("finished")), points=mine.get("points"),
+                    rank=mine.get("overall_rank"))
+    if upcoming:
+        dl = dt.datetime.fromisoformat(upcoming["deadline_time"].replace("Z", "+00:00")).astimezone(tz)
+        hours = (dl - now).total_seconds() / 3600
+        when = f"{dl.strftime('%A')} {dl.day} {dl.strftime('%B')} at {dl.strftime('%-I:%M %p').lower()} Sydney time"
+        lines.append(f"Gameweek {upcoming['id']} deadline: {when}, {hours / 24:.1f} days from now"
+                     + (" — SOON" if hours <= 48 else "") + ".")
+        info.update(deadline=dl.isoformat(), deadline_hours=round(hours), next_gameweek=upcoming["id"])
+        if not squad:
+            try:
+                squad = [pk["element"] for pk in fpl_get(f"entry/{team_id}/event/{upcoming['id'] - 1}/picks/")["picks"]]
+            except Exception:  # noqa: BLE001
+                squad = []
+        fixtures = fpl_get(f"fixtures/?event={upcoming['id']}")
+        fx = []
+        for pid in squad:
+            tid = players[pid]["team"]
+            games = []
+            for f in fixtures:
+                if f["team_h"] == tid:
+                    games.append(f"v {teams[f['team_a']]['name']} (home, difficulty {f['team_h_difficulty']})")
+                elif f["team_a"] == tid:
+                    games.append(f"at {teams[f['team_h']]['name']} (away, difficulty {f['team_a_difficulty']})")
+            fx.append(f"{pname(pid)}: " + (" and ".join(games) if games else "NO FIXTURE (blank)"))
+        lines.append(f"Your players' gameweek {upcoming['id']} fixtures (difficulty 1 easy to 5 hard): " + "; ".join(fx))
+    flags = []
+    for pid in squad:
+        pl = players[pid]
+        if pl.get("status") != "a" or (pl.get("chance_of_playing_next_round") not in (None, 100)):
+            chance = pl.get("chance_of_playing_next_round")
+            flags.append(f"{pname(pid)}: {pl.get('news') or 'flagged'}"
+                         + (f" ({chance}% chance of playing)" if chance is not None else ""))
+    lines.append("Injury and availability flags in your squad: " + ("; ".join(flags) if flags else "none"))
+    info["flags"] = flags
+    return "\n".join(lines), info
+
+
+def write_fpl(cfg: dict, facts: str, focus: list[str], today: dt.date) -> str:
+    f = cfg["fpl"]
+    target = int(f.get("segment_chars", 1000)) * max(1, len(focus)) // 3 + 300
+    prompt = f"""Write a short Fantasy Premier League segment about the listener's own FPL team for \
+today's episode ({nice_date(today)}). It comes after other stories, so its first sentence should make \
+the shift to his fantasy team obvious naturally, without announcing a segment.
+
+TODAY'S FOCUS (cover only these, in this order, with the beat pause tag between them):
+{chr(10).join(f"- {x}" for x in focus)}
+
+Use the official news wording for injuries. You may suggest at most one thing to consider (for \
+example, replacing a flagged starter), based only on these facts. Never invent a player, score, \
+rank or fixture. Aim for about {target:,} characters of spoken text. Write all numbers in words.
+
+FACTS
+{facts}
+---
+Return only the script for this part."""
+    messages = [{"role": "system", "content": WRITER_SYSTEM}, {"role": "user", "content": prompt}]
+    return clean_script(groq_chat(messages, cfg, max_tokens=5000))
+
+
+def fpl_segment(cfg: dict, today: dt.date, now: dt.datetime, fstate: dict) -> tuple[str, str | None, dict]:
+    """Returns (script, episode-notes bullet, info). Empty script means nothing worth saying today.
+
+    The segment only plays when something is due: a gameweek has finished and hasn't been recapped,
+    the next deadline is close, or a player in the squad has a new injury or availability flag.
+    fstate (kept in state.json) remembers what has already been said.
+    """
+    f = cfg.get("fpl", {})
+    if not f.get("enabled") or not int(f.get("team_id", 0)):
+        return "", None, {}
+    try:
+        facts, info = fpl_facts(int(f["team_id"]), ZoneInfo(cfg["show"]["timezone"]), now)
+    except Exception as e:  # noqa: BLE001 - FPL problems never stop the episode
+        warn(f"FPL segment skipped today: {str(e)[:150]}")
+        return "", None, {}
+    focus, bullet_bits = [], []
+    recap_due = remind_due = False
+    gw, nxt = info.get("gameweek"), info.get("next_gameweek")
+    if gw and info.get("finished") and fstate.get("recapped_gw") != gw:
+        focus.append(f"Recap of gameweek {gw}: score against the average, captain, who carried him and "
+                     f"who let him down, rank movement.")
+        bullet_bits.append(f"gameweek {gw} recap")
+        recap_due = True
+    remind_hours = int(f.get("remind_hours_before_deadline", 36))
+    if nxt and info.get("deadline_hours", 999) <= remind_hours and fstate.get("reminded_gw") != nxt:
+        focus.append(f"Deadline reminder for gameweek {nxt}: when it is, plus notable fixtures for his "
+                     f"players (blanks, doubles, very easy or hard games).")
+        bullet_bits.append(f"gameweek {nxt} deadline")
+        remind_due = True
+    new_flags = [x for x in info.get("flags", []) if x not in set(fstate.get("flags", []))]
+    if new_flags:
+        focus.append("New injury or availability news in his squad: " + "; ".join(new_flags))
+        bullet_bits.append("injury news")
+    info["focus"] = focus
+    if not focus:
+        log("  FPL: nothing new worth mentioning today, so no segment")
+        fstate["flags"] = info.get("flags", [])
+        return "", None, info
+    log("  FPL facts:\n    " + facts.replace("\n", "\n    "))
+    try:
+        script = write_fpl(cfg, facts, focus, today)
+    except LLMError as e:
+        warn(f"FPL segment skipped today: {str(e)[:150]}")
+        return "", None, info
+    log(f"  fpl: {spoken_len(script):,} chars")
+    if spoken_len(script) < 80:
+        warn("FPL segment skipped today: the writer returned almost nothing")
+        return "", None, info
+    # Only now that it's going in the episode, remember what was said.
+    if recap_due:
+        fstate["recapped_gw"] = gw
+    if remind_due:
+        fstate["reminded_gw"] = nxt
+    fstate["flags"] = info.get("flags", [])
+    return script, "Your FPL team: " + ", ".join(bullet_bits), info
 
 
 # ---------------------------------------------------------------------- audio
@@ -955,21 +1159,27 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
 
     log("4/5 Reading articles and writing the script…")
     for p in picks:
-        p["source_text"] = gather_source_text(p, cfg)
+        sec = next(x for x in cfg["sections"] if x["id"] == p["section"])
+        p["source_text"] = gather_source_text(p, cfg, sec.get("source_chars_per_story"))
         log(f"  {p['label'][:60]}: {len(p['source_text']):,} chars of source")
     sections_out, first, written = [], True, []
+    fpl_script, fpl_bullet, fpl_info = fpl_segment(cfg, today, now, state.setdefault("fpl", {}))
+    fpl_after = cfg.get("fpl", {}).get("after_section", "sport")
     for section in cfg["sections"]:
         stories = [p for p in picks if p["section"] == section["id"]]
-        if not stories:
-            continue
-        try:
-            sections_out.append(write_section(section, stories, cfg, today, first))
-        except LLMError as e:
-            warn(f"{section['name']} left out today: {str(e)[:150]}")
-            continue
-        written += stories
-        first = False
-    if not sections_out:
+        if stories:
+            try:
+                sections_out.append(write_section(section, stories, cfg, today, first))
+                written += stories
+                first = False
+            except LLMError as e:
+                warn(f"{section['name']} left out today: {str(e)[:150]}")
+        if fpl_script and section["id"] == fpl_after:
+            sections_out.append(fpl_script)
+            fpl_script = ""
+    if fpl_script:  # its section was missing today: play it at the end
+        sections_out.append(fpl_script)
+    if not written:
         raise SystemExit("No section could be written — check the run log.")
     picks = written
     intro = f"Morning, {cfg['show']['listener']}. It's {spoken_date(today)}."
@@ -992,7 +1202,7 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
     state["episodes"].append({
         "date": date_key, "title": nice_date(today), "guid": f"{date_key}-{digest}", "file": fname,
         "bytes": size, "duration": fmt_duration(seconds), "pub_date": format_datetime(now.astimezone(UTC)),
-        "bullets": [p["label"] for p in picks], "engine": engine,
+        "bullets": [p["label"] for p in picks] + ([fpl_bullet] if fpl_bullet else []), "engine": engine,
     })
     state["covered"] += [{"date": date_key, "label": p["label"], "title": p["lead"]["title"]} for p in picks]
     write_site(site, cfg, state, now)
@@ -1000,6 +1210,7 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
     (site / "last_run.json").write_text(json.dumps({
         "date": date_key, "ran_at": now.isoformat(timespec="seconds"), "engine": engine,
         "duration": fmt_duration(seconds), "spoken_chars": spoken_len(script), "warnings": WARNINGS,
+        "fpl": fpl_info,
         "feeds": report,
         "candidates": {sid: [{"title": c["lead"]["title"], "sources": c["sources"], "score": c["score"],
                               "covered": bool(c["covered"])} for c in cands]

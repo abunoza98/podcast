@@ -59,10 +59,11 @@ skip_title_patterns = [
 [[sections]]
 id = "news"
 name = "News"
-picks = 3
-brief = """Australian news first, then the biggest global stories. Favour stories that \
-change something for people in Australia, or that are the main story around the world. \
-Favour national and international significance over local incidents."""
+picks = 2
+brief = """The two stories that matter most today: Australian news first, then the biggest \
+global story. Favour things that change something for people in Australia, or that are the \
+main story around the world. Skip niche regional politics, diplomacy and resource-deal stories \
+(trade agreements, gas projects, treaty signings) unless they're front-page news here."""
 listener_note = "Adrian lives in Sydney. He follows the news but hasn't read today's yet."
 feeds = [
   { name = "ABC Top Stories", url = "https://www.abc.net.au/news/feed/10719986/rss.xml", ranked = true, weight = 1.3 },
@@ -73,6 +74,23 @@ feeds = [
   { name = "BBC World", url = "https://feeds.bbci.co.uk/news/world/rss.xml", ranked = true, weight = 1.2 },
   { name = "Guardian World", url = "https://www.theguardian.com/world/rss" },
   { name = "Al Jazeera", url = "https://www.aljazeera.com/xml/rss/all.xml", weight = 0.9 },
+]
+
+[[sections]]
+id = "payments"
+name = "Payments"
+picks = 2
+brief = """The payments industry: card schemes, acquirers, processors and fintechs (Visa, \
+Mastercard, American Express, Adyen, Stripe, Square, PayPal, Tyro, eftpos and the like), plus \
+regulation that affects them (RBA surcharging and interchange reform, scheme fees, open banking). \
+Favour Australian stories and big industry moves. Skip product puff pieces, partnership \
+announcements with no real substance, and sponsored content."""
+listener_note = "Adrian works full-time in the payments industry, so skip the basics of how cards and acquiring work. Do explain what a story means in practice for merchants and the industry."
+feeds = [
+  { name = "Payments Dive", url = "https://www.paymentsdive.com/feeds/news/", weight = 1.1 },
+  { name = "Finextra", url = "https://www.finextra.com/rss/headlines.aspx" },
+  { name = "PYMNTS", url = "https://www.pymnts.com/feed/", weight = 0.8 },
+  { name = "Google News (AU payments)", url = "https://news.google.com/rss/search?q=(Visa+OR+Mastercard+OR+Amex+OR+Adyen+OR+Stripe+OR+Tyro+OR+eftpos+OR+surcharging)+when:2d&hl=en-AU&gl=AU&ceid=AU:en", weight = 1.2 },
 ]
 
 [[sections]]
@@ -97,10 +115,15 @@ feeds = [
 [[sections]]
 id = "wrestling"
 name = "Pro wrestling"
-picks = 2
-brief = """Pro wrestling: WWE, AEW and other major promotions. Favour confirmed news, like \
-title changes, major results, signings and departures, injuries and big event \
-announcements, over speculation, reaction pieces, predictions and ratings columns."""
+style = "roundup"                        # one combined segment instead of separate stories
+picks = 4                                # how many items feed the roundup
+roundup_chars = 1600                     # about two minutes
+source_chars_per_story = 1400
+brief = """Pro wrestling: WWE, AEW and other major promotions. Pick the items that together give \
+the best overall picture of the last day in wrestling: the biggest event or show (including its \
+main event), the other notable results, the main storylines and where feuds are heading, and \
+confirmed news (title changes, signings, departures, injuries, big announcements). Avoid two \
+items about the same match. Skip speculation, reaction pieces, predictions and ratings columns."""
 listener_note = "Adrian is a wrestling fan and knows the major promotions, shows and names."
 feeds = [
   { name = "F4W / Wrestling Observer", url = "https://www.f4wonline.com/feed/", weight = 1.2 },
@@ -109,3 +132,14 @@ feeds = [
   { name = "Wrestling Inc", url = "https://www.wrestlinginc.com/feed/", weight = 0.9 },
   { name = "Wrestleview", url = "https://www.wrestleview.com/feed/", weight = 0.9 },
 ]
+
+# ---------------------------------------------------------------------------
+# Your Fantasy Premier League team. Find the ID in your team's address on the
+# FPL site: fantasy.premierleague.com/entry/1234567/event/8 → team_id = 1234567
+# ---------------------------------------------------------------------------
+[fpl]
+enabled = true
+team_id = 0                              # 0 = segment off until you add your ID
+after_section = "sport"                  # plays straight after this section
+segment_chars = 1000                     # about a minute when everything is due
+remind_hours_before_deadline = 36        # deadline reminder this close to the deadline
