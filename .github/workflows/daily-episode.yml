@@ -1,0 +1,79 @@
+name: Daily episode
+
+on:
+  schedule:
+    # GitHub schedules run in UTC. 18:17 UTC is 5:17 am in Sydney during daylight saving
+    # and 4:17 am in winter, so the episode is ready before 6 am all year.
+    - cron: "17 18 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "run = make today's episode · force = remake today's · probe = just check the feeds"
+        type: choice
+        options: [run, force, probe]
+        default: run
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-episode
+  cancel-in-progress: false
+
+jobs:
+  episode:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install ffmpeg
+        run: |
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          fi
+
+      - name: Install Python packages
+        run: pip install -q -r requirements.txt
+
+      - name: Load the published site
+        run: |
+          mkdir -p site
+          if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
+            git fetch -q --depth 1 origin gh-pages
+            git archive FETCH_HEAD | tar -x -C site
+            echo "Loaded $(ls site/episodes 2>/dev/null | wc -l) existing episodes"
+          else
+            echo "No gh-pages branch yet: this is the first episode"
+          fi
+
+      - name: Make the episode
+        id: make
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          MODE: ${{ inputs.mode || 'run' }}
+        run: python podcast_run.py --site site --mode "$MODE"
+
+      - name: Publish
+        if: steps.make.outputs.publish == 'true'
+        env:
+          TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          DATE: ${{ steps.make.outputs.date }}
+        run: |
+          # The site branch is rebuilt as a single commit each day, so old audio
+          # doesn't pile up in the repository's history.
+          cd site
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Episode $DATE"
+          git push -q --force "https://x-access-token:${TOKEN}@github.com/${REPO}.git" gh-pages
+          echo "Published episode $DATE"
