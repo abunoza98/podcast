@@ -46,6 +46,8 @@ skip_title_patterns = [
   "\\bquiz\\b", "crossword", "\\bpodcast\\b", "^watch:", "\\bas it happened\\b",
   "\\bhow to watch\\b", "\\bodds\\b", "\\bbetting\\b", "\\btips\\b", "\\bin pictures\\b",
   "\\bphotos?:", "\\bwordle\\b", "\\bhoroscope", "\\bsponsored\\b",
+  "\\bpredictions?\\b", "\\bpreview\\b", "what channel", "live stream", "►", "injury report",
+  "ratings$", "player ratings",
 ]
 
 # ---------------------------------------------------------------------------
@@ -97,7 +99,9 @@ feeds = [
 id = "sport"
 name = "Football and sport"
 picks = 2
-brief = """Football (soccer) first: the A-League, Socceroos, Matildas, and the biggest \
+brief = """Scores are read out separately in a scores roundup just before this, so pick stories \
+that go beyond the scoreline: standout performances, managers, injuries, transfers and title races. \
+Football (soccer) first: the A-League, Socceroos, Matildas, and the biggest \
 European and international stories. Other sports only when they have genuine global \
 relevance, like a world title, a major record or a huge upset. Skip unconfirmed transfer \
 rumours, routine match previews and fantasy content."""
@@ -121,7 +125,9 @@ picks = 3                                # at most this many on a busy day
 target_chars_per_story = 380
 min_chars_per_story = 200
 max_chars_per_story = 650
-brief = """Adrian's teams and interests: Dinamo Zagreb and Croatian football (the national team, \
+brief = """Match scores for Dinamo, Croatia, Man City and the Chiefs are read out separately in a \
+scores roundup, so for those teams pick stories beyond the scoreline. \
+Adrian's teams and interests: Dinamo Zagreb and Croatian football (the national team, \
 the HNL, Croatian players abroad), the Kansas City Chiefs, big league-wide NFL news, Manchester \
 City, the St George Illawarra Dragons, and Eurovision. Pick a story only if it's a result of a \
 game his team played, or genuinely good to know: a title, trophy or big win or loss, a major \
@@ -175,3 +181,28 @@ team_id = 1632250                              # 0 = segment off until you add y
 after_section = "teams"                  # plays straight after this section
 segment_chars = 1000                     # about a minute when everything is due
 remind_hours_before_deadline = 36        # deadline reminder this close to the deadline
+
+# ---------------------------------------------------------------------------
+# Scores roundup: results of games finished since the last episode, read out
+# just before the football stories. mode = "all" reads every result,
+# "notable" only big ones, "teams" only games involving follow_teams.
+# ---------------------------------------------------------------------------
+[results]
+enabled = true
+before_section = "sport"
+follow_teams = ["Dinamo Zagreb", "Manchester City", "Croatia", "Kansas City Chiefs"]
+chars_per_result = 110
+leagues = [
+  { name = "Premier League", path = "soccer/eng.1", mode = "all" },
+  { name = "La Liga", path = "soccer/esp.1", mode = "notable" },
+  { name = "Serie A", path = "soccer/ita.1", mode = "notable" },
+  { name = "Bundesliga", path = "soccer/ger.1", mode = "notable" },
+  { name = "Ligue 1", path = "soccer/fra.1", mode = "notable" },
+  { name = "Champions League", path = "soccer/uefa.champions", mode = "notable" },
+  { name = "Europa League", path = "soccer/uefa.europa", mode = "teams" },
+  { name = "Conference League", path = "soccer/uefa.europa.conf", mode = "teams" },
+  { name = "A-League Men", path = "soccer/aus.1", mode = "notable" },
+  { name = "Croatian HNL", path = "soccer/cro.1", mode = "teams" },
+  { name = "Nations League", path = "soccer/uefa.nations", mode = "teams" },
+  { name = "NFL", path = "football/nfl", mode = "notable" },
+]

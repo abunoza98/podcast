@@ -143,10 +143,10 @@ def fetch_feed(url: str):
     return parsed
 
 
-def collect_items(cfg: dict, now: dt.datetime) -> tuple[list[dict], list[dict]]:
-    """Return (items, feed_report)."""
+def collect_items(cfg: dict, now: dt.datetime, since: dt.datetime | None = None) -> tuple[list[dict], list[dict]]:
+    """Return (items, feed_report). Items published before `since` are skipped."""
     fcfg = cfg["fetch"]
-    since = now - dt.timedelta(hours=fcfg.get("lookback_hours", 30))
+    since = since or now - dt.timedelta(hours=fcfg.get("lookback_hours", 30))
     skip = [re.compile(p, re.I) for p in fcfg.get("skip_title_patterns", [])]
     items, report = [], []
     for section in cfg["sections"]:
@@ -366,8 +366,16 @@ DROP_RULES = """- DROP every time: opinion and analysis columns, explainers with
 - More outlets covering a story usually means it's bigger."""
 
 
+def covered_block(covered: list[dict] | None) -> str:
+    if not covered:
+        return ""
+    lines = "\n".join(f"  - {c['date']}: {c['label']}" for c in covered[-40:])
+    return ("\n- ALREADY COVERED in recent episodes. Don't pick these again, or another write-up of the "
+            "same match, event or announcement, unless there's a genuinely new development:\n" + lines)
+
+
 def ask_editor(flat: list[dict], indices: list[int], wanted: str, today: dt.date, cfg: dict,
-               lead_rule: bool) -> list[dict]:
+               lead_rule: bool, covered: list[dict] | None = None) -> list[dict]:
     lines = []
     for idx in indices:
         c = flat[idx]
@@ -388,7 +396,7 @@ CANDIDATES (index | section | outlets covering it (count) | headline, then blurb
 {chr(10).join(lines)}
 
 RULES
-{lead_line}{DROP_RULES}
+{lead_line}{DROP_RULES}{covered_block(covered)}
 - Pick exactly the number asked for each section, only from that section's own candidates.
   Pick fewer only if every one of that section's candidates breaks the DROP rules.
 - Sections marked OPTIONAL are different: picking zero is normal. Only pick a story there if it
@@ -404,7 +412,7 @@ Return ONLY JSON: {{"picks": [{{"index": 0, "why": "<at most 8 words>", "label":
     return picks if isinstance(picks, list) else []
 
 
-def select_stories(by_section: dict, cfg: dict, today: dt.date) -> list[dict]:
+def select_stories(by_section: dict, cfg: dict, today: dt.date, covered: list[dict] | None = None) -> list[dict]:
     flat: list[dict] = []
     sec_idx: dict[str, list[int]] = {}
     for section in cfg["sections"]:
@@ -440,7 +448,7 @@ def select_stories(by_section: dict, cfg: dict, today: dt.date) -> list[dict]:
         return f"- {sec['id']}: pick exactly {sec['picks']}. {sec['brief']}"
 
     wanted = "\n".join(want_line(s) for s in cfg["sections"] if sec_idx.get(s["id"]))
-    accept(ask_editor(flat, list(range(len(flat))), wanted, today, cfg, lead_rule=True),
+    accept(ask_editor(flat, list(range(len(flat))), wanted, today, cfg, lead_rule=True, covered=covered),
            set(range(len(flat))), "editor")
 
     # The editor sometimes skips a whole section. Ask again for just that section, and if it
@@ -454,7 +462,7 @@ def select_stories(by_section: dict, cfg: dict, today: dt.date) -> list[dict]:
         log(f"  {sid}: editor picked {counts.get(sid, 0)} of {cap[sid]}, asking again for this section")
         try:
             accept(ask_editor(flat, pool, f"- {sid}: pick exactly {need}. {section['brief']}", today, cfg,
-                              lead_rule=False), set(pool), "editor (second ask)")
+                              lead_rule=False, covered=covered), set(pool), "editor (second ask)")
         except LLMError as e:
             log(f"    second ask failed: {e}")
         need = cap[sid] - counts.get(sid, 0)
@@ -669,6 +677,144 @@ def assemble(intro: str, sections: list[str], outro: str) -> str:
     return f"{intro} {BEAT_BREAK}\n{body} {STORY_BREAK}\n{outro}".strip()
 
 
+# ------------------------------------------------------------------ results
+
+ESPN_BASE = os.environ.get("ESPN_BASE", "https://site.api.espn.com/apis/site/v2/sports")
+
+
+def espn_events(path: str, start: dt.date, end: dt.date) -> list[dict]:
+    url = f"{ESPN_BASE}/{path}/scoreboard?dates={start:%Y%m%d}-{end:%Y%m%d}&limit=200"
+    r = requests.get(url, headers=UA, timeout=20)
+    r.raise_for_status()
+    return r.json().get("events", [])
+
+
+def describe_event(ev: dict, league: str, tz: ZoneInfo) -> dict | None:
+    """A finished game as plain facts, or None if it isn't finished."""
+    comp = (ev.get("competitions") or [{}])[0]
+    status = (comp.get("status") or ev.get("status") or {}).get("type", {})
+    if not status.get("completed"):
+        return None
+    teams = comp.get("competitors", [])
+    home = next((c for c in teams if c.get("homeAway") == "home"), None)
+    away = next((c for c in teams if c.get("homeAway") == "away"), None)
+    if not home or not away:
+        return None
+    names = {c.get("team", {}).get("id"): c.get("team", {}).get("displayName", "?") for c in teams}
+    scorers: dict[str, list[str]] = {}
+    for d in comp.get("details", []) or []:
+        who = (d.get("athletesInvolved") or [{}])[0].get("displayName", "")
+        if not who:
+            continue
+        if d.get("scoringPlay"):
+            mins = d.get("clock", {}).get("displayValue", "")
+            extra = " (pen)" if d.get("penaltyKick") else " (own goal)" if d.get("ownGoal") else ""
+            team = names.get(d.get("team", {}).get("id"), "?")
+            scorers.setdefault(f"{team} goals", []).append(f"{who} {mins}{extra}".strip())
+        elif d.get("redCard"):
+            scorers.setdefault("red cards", []).append(who)
+    note = status.get("shortDetail") or status.get("detail") or ""
+    try:
+        kickoff = dt.datetime.fromisoformat(ev["date"].replace("Z", "+00:00"))
+    except (KeyError, ValueError):
+        kickoff = None
+    return {
+        "id": f"{league}:{ev.get('id')}", "league": league, "kickoff": kickoff,
+        "home": home.get("team", {}).get("displayName", "?"), "away": away.get("team", {}).get("displayName", "?"),
+        "home_score": home.get("score", "?"), "away_score": away.get("score", "?"),
+        "note": "" if note in ("FT", "Final", "Full Time") else note,
+        "scorers": scorers,
+    }
+
+
+def results_segment(cfg: dict, today: dt.date, now: dt.datetime, state: dict) -> tuple[str, str | None, dict]:
+    """Scores for games finished since the last episode. Returns (script, notes bullet, info)."""
+    rc = cfg.get("results", {})
+    if not rc.get("enabled"):
+        return "", None, {}
+    tz = ZoneInfo(cfg["show"]["timezone"])
+    seen = set(state.get("results_seen", []))
+    follow = [t.lower() for t in rc.get("follow_teams", [])]
+    start = (now - dt.timedelta(hours=int(rc.get("lookback_hours", 40)))).astimezone(UTC).date()
+    # Games that kicked off well before the last episode were already finished by then.
+    prev = previous_run_time(state)
+    oldest = prev - dt.timedelta(hours=4.5) if prev else None
+    end = now.astimezone(UTC).date()
+    blocks: list[str] = []
+    new_ids: list[str] = []
+    info: dict = {"leagues": {}}
+    for lg in rc.get("leagues", []):
+        try:
+            events = espn_events(lg["path"], start, end)
+        except Exception as e:  # noqa: BLE001 - a missing league never stops the episode
+            log(f"  results: {lg['name']} unavailable ({str(e)[:80]})")
+            info["leagues"][lg["name"]] = f"error: {str(e)[:80]}"
+            continue
+        done = [d for d in (describe_event(ev, lg["name"], tz) for ev in events)
+                if d and d["id"] not in seen and not (oldest and d["kickoff"] and d["kickoff"] < oldest)]
+        info["leagues"][lg["name"]] = len(done)
+        mode = lg.get("mode", "notable")
+        rows = []
+        for d in done:
+            new_ids.append(d["id"])  # seen either way, so it's never considered again
+            mine = any(t in d["home"].lower() or t in d["away"].lower() for t in follow)
+            if mode == "teams" and not mine:
+                continue
+            line = f"{d['home']} {d['home_score']}-{d['away_score']} {d['away']}"
+            if d["note"]:
+                line += f" ({d['note']})"
+            if d["scorers"]:
+                line += " | " + "; ".join(f"{k}: {', '.join(v)}" for k, v in d["scorers"].items())
+            rows.append(("[ADRIAN'S TEAM] " if mine else "") + line)
+        if rows:
+            how = {"all": "read out EVERY result", "notable": "only the notable ones",
+                   "teams": "only Adrian's team"}.get(mode, "only the notable ones")
+            blocks.append(f"{lg['name']} ({how}):\n" + "\n".join(f"  {r}" for r in rows))
+    state["results_seen"] = (state.get("results_seen", []) + new_ids)[-800:]
+    info["new_results"] = len(new_ids)
+    if not blocks:
+        log("  results: no new results since the last episode")
+        return "", None, info
+    facts = "\n\n".join(blocks)
+    log("  results facts:\n    " + facts.replace("\n", "\n    "))
+    n_lines = sum(b.count("\n  ") for b in blocks)
+    target = int(rc.get("chars_per_result", 110)) * min(n_lines, 14) + 250
+    prompt = f"""Write a quick-fire scores roundup for today's episode ({nice_date(today)}). It comes \
+after other stories, so its first sentence should make the shift to the scores obvious naturally, \
+without announcing a segment.
+
+RULES
+- Results marked [ADRIAN'S TEAM] come first in their league with a little more detail: the \
+scorers and what it means, in two or three sentences.
+- For a league marked "read out EVERY result", give every result in one short line each, quick and \
+varied like a radio sports desk: "Leeds and Man United drew one-all. Brighton thrashed Palace \
+five-nil." Name a scorer only for a standout, like a hat-trick or a late winner.
+- For leagues marked "only the notable ones", pick at most two results per league and five in \
+total: big clubs, upsets, huge scorelines or title-race results. Skip the rest without mentioning \
+them. If none are notable, leave that league out.
+- Put the beat pause tag between leagues. Write every score and number in words. Use the names \
+fans use (Man United, Spurs, Palace, Bayern, Real, Barca).
+- Use only the scores and scorers below. Never invent a scorer, minute, standing or table position.
+
+Aim for about {target:,} characters of spoken text.
+
+RESULTS
+{facts}
+---
+Return only the script for this part."""
+    try:
+        script = clean_script(groq_chat([{"role": "system", "content": WRITER_SYSTEM},
+                                         {"role": "user", "content": prompt}], cfg, max_tokens=5000))
+    except LLMError as e:
+        warn(f"Scores roundup skipped today: {str(e)[:150]}")
+        return "", None, info
+    if spoken_len(script) < 60:
+        warn("Scores roundup skipped today: the writer returned almost nothing")
+        return "", None, info
+    log(f"  results: {spoken_len(script):,} chars from {n_lines} results")
+    return script, "Football scores roundup", info
+
+
 # ------------------------------------------------------------------ fantasy
 
 FPL_BASE = os.environ.get("FPL_BASE", "https://fantasy.premierleague.com/api")
@@ -835,10 +981,19 @@ def fpl_segment(cfg: dict, today: dt.date, now: dt.datetime, fstate: dict) -> tu
                      f"players (blanks, doubles, very easy or hard games).")
         bullet_bits.append(f"gameweek {nxt} deadline")
         remind_due = True
-    new_flags = [x for x in info.get("flags", []) if x not in set(fstate.get("flags", []))]
+    def flag_key(flag: str) -> str:  # "Name (TEAM), starter: news (x%)" -> "Name (TEAM): news"
+        name, _, rest = flag.partition(": ")
+        return f"{name.split(',')[0].strip()}: {rest.split(' (')[0].strip()}"
+
+    known = {flag_key(x) for x in fstate.get("flags", [])}
+    new_flags = [x for x in info.get("flags", []) if flag_key(x) not in known]
+    old_flags = [x for x in info.get("flags", []) if flag_key(x) in known]
     if new_flags:
-        focus.append("New injury or availability news in his squad: " + "; ".join(new_flags))
-        bullet_bits.append("injury news")
+        focus.append("NEW injury or availability news in his squad (make clear it's new): " + "; ".join(new_flags))
+        bullet_bits.append("new injury news")
+    if focus and old_flags:
+        names = ", ".join(x.partition(": ")[0] for x in old_flags)
+        focus.append(f"A one-sentence reminder only, names and starter or bench, no details: still flagged: {names}")
     info["focus"] = focus
     if not focus:
         log("  FPL: nothing new worth mentioning today, so no segment")
@@ -1155,7 +1310,36 @@ def probe(cfg: dict, now: dt.datetime) -> None:
         status = "✅" if row.get("ok") else f"❌ {row.get('error', '')}"
         summary(f"| {row['section']} | {row['feed']} | {status} | {row.get('kept', '')} | "
                 f"{row.get('newest_hours', '')} | {extract} |")
+    rc = cfg.get("results", {})
+    if rc.get("enabled"):
+        summary("\n## Scores sources\n")
+        summary("| League | Status | Finished games in the last two days |")
+        summary("|---|---|---|")
+        start = (now - dt.timedelta(hours=48)).astimezone(UTC).date()
+        for lg in rc.get("leagues", []):
+            try:
+                evs = espn_events(lg["path"], start, now.astimezone(UTC).date())
+                done = sum(1 for ev in evs if describe_event(ev, lg["name"], ZoneInfo(cfg["show"]["timezone"])))
+                summary(f"| {lg['name']} | ✅ | {done} |")
+            except Exception as e:  # noqa: BLE001
+                summary(f"| {lg['name']} | ❌ {str(e)[:80]} | |")
     set_output(publish="false")
+
+
+def previous_run_time(state: dict) -> dt.datetime | None:
+    if state.get("last_run_at"):
+        try:
+            return dt.datetime.fromisoformat(state["last_run_at"])
+        except ValueError:
+            pass
+    from email.utils import parsedate_to_datetime
+    times = []
+    for e in state.get("episodes", []):
+        try:
+            times.append(parsedate_to_datetime(e["pub_date"]))
+        except (KeyError, TypeError, ValueError):
+            pass
+    return max(times) if times else None
 
 
 def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
@@ -1166,12 +1350,24 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
         log(f"Episode for {date_key} already exists — nothing to do.")
         set_output(publish="false")
         return
+    if force and state.get("last_run_date") == date_key:
+        # Remaking today's episode: use the same window and scores as the first attempt.
+        state["last_run_at"] = state.get("prev_run_at")
+        state["results_seen"] = state.get("prev_results_seen", state.get("results_seen", []))
     state["episodes"] = [e for e in state["episodes"] if e["date"] != date_key]
     cutoff = (today - dt.timedelta(days=4)).isoformat()
     state["covered"] = [c for c in state.get("covered", []) if c["date"] >= cutoff and c["date"] != date_key]
 
     log("1/5 Fetching feeds…")
-    items, report = collect_items(cfg, now)
+    # Only stories published since the previous episode (with an hour's overlap), so nothing that
+    # was already available yesterday turns up again today.
+    lookback = dt.timedelta(hours=cfg["fetch"].get("lookback_hours", 30))
+    since = now - lookback
+    prev = previous_run_time(state)
+    if prev and prev < now:
+        since = min(max(since, prev - dt.timedelta(hours=1)), now - dt.timedelta(hours=12))
+    log(f"  stories published since {since.astimezone(now.tzinfo):%a %H:%M}")
+    items, report = collect_items(cfg, now, since)
     dead = [r["feed"] for r in report if not r.get("ok")]
     log(f"  {len(items)} fresh items" + (f"; feeds failing: {', '.join(dead)}" if dead else ""))
     if not items:
@@ -1181,7 +1377,7 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
     by_section = cluster_and_score(items, cfg, now, state["covered"])
 
     log("3/5 Picking stories…")
-    picks = select_stories(by_section, cfg, today)
+    picks = select_stories(by_section, cfg, today, state["covered"])
     if not picks:
         raise SystemExit("The editor model picked nothing — check the run log.")
     for p in picks:
@@ -1193,9 +1389,15 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
         p["source_text"] = gather_source_text(p, cfg, sec.get("source_chars_per_story"))
         log(f"  {p['label'][:60]}: {len(p['source_text']):,} chars of source")
     sections_out, first, written = [], True, []
+    results_seen_before = list(state.get("results_seen", []))
+    res_script, res_bullet, res_info = results_segment(cfg, today, now, state)
+    res_before = cfg.get("results", {}).get("before_section", "sport")
     fpl_script, fpl_bullet, fpl_info = fpl_segment(cfg, today, now, state.setdefault("fpl", {}))
     fpl_after = cfg.get("fpl", {}).get("after_section", "sport")
     for section in cfg["sections"]:
+        if res_script and section["id"] == res_before:
+            sections_out.append(res_script)
+            res_script = ""
         stories = [p for p in picks if p["section"] == section["id"]]
         if stories:
             try:
@@ -1207,6 +1409,8 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
         if fpl_script and section["id"] == fpl_after:
             sections_out.append(fpl_script)
             fpl_script = ""
+    if res_script:
+        sections_out.append(res_script)
     if fpl_script:  # its section was missing today: play it at the end
         sections_out.append(fpl_script)
     if not written:
@@ -1232,15 +1436,21 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
     state["episodes"].append({
         "date": date_key, "title": nice_date(today), "guid": f"{date_key}-{digest}", "file": fname,
         "bytes": size, "duration": fmt_duration(seconds), "pub_date": format_datetime(now.astimezone(UTC)),
-        "bullets": [p["label"] for p in picks] + ([fpl_bullet] if fpl_bullet else []), "engine": engine,
+        "bullets": ([res_bullet] if res_bullet else []) + [p["label"] for p in picks]
+                   + ([fpl_bullet] if fpl_bullet else []), "engine": engine,
     })
     state["covered"] += [{"date": date_key, "label": p["label"], "title": p["lead"]["title"]} for p in picks]
+    if state.get("last_run_date") != date_key:
+        state["prev_run_at"] = state.get("last_run_at") or (prev.isoformat() if prev else None)
+        state["prev_results_seen"] = results_seen_before
+    state["last_run_at"] = now.isoformat(timespec="seconds")
+    state["last_run_date"] = date_key
     write_site(site, cfg, state, now)
     # A record of how today's episode was chosen, published with the site for troubleshooting.
     (site / "last_run.json").write_text(json.dumps({
         "date": date_key, "ran_at": now.isoformat(timespec="seconds"), "engine": engine,
         "duration": fmt_duration(seconds), "spoken_chars": spoken_len(script), "warnings": WARNINGS,
-        "fpl": fpl_info,
+        "fpl": fpl_info, "results": res_info,
         "feeds": report,
         "candidates": {sid: [{"title": c["lead"]["title"], "sources": c["sources"], "score": c["score"],
                               "covered": bool(c["covered"])} for c in cands]
