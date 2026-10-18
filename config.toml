@@ -69,7 +69,7 @@ feeds = [
   { name = "ABC Just In", url = "https://www.abc.net.au/news/feed/10719976/rss.xml" },
   { name = "ABC World", url = "https://www.abc.net.au/news/feed/104217382/rss.xml" },
   { name = "Guardian Australia", url = "https://www.theguardian.com/australia-news/rss", weight = 1.1 },
-  { name = "SBS News", url = "https://www.sbs.com.au/news/feed" },
+  { name = "SBS News", url = "https://www.sbs.com.au/news/topic/latest/feed" },
   { name = "BBC World", url = "https://feeds.bbci.co.uk/news/world/rss.xml", ranked = true, weight = 1.2 },
   { name = "Guardian World", url = "https://www.theguardian.com/world/rss" },
   { name = "Al Jazeera", url = "https://www.aljazeera.com/xml/rss/all.xml", weight = 0.9 },
@@ -89,7 +89,7 @@ feeds = [
   { name = "Guardian Football", url = "https://www.theguardian.com/football/rss", weight = 1.1 },
   { name = "Guardian A-League", url = "https://www.theguardian.com/football/a-league/rss", weight = 1.2 },
   { name = "Guardian Australia Sport", url = "https://www.theguardian.com/sport/australia-sport/rss" },
-  { name = "ESPN Football", url = "https://www.espn.com/espn/rss/soccer/news" },
+  { name = "Sky Sports Football", url = "https://www.skysports.com/rss/11095" },
   { name = "ABC Sport", url = "https://www.abc.net.au/news/feed/103728570/rss.xml" },
   { name = "BBC Sport", url = "https://feeds.bbci.co.uk/sport/rss.xml", ranked = true, weight = 0.9 },
 ]
@@ -106,7 +106,6 @@ feeds = [
   { name = "F4W / Wrestling Observer", url = "https://www.f4wonline.com/feed/", weight = 1.2 },
   { name = "POST Wrestling", url = "https://www.postwrestling.com/feed/", weight = 1.2 },
   { name = "PWTorch", url = "https://www.pwtorch.com/site/feed/", weight = 1.1 },
-  { name = "Cageside Seats", url = "https://www.cagesideseats.com/rss/current" },
   { name = "Wrestling Inc", url = "https://www.wrestlinginc.com/feed/", weight = 0.9 },
   { name = "Wrestleview", url = "https://www.wrestleview.com/feed/", weight = 0.9 },
 ]

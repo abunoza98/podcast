@@ -60,6 +60,16 @@ def summary(line: str = "") -> None:
     SUMMARY_LINES.append(line)
 
 
+WARNINGS: list[str] = []
+
+
+def warn(message: str) -> None:
+    """Something went wrong but the episode can still go out."""
+    WARNINGS.append(message)
+    log(f"  ⚠ {message}")
+    summary(f"⚠️ {message}\n")
+
+
 def write_summary() -> None:
     path = os.environ.get("GITHUB_STEP_SUMMARY")
     if path and SUMMARY_LINES:
@@ -345,69 +355,109 @@ def parse_json(text: str) -> dict:
 
 SELECT_SYSTEM = "You are the editor of a short daily audio news brief made for one listener in Sydney."
 
-
-def select_stories(by_section: dict, cfg: dict, today: dt.date) -> list[dict]:
-    flat: list[dict] = []
-    lines: list[str] = []
-    for section in cfg["sections"]:
-        for c in by_section.get(section["id"], []):
-            idx = len(flat)
-            flat.append(c)
-            lead = c["lead"]
-            blurb = (lead["summary"] or "")[:220]
-            src = ", ".join(c["sources"])
-            note = f"\n     (already covered on {c['covered']['date']})" if c["covered"] else ""
-            lines.append(f"[{idx}] {section['id']} | {src} ({len(c['sources'])}) | {lead['title']}"
-                         f"\n     {blurb}{note}")
-    if not flat:
-        return []
-    caps = "\n".join(f"- {s['id']}: pick up to {s['picks']}. {s['brief']}" for s in cfg["sections"])
-    prompt = f"""Today is {nice_date(today)}. Choose the stories for today's episode.
-
-SECTIONS, AND HOW MANY TO PICK FROM EACH
-{caps}
-
-CANDIDATES (index | section | outlets covering it (count) | headline, then blurb)
-{chr(10).join(lines)}
-
-RULES
-- Within each section, most important first. The first news pick leads the whole episode:
-  the story the listener would be most annoyed to have missed.
-- DROP every time: opinion and analysis columns, explainers with no new event, quizzes, live
+DROP_RULES = """- DROP every time: opinion and analysis columns, explainers with no new event, quizzes, live
   blogs that only recap, "how to watch" guides, betting and odds, celebrity gossip, sponsored
   content, podcast or video-only items, photo galleries, listicles, and anything where the
   headline is the only fact.
 - A story already covered in a recent episode only comes back if there's a clear new
   development. If you pick one, say what's new in "why".
 - Never pick two items that are the same story.
-- More outlets covering a story usually means it's bigger.
-- Only pick from a section's own candidates, and fewer is fine if the candidates are weak.
+- More outlets covering a story usually means it's bigger."""
+
+
+def ask_editor(flat: list[dict], indices: list[int], wanted: str, today: dt.date, cfg: dict,
+               lead_rule: bool) -> list[dict]:
+    lines = []
+    for idx in indices:
+        c = flat[idx]
+        lead = c["lead"]
+        blurb = (lead["summary"] or "")[:220]
+        note = f"\n     (already covered on {c['covered']['date']})" if c["covered"] else ""
+        lines.append(f"[{idx}] {c['section']} | {', '.join(c['sources'])} ({len(c['sources'])}) | "
+                     f"{lead['title']}\n     {blurb}{note}")
+    lead_line = ("- Within each section, most important first. The first news pick leads the whole "
+                 "episode: the story the listener would be most annoyed to have missed.\n" if lead_rule
+                 else "- Most important first.\n")
+    prompt = f"""Today is {nice_date(today)}. Choose the stories for today's episode.
+
+WHAT TO PICK
+{wanted}
+
+CANDIDATES (index | section | outlets covering it (count) | headline, then blurb)
+{chr(10).join(lines)}
+
+RULES
+{lead_line}{DROP_RULES}
+- Pick exactly the number asked for each section, only from that section's own candidates.
+  Pick fewer only if every one of that section's candidates breaks the DROP rules.
 
 For each pick, also write "label": a plain headline of at most ten words for the episode notes.
 Real names only: no outlet names, URLs, hashtags or clickbait.
 
-Return ONLY JSON: {{"picks": [{{"index": 0, "section": "news", "why": "<at most 8 words>", "label": "<headline>"}}]}}"""
+Return ONLY JSON: {{"picks": [{{"index": 0, "why": "<at most 8 words>", "label": "<headline>"}}]}}"""
     raw = groq_chat([{"role": "system", "content": SELECT_SYSTEM}, {"role": "user", "content": prompt}],
                     cfg, max_tokens=4000, json_mode=True, temperature=0.3)
     picks = parse_json(raw).get("picks", [])
-    counts: dict[str, int] = {}
+    return picks if isinstance(picks, list) else []
+
+
+def select_stories(by_section: dict, cfg: dict, today: dt.date) -> list[dict]:
+    flat: list[dict] = []
+    sec_idx: dict[str, list[int]] = {}
+    for section in cfg["sections"]:
+        for c in by_section.get(section["id"], []):
+            sec_idx.setdefault(section["id"], []).append(len(flat))
+            flat.append(c)
+    if not flat:
+        return []
     cap = {s["id"]: s["picks"] for s in cfg["sections"]}
+    counts: dict[str, int] = {}
     chosen, seen = [], set()
-    for p in picks:
+
+    def accept(picks: list, allowed: set[int], how: str) -> None:
+        for p in picks:
+            try:
+                idx = int(p["index"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            if idx in seen or idx not in allowed:
+                continue
+            c = flat[idx]
+            sid = c["section"]
+            if counts.get(sid, 0) >= cap[sid]:
+                continue
+            seen.add(idx)
+            counts[sid] = counts.get(sid, 0) + 1
+            label = re.sub(r"\s+", " ", str(p.get("label") or c["lead"]["title"])).strip()
+            chosen.append({**c, "why": str(p.get("why", "")).strip(), "label": label, "picked_by": how})
+
+    wanted = "\n".join(f"- {s['id']}: pick exactly {s['picks']}. {s['brief']}"
+                       for s in cfg["sections"] if sec_idx.get(s["id"]))
+    accept(ask_editor(flat, list(range(len(flat))), wanted, today, cfg, lead_rule=True),
+           set(range(len(flat))), "editor")
+
+    # The editor sometimes skips a whole section. Ask again for just that section, and if it
+    # still comes back short, fall back to the highest-ranked stories.
+    for section in cfg["sections"]:
+        sid = section["id"]
+        pool = [i for i in sec_idx.get(sid, []) if i not in seen]
+        need = cap[sid] - counts.get(sid, 0)
+        if need <= 0 or not pool:
+            continue
+        log(f"  {sid}: editor picked {counts.get(sid, 0)} of {cap[sid]}, asking again for this section")
         try:
-            idx = int(p["index"])
-        except (KeyError, TypeError, ValueError):
-            continue
-        if idx in seen or not 0 <= idx < len(flat):
-            continue
-        c = flat[idx]
-        sid = c["section"]
-        if counts.get(sid, 0) >= cap[sid]:
-            continue
-        seen.add(idx)
-        counts[sid] = counts.get(sid, 0) + 1
-        label = re.sub(r"\s+", " ", str(p.get("label") or c["lead"]["title"])).strip()
-        chosen.append({**c, "why": str(p.get("why", "")).strip(), "label": label})
+            accept(ask_editor(flat, pool, f"- {sid}: pick exactly {need}. {section['brief']}", today, cfg,
+                              lead_rule=False), set(pool), "editor (second ask)")
+        except LLMError as e:
+            log(f"    second ask failed: {e}")
+        need = cap[sid] - counts.get(sid, 0)
+        if need > 0:
+            backups = [i for i in pool if i not in seen and not flat[i]["covered"]][:need]
+            if backups:
+                warn(f"{section['name']}: editor picked too few, so {len(backups)} top-ranked "
+                     f"stor{'y' if len(backups) == 1 else 'ies'} filled in")
+            accept([{"index": i, "why": "top-ranked story", "label": flat[i]["lead"]["title"]} for i in backups],
+                   set(backups), "ranking")
     order = {s["id"]: n for n, s in enumerate(cfg["sections"])}
     chosen.sort(key=lambda c: order[c["section"]])  # stable: keeps the editor's order inside a section
     return chosen
@@ -738,8 +788,7 @@ def render_audio(script: str, cfg: dict, out: Path) -> str:
                 tts_elevenlabs(script, cfg, out, work)
                 return "elevenlabs"
             except TTSError as e:
-                log(f"  ⚠ ElevenLabs failed: {e}")
-                summary(f"⚠️ ElevenLabs failed ({str(e)[:150]}). ")
+                warn(f"ElevenLabs failed, so Kokoro voiced this episode: {str(e)[:150]}")
                 if not v.get("fallback_to_kokoro", True):
                     raise
                 log("  falling back to Kokoro")
@@ -902,7 +951,7 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
     if not picks:
         raise SystemExit("The editor model picked nothing — check the run log.")
     for p in picks:
-        log(f"  [{p['section']}] {p['label']}  ({', '.join(p['sources'])}) — {p['why']}")
+        log(f"  [{p['section']}] {p['label']}  ({', '.join(p['sources'])}) — {p['why']} [{p.get('picked_by')}]")
 
     log("4/5 Reading articles and writing the script…")
     for p in picks:
@@ -916,8 +965,7 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
         try:
             sections_out.append(write_section(section, stories, cfg, today, first))
         except LLMError as e:
-            log(f"  ⚠ couldn't write {section['id']}, leaving it out today: {e}")
-            summary(f"⚠️ {section['name']} left out today: {str(e)[:150]}\n")
+            warn(f"{section['name']} left out today: {str(e)[:150]}")
             continue
         written += stories
         first = False
@@ -948,6 +996,17 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
     })
     state["covered"] += [{"date": date_key, "label": p["label"], "title": p["lead"]["title"]} for p in picks]
     write_site(site, cfg, state, now)
+    # A record of how today's episode was chosen, published with the site for troubleshooting.
+    (site / "last_run.json").write_text(json.dumps({
+        "date": date_key, "ran_at": now.isoformat(timespec="seconds"), "engine": engine,
+        "duration": fmt_duration(seconds), "spoken_chars": spoken_len(script), "warnings": WARNINGS,
+        "feeds": report,
+        "candidates": {sid: [{"title": c["lead"]["title"], "sources": c["sources"], "score": c["score"],
+                              "covered": bool(c["covered"])} for c in cands]
+                       for sid, cands in by_section.items()},
+        "picks": [{"section": p["section"], "label": p["label"], "why": p["why"], "picked_by": p.get("picked_by"),
+                   "sources": p["sources"], "url": p["lead"]["url"]} for p in picks],
+    }, indent=1, ensure_ascii=False), encoding="utf-8")
 
     credits = len(script) * float(cfg["voice"].get("elevenlabs_credits_per_char", 1.0))
     SUMMARY_LINES.insert(0, f"## {nice_date(today)}\n")
