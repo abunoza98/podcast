@@ -125,8 +125,10 @@ picks = 3                                # at most this many on a busy day
 target_chars_per_story = 380
 min_chars_per_story = 200
 max_chars_per_story = 650
-brief = """Match scores for Dinamo, Croatia, Man City and the Chiefs are read out separately in a \
-scores roundup, so for those teams pick stories beyond the scoreline. \
+brief = """Match scores for Man City, the Chiefs, Croatia and Dinamo's European games are read out \
+separately in a scores roundup, so for those pick stories beyond the scoreline. Dinamo's Croatian \
+league (HNL) results are NOT in that roundup, so always pick a report of Dinamo's latest league \
+match when there is one. \
 Adrian's teams and interests: Dinamo Zagreb and Croatian football (the national team, \
 the HNL, Croatian players abroad), the Kansas City Chiefs, big league-wide NFL news, Manchester \
 City, the St George Illawarra Dragons, and Eurovision. Pick a story only if it's a result of a \
@@ -202,7 +204,6 @@ leagues = [
   { name = "Europa League", path = "soccer/uefa.europa", mode = "teams" },
   { name = "Conference League", path = "soccer/uefa.europa.conf", mode = "teams" },
   { name = "A-League Men", path = "soccer/aus.1", mode = "notable" },
-  { name = "Croatian HNL", path = "soccer/cro.1", mode = "teams" },
   { name = "Nations League", path = "soccer/uefa.nations", mode = "teams" },
   { name = "NFL", path = "football/nfl", mode = "notable" },
 ]
