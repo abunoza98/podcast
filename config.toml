@@ -140,7 +140,7 @@ feeds = [
   { name = "BBC Man City", url = "https://feeds.bbci.co.uk/sport/football/teams/manchester-city/rss.xml", weight = 1.1 },
   { name = "Guardian Man City", url = "https://www.theguardian.com/football/manchestercity/rss" },
   { name = "Google News: St George Dragons", url = "https://news.google.com/rss/search?q=%22St+George+Illawarra%22+OR+%22Dragons%22+NRL+when:2d&hl=en-AU&gl=AU&ceid=AU:en" },
-  { name = "Wiwibloggs (Eurovision)", url = "https://wiwibloggs.com/feed/", weight = 0.9 },
+  { name = "Google News: Eurovision", url = "https://news.google.com/rss/search?q=Eurovision+when:2d&hl=en-AU&gl=AU&ceid=AU:en", weight = 0.9 },
   { name = "ESCXtra (Eurovision)", url = "https://escxtra.com/feed/", weight = 0.9 },
 ]
 
