@@ -113,6 +113,38 @@ feeds = [
 ]
 
 [[sections]]
+id = "teams"
+name = "Your teams"
+optional = true                          # usually silent: only plays when something clears the bar
+style = "brief"                          # short items, two to four sentences each
+picks = 3                                # at most this many on a busy day
+target_chars_per_story = 380
+min_chars_per_story = 200
+max_chars_per_story = 650
+brief = """Adrian's teams and interests: Dinamo Zagreb and Croatian football (the national team, \
+the HNL, Croatian players abroad), the Kansas City Chiefs, big league-wide NFL news, Manchester \
+City, the St George Illawarra Dragons, and Eurovision. Pick a story only if it's a result of a \
+game his team played, or genuinely good to know: a title, trophy or big win or loss, a major \
+signing, sale, injury or coach change, a big announcement, or for Eurovision major news like \
+hosts, entries, songs and results. Skip previews, rumours, minor squad news, opinion and \
+fan-site filler. Don't repeat a story already picked for another section. Some headlines are in Croatian: that's \
+fine, but write the label in English."""
+listener_note = "Adrian is a fan of all of these, so talk to him like one. He follows them but hasn't seen today's news. Some sources are in Croatian: always speak in English."
+feeds = [
+  { name = "Google News: Dinamo Zagreb", url = "https://news.google.com/rss/search?q=%22Dinamo+Zagreb%22+when:2d&hl=en-AU&gl=AU&ceid=AU:en" },
+  { name = "Google News: Croatian football", url = "https://news.google.com/rss/search?q=Dinamo+OR+Hajduk+OR+HNL+OR+reprezentacija+when:2d&hl=hr&gl=HR&ceid=HR:hr", weight = 0.8 },
+  { name = "Google News: Croatia national team", url = "https://news.google.com/rss/search?q=%22Croatia%22+football+OR+Modric+OR+Gvardiol+when:2d&hl=en-AU&gl=AU&ceid=AU:en", weight = 0.8 },
+  { name = "Google News: Kansas City Chiefs", url = "https://news.google.com/rss/search?q=%22Kansas+City+Chiefs%22+when:2d&hl=en-US&gl=US&ceid=US:en" },
+  { name = "Guardian NFL", url = "https://www.theguardian.com/sport/nfl/rss", weight = 0.9 },
+  { name = "CBS Sports NFL", url = "https://www.cbssports.com/rss/headlines/nfl/", weight = 0.8 },
+  { name = "BBC Man City", url = "https://feeds.bbci.co.uk/sport/football/teams/manchester-city/rss.xml", weight = 1.1 },
+  { name = "Guardian Man City", url = "https://www.theguardian.com/football/manchestercity/rss" },
+  { name = "Google News: St George Dragons", url = "https://news.google.com/rss/search?q=%22St+George+Illawarra%22+OR+%22Dragons%22+NRL+when:2d&hl=en-AU&gl=AU&ceid=AU:en" },
+  { name = "Wiwibloggs (Eurovision)", url = "https://wiwibloggs.com/feed/", weight = 0.9 },
+  { name = "ESCXtra (Eurovision)", url = "https://escxtra.com/feed/", weight = 0.9 },
+]
+
+[[sections]]
 id = "wrestling"
 name = "Pro wrestling"
 style = "roundup"                        # one combined segment instead of separate stories
@@ -140,6 +172,6 @@ feeds = [
 [fpl]
 enabled = true
 team_id = 1632250                              # 0 = segment off until you add your ID
-after_section = "sport"                  # plays straight after this section
+after_section = "teams"                  # plays straight after this section
 segment_chars = 1000                     # about a minute when everything is due
 remind_hours_before_deadline = 36        # deadline reminder this close to the deadline

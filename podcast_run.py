@@ -391,6 +391,8 @@ RULES
 {lead_line}{DROP_RULES}
 - Pick exactly the number asked for each section, only from that section's own candidates.
   Pick fewer only if every one of that section's candidates breaks the DROP rules.
+- Sections marked OPTIONAL are different: picking zero is normal. Only pick a story there if it
+  clearly clears that section's bar.
 
 For each pick, also write "label": a plain headline of at most ten words for the episode notes.
 Real names only: no outlet names, URLs, hashtags or clickbait.
@@ -432,8 +434,12 @@ def select_stories(by_section: dict, cfg: dict, today: dt.date) -> list[dict]:
             label = re.sub(r"\s+", " ", str(p.get("label") or c["lead"]["title"])).strip()
             chosen.append({**c, "why": str(p.get("why", "")).strip(), "label": label, "picked_by": how})
 
-    wanted = "\n".join(f"- {s['id']}: pick exactly {s['picks']}. {s['brief']}"
-                       for s in cfg["sections"] if sec_idx.get(s["id"]))
+    def want_line(sec: dict) -> str:
+        if sec.get("optional"):
+            return f"- {sec['id']}: OPTIONAL, pick 0 to {sec['picks']}. Only stories that clear this bar: {sec['brief']}"
+        return f"- {sec['id']}: pick exactly {sec['picks']}. {sec['brief']}"
+
+    wanted = "\n".join(want_line(s) for s in cfg["sections"] if sec_idx.get(s["id"]))
     accept(ask_editor(flat, list(range(len(flat))), wanted, today, cfg, lead_rule=True),
            set(range(len(flat))), "editor")
 
@@ -443,7 +449,7 @@ def select_stories(by_section: dict, cfg: dict, today: dt.date) -> list[dict]:
         sid = section["id"]
         pool = [i for i in sec_idx.get(sid, []) if i not in seen]
         need = cap[sid] - counts.get(sid, 0)
-        if need <= 0 or not pool:
+        if need <= 0 or not pool or section.get("optional"):
             continue
         log(f"  {sid}: editor picked {counts.get(sid, 0)} of {cap[sid]}, asking again for this section")
         try:
@@ -557,8 +563,10 @@ def section_lengths(section: dict, n: float, cfg: dict) -> tuple[int, int, int]:
     if section.get("style") == "roundup":
         target = int(section.get("roundup_chars", 1600))
         return target, int(target * 0.7), int(target * 1.5)
-    return (int(L["target_chars_per_story"] * n), int(L["min_chars_per_story"] * n),
-            int(L["max_chars_per_story"] * max(n, 1)))
+    def get(key: str) -> int:
+        return int(section.get(key, L[key]))
+    return (int(get("target_chars_per_story") * n), int(get("min_chars_per_story") * n),
+            int(get("max_chars_per_story") * max(n, 1)))
 
 
 ROUNDUP_SHAPE = """Write this part as ONE flowing roundup, not a separate segment per item. Shape, with the \
@@ -578,9 +586,13 @@ name the open question instead. Never invent a date.
 Each beat is two to four sentences. Put the story pause tag between stories."""
 
 
+BRIEF_SHAPE = """Each story is short: two to four sentences in total, covering what happened and why it \
+matters to a fan. Mention what's next only if the source says. Put the story pause tag between stories."""
+
+
 def section_prompt(section: dict, stories: list[dict], cfg: dict, today: dt.date, first: bool) -> str:
     target, floor, _ = section_lengths(section, story_weight(stories), cfg)
-    shape = ROUNDUP_SHAPE if section.get("style") == "roundup" else STORY_SHAPE
+    shape = {"roundup": ROUNDUP_SHAPE, "brief": BRIEF_SHAPE}.get(section.get("style", ""), STORY_SHAPE)
     blocks = []
     for n, s in enumerate(stories, 1):
         cov = ""
