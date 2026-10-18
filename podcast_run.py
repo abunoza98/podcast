@@ -689,6 +689,11 @@ def fpl_facts(team_id: int, tz: ZoneInfo, now: dt.datetime) -> tuple[str, dict]:
         return f"{pl['web_name']} ({teams[pl['team']]['short_name']})"
 
     squad: list[int] = []
+    role: dict[int, str] = {}  # player id -> "starter" or "bench"
+
+    def note_roles(picks_list: list[dict]) -> None:
+        for pk in picks_list:
+            role[pk["element"]] = "starter" if pk.get("position", 99) <= 11 else "bench"
     if current:
         gw = current["id"]
         state = "finished" if current.get("finished") else "in progress"
@@ -698,6 +703,7 @@ def fpl_facts(team_id: int, tz: ZoneInfo, now: dt.datetime) -> tuple[str, dict]:
         mine = next((h for h in hist if h["event"] == gw), {})
         prev = next((h for h in hist if h["event"] == gw - 1), {})
         squad = [pk["element"] for pk in picks["picks"]]
+        note_roles(picks["picks"])
         lines.append(f"Gameweek {gw} ({state}): {mine.get('points', '?')} points. Average manager: "
                      f"{current.get('average_entry_score')}. Highest: {current.get('highest_score')}.")
         if mine.get("overall_rank"):
@@ -737,7 +743,9 @@ def fpl_facts(team_id: int, tz: ZoneInfo, now: dt.datetime) -> tuple[str, dict]:
         info.update(deadline=dl.isoformat(), deadline_hours=round(hours), next_gameweek=upcoming["id"])
         if not squad:
             try:
-                squad = [pk["element"] for pk in fpl_get(f"entry/{team_id}/event/{upcoming['id'] - 1}/picks/")["picks"]]
+                prev_picks = fpl_get(f"entry/{team_id}/event/{upcoming['id'] - 1}/picks/")["picks"]
+                squad = [pk["element"] for pk in prev_picks]
+                note_roles(prev_picks)
             except Exception:  # noqa: BLE001
                 squad = []
         fixtures = fpl_get(f"fixtures/?event={upcoming['id']}")
@@ -757,7 +765,7 @@ def fpl_facts(team_id: int, tz: ZoneInfo, now: dt.datetime) -> tuple[str, dict]:
         pl = players[pid]
         if pl.get("status") != "a" or (pl.get("chance_of_playing_next_round") not in (None, 100)):
             chance = pl.get("chance_of_playing_next_round")
-            flags.append(f"{pname(pid)}: {pl.get('news') or 'flagged'}"
+            flags.append(f"{pname(pid)}, {role.get(pid, 'in squad')}: {pl.get('news') or 'flagged'}"
                          + (f" ({chance}% chance of playing)" if chance is not None else ""))
     lines.append("Injury and availability flags in your squad: " + ("; ".join(flags) if flags else "none"))
     info["flags"] = flags
@@ -774,7 +782,8 @@ the shift to his fantasy team obvious naturally, without announcing a segment.
 TODAY'S FOCUS (cover only these, in this order, with the beat pause tag between them):
 {chr(10).join(f"- {x}" for x in focus)}
 
-Use the official news wording for injuries. Don't suggest specific transfers, swaps or captains. \
+Use the official news wording for injuries. Each flagged player is marked as a starter or on the \
+bench in his current lineup: say which, and never call a bench player a starter. Don't suggest specific transfers, swaps or captains. \
 Never invent a player, score, rank or fixture. Aim for about {target:,} characters of spoken text. Write all numbers in words.
 
 FACTS
