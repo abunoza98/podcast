@@ -1,0 +1,112 @@
+# Daily Brief settings. Edit this file on GitHub (pencil icon) to change topics,
+# feeds, voice or length. The next run picks up your changes automatically.
+
+[show]
+title = "Adrian's Daily Brief"
+listener = "Adrian"                      # used in the greeting
+author = "Adrian"
+description = "A private daily brief: Australian and world news, football, and pro wrestling."
+site_url = "https://abunoza98.github.io/podcast"
+language = "en-au"
+timezone = "Australia/Sydney"
+category = "News"
+subcategory = "Daily News"
+keep_episodes = 14                       # older episodes are deleted to keep the site small
+outro = "That's your brief. Have a good one."
+
+[length]
+# Roughly 900 spoken characters is one minute of audio.
+# 7 stories x 750 characters is about six minutes.
+target_chars_per_story = 750
+min_chars_per_story = 550                # below this, the writer is asked to go deeper (once)
+max_chars_per_story = 1100               # above this, the writer is asked to tighten (once)
+
+[llm]
+model = "openai/gpt-oss-120b"
+fallback_models = ["llama-3.3-70b-versatile"]
+reasoning_effort = "low"
+tokens_per_minute = 8000                 # Groq free-tier limit for gpt-oss-120b
+
+[voice]
+engine = "elevenlabs"                    # "elevenlabs" or "kokoro" (free, runs on GitHub)
+fallback_to_kokoro = true                # if ElevenLabs fails or runs out of credits, use Kokoro
+elevenlabs_voice_id = "qCwgiN0GsIAYwAJ1nYvZ"
+elevenlabs_model = "eleven_flash_v2_5"
+elevenlabs_credits_per_char = 1.0        # only used for the cost estimate in the run log
+kokoro_voice = "bm_george"               # British male. Others: bm_lewis, bm_daniel, bf_emma, bf_isabella
+kokoro_lang = "b"                        # b = British English (closest to Australian)
+
+[fetch]
+lookback_hours = 30                      # only consider items published in this window
+max_items_per_feed = 25
+candidates_per_section = 12              # how many each section shows the editor model
+source_chars_per_story = 2400            # article text sent to the writer per story
+# Headlines matching any of these (case-insensitive regex) are skipped before ranking.
+skip_title_patterns = [
+  "\\bquiz\\b", "crossword", "\\bpodcast\\b", "^watch:", "\\bas it happened\\b",
+  "\\bhow to watch\\b", "\\bodds\\b", "\\bbetting\\b", "\\btips\\b", "\\bin pictures\\b",
+  "\\bphotos?:", "\\bwordle\\b", "\\bhoroscope", "\\bsponsored\\b",
+]
+
+# ---------------------------------------------------------------------------
+# Sections play in this order. "picks" is how many stories each gets.
+# "brief" tells the editor model what to choose; "listener_note" tells the
+# writer what Adrian already knows. Feeds marked ranked = true list stories
+# in editorial order (most important first), which counts towards the score.
+# weight > 1 trusts a source more; < 1 trusts it less.
+# ---------------------------------------------------------------------------
+
+[[sections]]
+id = "news"
+name = "News"
+picks = 3
+brief = """Australian news first, then the biggest global stories. Favour stories that \
+change something for people in Australia, or that are the main story around the world. \
+Favour national and international significance over local incidents."""
+listener_note = "Adrian lives in Sydney. He follows the news but hasn't read today's yet."
+feeds = [
+  { name = "ABC Top Stories", url = "https://www.abc.net.au/news/feed/10719986/rss.xml", ranked = true, weight = 1.3 },
+  { name = "ABC Just In", url = "https://www.abc.net.au/news/feed/10719976/rss.xml" },
+  { name = "ABC World", url = "https://www.abc.net.au/news/feed/104217382/rss.xml" },
+  { name = "Guardian Australia", url = "https://www.theguardian.com/australia-news/rss", weight = 1.1 },
+  { name = "SBS News", url = "https://www.sbs.com.au/news/feed" },
+  { name = "BBC World", url = "https://feeds.bbci.co.uk/news/world/rss.xml", ranked = true, weight = 1.2 },
+  { name = "Guardian World", url = "https://www.theguardian.com/world/rss" },
+  { name = "Al Jazeera", url = "https://www.aljazeera.com/xml/rss/all.xml", weight = 0.9 },
+]
+
+[[sections]]
+id = "sport"
+name = "Football and sport"
+picks = 2
+brief = """Football (soccer) first: the A-League, Socceroos, Matildas, and the biggest \
+European and international stories. Other sports only when they have genuine global \
+relevance, like a world title, a major record or a huge upset. Skip unconfirmed transfer \
+rumours, routine match previews and fantasy content."""
+listener_note = "Adrian follows football closely, so don't explain how football works. Say 'football' for soccer and name other codes (AFL, NRL) explicitly."
+feeds = [
+  { name = "BBC Football", url = "https://feeds.bbci.co.uk/sport/football/rss.xml", ranked = true, weight = 1.2 },
+  { name = "Guardian Football", url = "https://www.theguardian.com/football/rss", weight = 1.1 },
+  { name = "Guardian A-League", url = "https://www.theguardian.com/football/a-league/rss", weight = 1.2 },
+  { name = "Guardian Australia Sport", url = "https://www.theguardian.com/sport/australia-sport/rss" },
+  { name = "ESPN Football", url = "https://www.espn.com/espn/rss/soccer/news" },
+  { name = "ABC Sport", url = "https://www.abc.net.au/news/feed/103728570/rss.xml" },
+  { name = "BBC Sport", url = "https://feeds.bbci.co.uk/sport/rss.xml", ranked = true, weight = 0.9 },
+]
+
+[[sections]]
+id = "wrestling"
+name = "Pro wrestling"
+picks = 2
+brief = """Pro wrestling: WWE, AEW and other major promotions. Favour confirmed news, like \
+title changes, major results, signings and departures, injuries and big event \
+announcements, over speculation, reaction pieces, predictions and ratings columns."""
+listener_note = "Adrian is a wrestling fan and knows the major promotions, shows and names."
+feeds = [
+  { name = "F4W / Wrestling Observer", url = "https://www.f4wonline.com/feed/", weight = 1.2 },
+  { name = "POST Wrestling", url = "https://www.postwrestling.com/feed/", weight = 1.2 },
+  { name = "PWTorch", url = "https://www.pwtorch.com/site/feed/", weight = 1.1 },
+  { name = "Cageside Seats", url = "https://www.cagesideseats.com/rss/current" },
+  { name = "Wrestling Inc", url = "https://www.wrestlinginc.com/feed/", weight = 0.9 },
+  { name = "Wrestleview", url = "https://www.wrestleview.com/feed/", weight = 0.9 },
+]
