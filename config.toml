@@ -139,7 +139,7 @@ feeds = [
 # ---------------------------------------------------------------------------
 [fpl]
 enabled = true
-team_id = 0                              # 0 = segment off until you add your ID
+team_id = 1632250                              # 0 = segment off until you add your ID
 after_section = "sport"                  # plays straight after this section
 segment_chars = 1000                     # about a minute when everything is due
 remind_hours_before_deadline = 36        # deadline reminder this close to the deadline
