@@ -683,10 +683,17 @@ ESPN_BASE = os.environ.get("ESPN_BASE", "https://site.api.espn.com/apis/site/v2/
 
 
 def espn_events(path: str, start: dt.date, end: dt.date) -> list[dict]:
-    url = f"{ESPN_BASE}/{path}/scoreboard?dates={start:%Y%m%d}-{end:%Y%m%d}&limit=200"
-    r = requests.get(url, headers=UA, timeout=20)
-    r.raise_for_status()
-    return r.json().get("events", [])
+    """Every game from start to end (UTC dates), one request per day."""
+    events: dict[str, dict] = {}
+    day = start
+    while day <= end:
+        r = requests.get(f"{ESPN_BASE}/{path}/scoreboard", params={"dates": f"{day:%Y%m%d}"},
+                         headers=UA, timeout=20)
+        r.raise_for_status()
+        for ev in r.json().get("events", []):
+            events[str(ev.get("id"))] = ev
+        day += dt.timedelta(days=1)
+    return list(events.values())
 
 
 def describe_event(ev: dict, league: str, tz: ZoneInfo) -> dict | None:
