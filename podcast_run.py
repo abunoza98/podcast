@@ -361,7 +361,8 @@ DROP_RULES = """- DROP every time: opinion and analysis columns, explainers with
   headline is the only fact.
 - A story already covered in a recent episode only comes back if there's a clear new
   development. If you pick one, say what's new in "why".
-- Never pick two items that are the same story.
+- Never pick two items that are the same story. Two items about the same match, event or
+  announcement count as the same story, even if they take different angles.
 - More outlets covering a story usually means it's bigger."""
 
 
@@ -528,6 +529,8 @@ WRITING RULES
 - Every fact comes from the SOURCE TEXT for that story. Never state a number, score, date, name, \
 quote or price that isn't in it. If the source is thin, say less rather than filling gaps.
 - Never assert anything about the listener's own life, plans or opinions.
+- Never link a person to a team, club, company or role unless the source text does. If you're \
+not sure who someone plays for or manages, leave it out.
 - Never narrate structure: no "our top story", "next up", "in other news", "moving on", "turning to", \
 "that's all for". The listener can hear the order.
 - Write numbers and dates the way a newsreader says them, in words: "two-nil", "about three hundred \
@@ -542,13 +545,20 @@ PAUSE TAGS (use these exact strings)
 - Between beats inside a story: <break time="0.6s" />"""
 
 
-def section_lengths(section: dict, n: int, cfg: dict) -> tuple[int, int, int]:
+def story_weight(stories: list[dict]) -> float:
+    """Stories with only a headline or summary to go on count for less, so the writer isn't
+    pushed to pad them out with invented detail."""
+    return sum(0.4 if s.get("source_text", "").startswith("(") else 1.0 for s in stories)
+
+
+def section_lengths(section: dict, n: float, cfg: dict) -> tuple[int, int, int]:
     """(target, floor, ceiling) in spoken characters for a section with n stories."""
     L = cfg["length"]
     if section.get("style") == "roundup":
         target = int(section.get("roundup_chars", 1600))
         return target, int(target * 0.7), int(target * 1.5)
-    return (L["target_chars_per_story"] * n, L["min_chars_per_story"] * n, L["max_chars_per_story"] * n)
+    return (int(L["target_chars_per_story"] * n), int(L["min_chars_per_story"] * n),
+            int(L["max_chars_per_story"] * max(n, 1)))
 
 
 ROUNDUP_SHAPE = """Write this part as ONE flowing roundup, not a separate segment per item. Shape, with the \
@@ -569,7 +579,7 @@ Each beat is two to four sentences. Put the story pause tag between stories."""
 
 
 def section_prompt(section: dict, stories: list[dict], cfg: dict, today: dt.date, first: bool) -> str:
-    target, floor, _ = section_lengths(section, len(stories), cfg)
+    target, floor, _ = section_lengths(section, story_weight(stories), cfg)
     shape = ROUNDUP_SHAPE if section.get("style") == "roundup" else STORY_SHAPE
     blocks = []
     for n, s in enumerate(stories, 1):
@@ -614,7 +624,7 @@ def clean_script(text: str) -> str:
 
 
 def write_section(section: dict, stories: list[dict], cfg: dict, today: dt.date, first: bool) -> str:
-    _, floor, ceiling = section_lengths(section, len(stories), cfg)
+    _, floor, ceiling = section_lengths(section, story_weight(stories), cfg)
     messages = [{"role": "system", "content": WRITER_SYSTEM},
                 {"role": "user", "content": section_prompt(section, stories, cfg, today, first)}]
     script = clean_script(groq_chat(messages, cfg, max_tokens=6000))
@@ -764,9 +774,8 @@ the shift to his fantasy team obvious naturally, without announcing a segment.
 TODAY'S FOCUS (cover only these, in this order, with the beat pause tag between them):
 {chr(10).join(f"- {x}" for x in focus)}
 
-Use the official news wording for injuries. You may suggest at most one thing to consider (for \
-example, replacing a flagged starter), based only on these facts. Never invent a player, score, \
-rank or fixture. Aim for about {target:,} characters of spoken text. Write all numbers in words.
+Use the official news wording for injuries. Don't suggest specific transfers, swaps or captains. \
+Never invent a player, score, rank or fixture. Aim for about {target:,} characters of spoken text. Write all numbers in words.
 
 FACTS
 {facts}

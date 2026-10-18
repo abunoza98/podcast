@@ -32,7 +32,7 @@ engine = "elevenlabs"                    # "elevenlabs" or "kokoro" (free, runs 
 fallback_to_kokoro = true                # if ElevenLabs fails or runs out of credits, use Kokoro
 elevenlabs_voice_id = "qCwgiN0GsIAYwAJ1nYvZ"
 elevenlabs_model = "eleven_flash_v2_5"
-elevenlabs_credits_per_char = 1.0        # only used for the cost estimate in the run log
+elevenlabs_credits_per_char = 0.21        # only used for the cost estimate in the run log
 kokoro_voice = "bm_george"               # British male. Others: bm_lewis, bm_daniel, bf_emma, bf_isabella
 kokoro_lang = "b"                        # b = British English (closest to Australian)
 
