@@ -147,9 +147,11 @@ def collect_items(cfg: dict, now: dt.datetime, since: dt.datetime | None = None)
     """Return (items, feed_report). Items published before `since` are skipped."""
     fcfg = cfg["fetch"]
     since = since or now - dt.timedelta(hours=fcfg.get("lookback_hours", 30))
-    skip = [re.compile(p, re.I) for p in fcfg.get("skip_title_patterns", [])]
+    skip_all = [re.compile(p, re.I) for p in fcfg.get("skip_title_patterns", [])]
     items, report = [], []
     for section in cfg["sections"]:
+        # A section can add its own skip patterns on top of the global ones.
+        skip = skip_all + [re.compile(p, re.I) for p in section.get("skip_title_patterns", [])]
         for feed in section["feeds"]:
             row = {"section": section["id"], "feed": feed["name"], "url": feed["url"]}
             try:
@@ -163,6 +165,9 @@ def collect_items(cfg: dict, now: dt.datetime, since: dt.datetime | None = None)
             newest = None
             for rank, entry in enumerate(parsed.entries[: fcfg.get("max_items_per_feed", 25)]):
                 title = strip_html(entry.get("title", ""))
+                # "Live:" on a breaking story is a format, not a sign the story is minor. Strip it
+                # so the editor judges the story itself rather than dropping it as a live blog.
+                title = re.sub(r"^\s*(live|live updates|breaking)\s*[:|–-]\s*", "", title, flags=re.I)
                 link = entry.get("link", "")
                 if not title or not link:
                     continue
@@ -356,7 +361,8 @@ def parse_json(text: str) -> dict:
 SELECT_SYSTEM = "You are the editor of a short daily audio news brief made for one listener in Sydney."
 
 DROP_RULES = """- DROP every time: opinion and analysis columns, explainers with no new event, quizzes, live
-  blogs that only recap, "how to watch" guides, betting and odds, celebrity gossip, sponsored
+  blogs that only recap a finished event (a live page on a breaking story is fine and may well be
+  the biggest story of the day), "how to watch" guides, betting and odds, celebrity gossip, sponsored
   content, podcast or video-only items, photo galleries, listicles, and anything where the
   headline is the only fact.
 - A story already covered in a recent episode only comes back if there's a clear new
@@ -720,6 +726,15 @@ def describe_event(ev: dict, league: str, tz: ZoneInfo) -> dict | None:
             scorers.setdefault(f"{team} goals", []).append(f"{who} {mins}{extra}".strip())
         elif d.get("redCard"):
             scorers.setdefault("red cards", []).append(who)
+    if not scorers:  # basketball and similar: each team's top scorer, from ESPN's game leaders
+        for c in teams:
+            for cat in c.get("leaders", []) or []:
+                if cat.get("name") == "points" and cat.get("leaders"):
+                    top = cat["leaders"][0]
+                    who = (top.get("athlete") or {}).get("displayName", "")
+                    if who:
+                        team = c.get("team", {}).get("displayName", "?")
+                        scorers.setdefault(f"{team} top scorer", []).append(f"{who} {top.get('displayValue', '')} pts".strip())
     note = status.get("shortDetail") or status.get("detail") or ""
     try:
         kickoff = dt.datetime.fromisoformat(ev["date"].replace("Z", "+00:00"))
@@ -792,7 +807,9 @@ without announcing a segment.
 
 RULES
 - Results marked [ADRIAN'S TEAM] come first in their league with a little more detail: the \
-scorers and what it means, in two or three sentences.
+scorers (or top scorers, for basketball) and what it means, in two or three sentences.
+- Basketball scores are big numbers: say them naturally ("beat the Knicks one-eighteen to \
+one-oh-nine") and never say a basketball game was a thrashing unless the margin is twenty or more.
 - For a league marked "read out EVERY result", give every result in one short line each, quick and \
 varied like a radio sports desk: "Leeds and Man United drew one-all. Brighton thrashed Palace \
 five-nil." Name a scorer only for a standout, like a hat-trick or a late winner.
@@ -934,7 +951,147 @@ def fpl_facts(team_id: int, tz: ZoneInfo, now: dt.datetime) -> tuple[str, dict]:
                          + (f" ({chance}% chance of playing)" if chance is not None else ""))
     lines.append("Injury and availability flags in your squad: " + ("; ".join(flags) if flags else "none"))
     info["flags"] = flags
+    info["_ctx"] = {"boot": boot, "entry": entry, "squad": squad, "next_gw": upcoming["id"] if upcoming else None}
     return "\n".join(lines), info
+
+
+# ------------------------------------------------------ fantasy: transfer ideas
+
+POSITIONS = {1: "goalkeeper", 2: "defender", 3: "midfielder", 4: "forward"}
+
+
+def estimate_free_transfers(history: dict, entry: dict, next_gw: int) -> int:
+    """Free transfers available for next_gw, rebuilt from the public transfer history.
+
+    FPL rules since 2024/25: one free transfer each gameweek after your first, unused ones roll
+    over up to five, and a Wildcard or Free Hit keeps whatever you had. The public API doesn't
+    give the number directly, so this is an estimate (special one-off top-ups aren't known).
+    """
+    chips = {c.get("event"): c.get("name") for c in history.get("chips", [])}
+    played = {h["event"]: h for h in history.get("current", [])}
+    start = int(entry.get("started_event") or 1)
+    ft = 1  # going into the gameweek after the one you started in
+    for gw in range(start + 1, next_gw):
+        if chips.get(gw) not in ("wildcard", "freehit"):
+            ft = max(0, ft - int(played.get(gw, {}).get("event_transfers", 0)))
+        ft = min(5, ft + 1)
+    return ft
+
+
+def fpl_transfer_ideas(team_id: int, info: dict, fcfg: dict) -> tuple[list[str], dict]:
+    """Suggest like-for-like swaps for the listener's squad.
+
+    Scores every player on recent form, FPL's own expected points for next gameweek and how easy
+    his next few fixtures are, then looks for the weakest squad players with a clearly better
+    replacement in the same position that fits the budget and the three-per-club rule.
+    Returns (fact lines for the writer, summary for the run record).
+    """
+    ctx = info.get("_ctx") or {}
+    boot, entry, squad, next_gw = ctx.get("boot"), ctx.get("entry"), ctx.get("squad"), ctx.get("next_gw")
+    if not (boot and squad and next_gw):
+        return [], {}
+    players = {e["id"]: e for e in boot["elements"]}
+    teams = {t["id"]: t for t in boot["teams"]}
+    look = max(1, int(fcfg.get("transfer_lookahead", 3)))
+    window = range(next_gw, next_gw + look)
+    history = fpl_get(f"entry/{team_id}/history/")
+    fixtures = [f for f in fpl_get("fixtures/?future=1") if f.get("event") in window]
+
+    ft = estimate_free_transfers(history, entry, next_gw)
+    played = history.get("current", [])
+    bank = (played[-1].get("bank") if played else entry.get("last_deadline_bank")) or 0
+    bank = bank / 10
+
+    runs: dict[int, list[str]] = {}
+    ease: dict[int, float] = {}
+    for tid in teams:
+        games, total = [], 0.0
+        for gw in window:
+            mine = [f for f in fixtures if f["event"] == gw and tid in (f["team_h"], f["team_a"])]
+            if not mine:
+                games.append(f"GW{gw} blank")
+            for f in mine:
+                home = f["team_h"] == tid
+                d = f["team_h_difficulty"] if home else f["team_a_difficulty"]
+                opp = teams[f["team_a"] if home else f["team_h"]]["short_name"]
+                games.append(f"{opp} ({'H' if home else 'A'}, {d})")
+                total += 5 - d  # difficulty 2 is worth 3, difficulty 5 is worth 0
+        runs[tid] = games
+        ease[tid] = total / look
+
+    def available(pl: dict) -> bool:
+        chance = pl.get("chance_of_playing_next_round")
+        return pl.get("status") == "a" and (chance is None or chance >= 75)
+
+    def score(pl: dict) -> float:
+        s = 0.5 * float(pl.get("form") or 0) + 0.4 * float(pl.get("ep_next") or 0) + 0.6 * ease[pl["team"]]
+        chance = pl.get("chance_of_playing_next_round")
+        if pl.get("status") in ("i", "s", "u", "n") or chance == 0:
+            s -= 6  # out injured, suspended or gone: replacing him is nearly free value
+        elif chance is not None and chance < 75:
+            s -= 3
+        return s
+
+    def describe(pl: dict) -> str:
+        return (f"{pl['web_name']} ({teams[pl['team']]['short_name']}, {POSITIONS[pl['element_type']]}, "
+                f"£{pl['now_cost'] / 10:.1f}m): form {pl.get('form')}, {pl.get('total_points')} pts this "
+                f"season, next fixtures {', '.join(runs[pl['team']])}")
+
+    min_minutes = int(fcfg.get("transfer_min_minutes", 270))
+    club_count: dict[int, int] = {}
+    for pid in squad:
+        club_count[players[pid]["team"]] = club_count.get(players[pid]["team"], 0) + 1
+
+    want = max(1, min(ft, int(fcfg.get("max_transfer_ideas", 2))))
+    outs = sorted(squad, key=lambda pid: score(players[pid]))
+    taken_in: set[int] = set()
+    ideas, money = [], bank
+    for out_id in outs:
+        if len(ideas) >= want:
+            break
+        out = players[out_id]
+        if out["element_type"] == 1 and score(out) > -1:
+            continue  # only swap a keeper if he's actually unavailable
+        budget = money + out["now_cost"] / 10
+        counts = dict(club_count)
+        counts[out["team"]] -= 1
+        options = [
+            p for p in boot["elements"]
+            if p["element_type"] == out["element_type"] and p["id"] not in squad and p["id"] not in taken_in
+            and available(p) and p.get("minutes", 0) >= min_minutes
+            and p["now_cost"] / 10 <= budget + 1e-9 and counts.get(p["team"], 0) < 3
+        ]
+        options.sort(key=score, reverse=True)
+        if not options or score(options[0]) - score(out) < float(fcfg.get("transfer_min_gain", 1.5)):
+            continue
+        best = options[0]
+        cheaper = next((p for p in options[1:6] if p["now_cost"] < best["now_cost"] and p["team"] != best["team"]), None)
+        ideas.append({"out": out, "in": best, "alt": cheaper})
+        taken_in.add(best["id"])
+        money = budget - best["now_cost"] / 10
+        club_count = counts
+        club_count[best["team"]] = club_count.get(best["team"], 0) + 1
+
+    lines = [f"Free transfers for gameweek {next_gw}: about {ft} (worked out from his transfer history, "
+             f"before any transfers he has already made this week). Money in the bank: £{bank:.1f}m."]
+    if ideas:
+        lines.append(f"Suggested swaps (same position, within budget, max three per club; fixtures shown as "
+                     f"opponent, home or away, difficulty 1 easy to 5 hard, over the next {look} gameweeks):")
+        for n, idea in enumerate(ideas, 1):
+            lines.append(f"  {n}. OUT {describe(idea['out'])}"
+                         + (f" — flagged: {idea['out'].get('news')}" if idea["out"].get("news") else ""))
+            lines.append(f"     IN {describe(idea['in'])}")
+            if idea["alt"]:
+                lines.append(f"     Cheaper alternative: {describe(idea['alt'])}")
+    else:
+        lines.append("No swap stands out clearly over his current players: say his squad looks fine to roll "
+                     "the transfer (and bank it for next week).")
+    summary_out = {
+        "free_transfers_estimate": ft, "bank": round(bank, 1),
+        "ideas": [f"{i['out']['web_name']} → {i['in']['web_name']}"
+                  + (f" (or {i['alt']['web_name']})" if i["alt"] else "") for i in ideas],
+    }
+    return lines, summary_out
 
 
 def write_fpl(cfg: dict, facts: str, focus: list[str], today: dt.date) -> str:
@@ -948,7 +1105,10 @@ TODAY'S FOCUS (cover only these, in this order, with the beat pause tag between 
 {chr(10).join(f"- {x}" for x in focus)}
 
 Use the official news wording for injuries. Each flagged player is marked as a starter or on the \
-bench in his current lineup: say which, and never call a bench player a starter. Don't suggest specific transfers, swaps or captains. \
+bench in his current lineup: say which, and never call a bench player a starter. Only mention \
+transfers when the focus asks for transfer ideas, and then only the swaps listed under "Suggested \
+swaps" in the facts: never make up a different swap, and don't suggest captains. Keep prices to one \
+decimal and don't read out every fixture: name the one or two that matter. \
 Never invent a player, score, rank or fixture. Aim for about {target:,} characters of spoken text. Write all numbers in words.
 
 FACTS
@@ -1001,6 +1161,25 @@ def fpl_segment(cfg: dict, today: dt.date, now: dt.datetime, fstate: dict) -> tu
     if focus and old_flags:
         names = ", ".join(x.partition(": ")[0] for x in old_flags)
         focus.append(f"A one-sentence reminder only, names and starter or bench, no details: still flagged: {names}")
+
+    # Transfer ideas: on the days set by transfer_ideas ("deadline", "recap", "both" or "off").
+    ideas_when = str(f.get("transfer_ideas", "deadline")).lower()
+    ideas_due = (remind_due and ideas_when in ("deadline", "both")) or (recap_due and ideas_when in ("recap", "both"))
+    if ideas_due:
+        try:
+            idea_lines, idea_info = fpl_transfer_ideas(int(f["team_id"]), info, f)
+        except Exception as e:  # noqa: BLE001 - never stop the segment over this
+            idea_lines, idea_info = [], {}
+            warn(f"FPL transfer ideas skipped today: {str(e)[:150]}")
+        if idea_lines:
+            facts += "\n" + "\n".join(idea_lines)
+            info["transfers"] = idea_info
+            focus.append("Transfer ideas for the coming gameweek: how many free transfers he has (say it's "
+                         "roughly that many, as it's worked out from his history) and money in the bank, then "
+                         "each suggested swap: who out, who in and why in a sentence (form, fixtures, injury), "
+                         "plus the cheaper alternative if there is one. Present them as suggestions; he decides.")
+            bullet_bits.append("transfer ideas")
+    info.pop("_ctx", None)
     info["focus"] = focus
     if not focus:
         log("  FPL: nothing new worth mentioning today, so no segment")
@@ -1145,7 +1324,11 @@ def split_pauses(script: str) -> list[tuple[str, object]]:
     return out
 
 
+_KOKORO_PIPE = None
+
+
 def tts_kokoro(script: str, cfg: dict, out: Path, work: Path) -> None:
+    global _KOKORO_PIPE
     ensure_kokoro()
     import numpy as np
     import soundfile as sf
@@ -1153,7 +1336,9 @@ def tts_kokoro(script: str, cfg: dict, out: Path, work: Path) -> None:
 
     v = cfg["voice"]
     sr = 24000
-    pipe = KPipeline(lang_code=v.get("kokoro_lang", "b"), repo_id="hexgrad/Kokoro-82M")
+    if _KOKORO_PIPE is None:  # loading the model is slow, so do it once per run
+        _KOKORO_PIPE = KPipeline(lang_code=v.get("kokoro_lang", "b"), repo_id="hexgrad/Kokoro-82M")
+    pipe = _KOKORO_PIPE
     audio_parts = []
     for kind, val in split_pauses(script):
         if kind == "pause":
@@ -1168,28 +1353,101 @@ def tts_kokoro(script: str, cfg: dict, out: Path, work: Path) -> None:
             audio_parts.append(np.zeros(int(sr * 0.15), dtype=np.float32))
     if not audio_parts:
         raise TTSError("Kokoro produced no audio")
-    wav = work / "kokoro.wav"
+    wav = work / f"{out.stem}.wav"
     sf.write(wav, np.concatenate(audio_parts), sr)
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(wav), "-codec:a", "libmp3lame",
                     "-b:a", "96k", str(out)], check=True)
 
 
-def render_audio(script: str, cfg: dict, out: Path) -> str:
-    """Render the episode and return the engine actually used."""
+def render_audio(texts: list[str], cfg: dict, out: Path) -> tuple[str, list[float]]:
+    """Voice each chapter separately, join them, and return (engine used, seconds per chapter).
+
+    Voicing chapter by chapter costs the same ElevenLabs credits (they're per character) and
+    tells us exactly where each topic starts, for the chapter markers.
+    """
     v = cfg["voice"]
-    with tempfile.TemporaryDirectory() as tmp:
-        work = Path(tmp)
-        if v.get("engine", "elevenlabs") == "elevenlabs":
-            try:
-                tts_elevenlabs(script, cfg, out, work)
-                return "elevenlabs"
-            except TTSError as e:
-                warn(f"ElevenLabs failed, so Kokoro voiced this episode: {str(e)[:150]}")
-                if not v.get("fallback_to_kokoro", True):
-                    raise
-                log("  falling back to Kokoro")
-        tts_kokoro(script, cfg, out, work)
-        return "kokoro"
+
+    def run(engine) -> list[float]:
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp)
+            parts = []
+            for n, text in enumerate(texts):
+                part = work / f"chapter{n:02d}.mp3"
+                sub = work / f"c{n:02d}"
+                sub.mkdir()
+                engine(text, cfg, part, sub)
+                parts.append(part)
+            lengths = [audio_seconds(p) for p in parts]
+            if len(parts) > 1:
+                # The pause between topics, as real silence in the same format as the voice audio.
+                gap = work / "gap.mp3"
+                silence_like(parts[0], gap, CHAPTER_GAP)
+                gap_len = audio_seconds(gap)
+                joined = []
+                for n, p in enumerate(parts):
+                    joined.append(p)
+                    if n < len(parts) - 1:
+                        joined.append(gap)
+                        lengths[n] += gap_len
+                parts = joined
+            ffmpeg_concat(parts, out)
+            return lengths
+
+    if v.get("engine", "elevenlabs") == "elevenlabs":
+        try:
+            return "elevenlabs", run(tts_elevenlabs)
+        except TTSError as e:
+            warn(f"ElevenLabs failed, so Kokoro voiced this episode: {str(e)[:150]}")
+            if not v.get("fallback_to_kokoro", True):
+                raise
+            log("  falling back to Kokoro")
+    return "kokoro", run(tts_kokoro)
+
+
+CHAPTER_GAP = 1.4  # seconds of silence between topics, matching the pause between stories
+
+
+def silence_like(sample: Path, out: Path, seconds: float) -> None:
+    """Silent MP3 with the same sample rate, channels and bitrate as sample, so it joins cleanly."""
+    probe = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries",
+                            "stream=sample_rate,channels,bit_rate", "-of", "json", str(sample)],
+                           capture_output=True, text=True, check=True)
+    st = json.loads(probe.stdout)["streams"][0]
+    layout = "mono" if int(st.get("channels", 1)) == 1 else "stereo"
+    rate = int(st.get("bit_rate") or 128000) // 1000
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i",
+                    f"anullsrc=r={st['sample_rate']}:cl={layout}", "-t", str(seconds),
+                    "-codec:a", "libmp3lame", "-b:a", f"{rate}k", str(out)], check=True)
+
+
+def ffmeta_escape(text: str) -> str:
+    return re.sub(r"([=;#\\\n])", r"\\\1", text)
+
+
+def embed_chapters(mp3: Path, chapters: list[dict], total: float) -> None:
+    """Write chapter markers (ID3 CHAP frames) into the MP3, which Apple Podcasts shows as Chapters."""
+    meta = mp3.with_suffix(".ffmeta")
+    lines = [";FFMETADATA1"]
+    for n, ch in enumerate(chapters):
+        end = chapters[n + 1]["start"] if n + 1 < len(chapters) else total
+        lines += ["[CHAPTER]", "TIMEBASE=1/1000", f"START={int(ch['start'] * 1000)}",
+                  f"END={int(end * 1000)}", f"title={ffmeta_escape(ch['title'])}"]
+    meta.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    tagged = mp3.with_name(mp3.stem + "-chapters.mp3")
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(mp3), "-i", str(meta),
+                    "-map", "0:a", "-map_metadata", "1", "-map_chapters", "1", "-c", "copy",
+                    "-id3v2_version", "3", str(tagged)], check=True)
+    tagged.replace(mp3)
+    meta.unlink()
+
+
+def section_chapters(section: dict, stories: list[dict], script: str) -> list[dict]:
+    """One chapter per story when the section is cleanly split into stories, else one for the section."""
+    parts = [p.strip() for p in script.split(STORY_BREAK) if p.strip()]
+    if section.get("style") != "roundup" and len(stories) > 1 and len(parts) == len(stories):
+        return [{"title": s["label"], "text": p} for s, p in zip(stories, parts)]
+    title = stories[0]["label"] if len(stories) == 1 and section.get("style") != "roundup" else section["name"]
+    return [{"title": title, "text": script}]
 
 
 # ------------------------------------------------------------------ the site
@@ -1239,8 +1497,15 @@ def build_feed(cfg: dict, episodes: list[dict], cover: str, now: dt.datetime) ->
     items = []
     for ep in sorted(episodes, key=lambda e: e["date"], reverse=True):
         bullets = ep.get("bullets", [])
-        desc = "\n".join(f"• {b}" for b in bullets) or ep["title"]
-        rich = "<ul>" + "".join(f"<li>{html.escape(b)}</li>" for b in bullets) + "</ul>"
+        if ep.get("chapters_file"):  # bullets start with a timestamp: one per line, no bullet point
+            desc = "\n".join(bullets)
+            rich = "<p>" + "<br>".join(html.escape(b) for b in bullets) + "</p>"
+            chap_url = base + "/episodes/" + ep["chapters_file"]
+            chap = f'\n      <podcast:chapters url={quoteattr(chap_url)} type="application/json+chapters"/>'
+        else:
+            desc = "\n".join(f"• {b}" for b in bullets) or ep["title"]
+            rich = "<ul>" + "".join(f"<li>{html.escape(b)}</li>" for b in bullets) + "</ul>"
+            chap = ""
         items.append(f"""    <item>
       <title>{escape(ep['title'])}</title>
       <description>{escape(desc)}</description>
@@ -1250,11 +1515,11 @@ def build_feed(cfg: dict, episodes: list[dict], cover: str, now: dt.datetime) ->
       <enclosure url={quoteattr(f"{base}/episodes/{ep['file']}")} length="{ep['bytes']}" type="audio/mpeg"/>
       <itunes:duration>{ep['duration']}</itunes:duration>
       <itunes:episodeType>full</itunes:episodeType>
-      <itunes:explicit>false</itunes:explicit>
+      <itunes:explicit>false</itunes:explicit>{chap}
     </item>""")
     sub = f'<itunes:category text={quoteattr(s["subcategory"])}/>' if s.get("subcategory") else ""
     return f"""<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:podcast="https://podcastindex.org/namespace/1.0">
   <channel>
     <title>{escape(s['title'])}</title>
     <link>{escape(base)}/</link>
@@ -1280,8 +1545,8 @@ def write_site(site: Path, cfg: dict, state: dict, now: dt.datetime) -> None:
     state["episodes"] = sorted(state["episodes"], key=lambda e: e["date"], reverse=True)[:keep]
     ep_dir = site / "episodes"
     ep_dir.mkdir(parents=True, exist_ok=True)
-    wanted = {e["file"] for e in state["episodes"]}
-    for f in ep_dir.glob("*.mp3"):
+    wanted = {e["file"] for e in state["episodes"]} | {e.get("chapters_file") for e in state["episodes"]}
+    for f in [*ep_dir.glob("*.mp3"), *ep_dir.glob("*.chapters.json")]:
         if f.name not in wanted:
             log(f"  pruning {f.name}")
             f.unlink()
@@ -1395,43 +1660,59 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
         sec = next(x for x in cfg["sections"] if x["id"] == p["section"])
         p["source_text"] = gather_source_text(p, cfg, sec.get("source_chars_per_story"))
         log(f"  {p['label'][:60]}: {len(p['source_text']):,} chars of source")
-    sections_out, first, written = [], True, []
+    chapters, first, written = [], True, []  # chapters: {"title", "text"} in playing order
     results_seen_before = list(state.get("results_seen", []))
     res_script, res_bullet, res_info = results_segment(cfg, today, now, state)
     res_before = cfg.get("results", {}).get("before_section", "sport")
     fpl_script, fpl_bullet, fpl_info = fpl_segment(cfg, today, now, state.setdefault("fpl", {}))
     fpl_after = cfg.get("fpl", {}).get("after_section", "sport")
+    res_chapter = {"title": "Scores roundup", "text": res_script} if res_script else None
+    fpl_chapter = {"title": fpl_bullet or "Your FPL team", "text": fpl_script} if fpl_script else None
     for section in cfg["sections"]:
-        if res_script and section["id"] == res_before:
-            sections_out.append(res_script)
-            res_script = ""
+        if res_chapter and section["id"] == res_before:
+            chapters.append(res_chapter)
+            res_chapter = None
         stories = [p for p in picks if p["section"] == section["id"]]
         if stories:
             try:
-                sections_out.append(write_section(section, stories, cfg, today, first))
+                text = write_section(section, stories, cfg, today, first)
+                chapters += section_chapters(section, stories, text)
                 written += stories
                 first = False
             except LLMError as e:
                 warn(f"{section['name']} left out today: {str(e)[:150]}")
-        if fpl_script and section["id"] == fpl_after:
-            sections_out.append(fpl_script)
-            fpl_script = ""
-    if res_script:
-        sections_out.append(res_script)
-    if fpl_script:  # its section was missing today: play it at the end
-        sections_out.append(fpl_script)
+        if fpl_chapter and section["id"] == fpl_after:
+            chapters.append(fpl_chapter)
+            fpl_chapter = None
+    if res_chapter:
+        chapters.append(res_chapter)
+    if fpl_chapter:  # its section was missing today: play it at the end
+        chapters.append(fpl_chapter)
     if not written:
         raise SystemExit("No section could be written — check the run log.")
     picks = written
     intro = f"Morning, {cfg['show']['listener']}. It's {spoken_date(today)}."
-    script = assemble(intro, sections_out, cfg["show"].get("outro", "That's your brief."))
+    outro = cfg["show"].get("outro", "That's your brief.")
+    # The greeting rides on the first chapter and the sign-off on the last. Each chapter is voiced
+    # separately and the pause between them is added as silence when the audio is joined.
+    chapters[0]["text"] = f"{intro} {BEAT_BREAK}\n{chapters[0]['text']}"
+    chapters[-1]["text"] = f"{chapters[-1]['text']} {STORY_BREAK}\n{outro}"
+    script = f" {STORY_BREAK}\n".join(ch["text"] for ch in chapters).strip()
     (site / "last_script.txt").write_text(script, encoding="utf-8")
-    log(f"  script: {spoken_len(script):,} spoken characters")
+    log(f"  script: {spoken_len(script):,} spoken characters, {len(chapters)} chapters")
 
     log("5/5 Rendering audio…")
     with tempfile.TemporaryDirectory() as tmp:
         raw = Path(tmp) / "episode.mp3"
-        engine = render_audio(script, cfg, raw)
+        engine, lengths = render_audio([ch["text"] for ch in chapters], cfg, raw)
+        start = 0.0
+        for ch, length in zip(chapters, lengths):
+            ch["start"] = round(start, 2)
+            start += length
+        try:
+            embed_chapters(raw, chapters, audio_seconds(raw))
+        except Exception as e:  # noqa: BLE001 - chapters are nice to have, never worth losing the episode
+            warn(f"Chapter markers left out today: {str(e)[:150]}")
         digest = hashlib.sha256(raw.read_bytes()).hexdigest()[:8]
         fname = f"{date_key}-{digest}.mp3"
         (site / "episodes").mkdir(parents=True, exist_ok=True)
@@ -1439,12 +1720,19 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
     seconds = audio_seconds(site / "episodes" / fname)
     size = (site / "episodes" / fname).stat().st_size
     log(f"  {engine}: {fmt_duration(seconds)} long, {size / 1e6:.1f} MB")
+    chapter_list = [{"start": ch["start"], "title": ch["title"]} for ch in chapters]
+    (site / "episodes" / f"{date_key}-{digest}.chapters.json").write_text(json.dumps({
+        "version": "1.2.0",
+        "chapters": [{"startTime": c["start"], "title": c["title"]} for c in chapter_list],
+    }, ensure_ascii=False, indent=1), encoding="utf-8")
+    for c in chapter_list:
+        log(f"  {fmt_duration(c['start']):>5}  {c['title']}")
 
     state["episodes"].append({
         "date": date_key, "title": nice_date(today), "guid": f"{date_key}-{digest}", "file": fname,
         "bytes": size, "duration": fmt_duration(seconds), "pub_date": format_datetime(now.astimezone(UTC)),
-        "bullets": ([res_bullet] if res_bullet else []) + [p["label"] for p in picks]
-                   + ([fpl_bullet] if fpl_bullet else []), "engine": engine,
+        "bullets": [f"{fmt_duration(c['start'])} {c['title']}" for c in chapter_list],
+        "chapters_file": f"{date_key}-{digest}.chapters.json", "engine": engine,
     })
     state["covered"] += [{"date": date_key, "label": p["label"], "title": p["lead"]["title"]} for p in picks]
     if state.get("last_run_date") != date_key:

@@ -63,9 +63,14 @@ id = "news"
 name = "News"
 picks = 2
 brief = """The two stories that matter most today: Australian news first, then the biggest \
-global story. Favour things that change something for people in Australia, or that are the \
-main story around the world. Skip niche regional politics, diplomacy and resource-deal stories \
-(trade agreements, gas projects, treaty signings) unless they're front-page news here."""
+global story. The Australian pick must be the story leading the Australian news this morning: \
+the one at or near the top of ABC Top Stories and covered by several outlets. Breaking events \
+always win over policy or economy stories: an attack on or death of a public figure, a terror \
+attack, a major disaster, a big crime, or anything with lives at stake. A politician being \
+attacked or hurt is a major national story, not niche politics. After that, favour things that \
+change something for people in Australia, or that are the main story around the world. Skip \
+niche regional politics, diplomacy and resource-deal stories (trade agreements, gas projects, \
+treaty signings) unless they're front-page news here."""
 listener_note = "Adrian lives in Sydney. He follows the news but hasn't read today's yet."
 feeds = [
   { name = "ABC Top Stories", url = "https://www.abc.net.au/news/feed/10719986/rss.xml", ranked = true, weight = 1.3 },
@@ -103,8 +108,13 @@ brief = """Scores are read out separately in a scores roundup just before this, 
 that go beyond the scoreline: standout performances, managers, injuries, transfers and title races. \
 Football (soccer) first: the A-League, Socceroos, Matildas, and the biggest \
 European and international stories. Other sports only when they have genuine global \
-relevance, like a world title, a major record or a huge upset. Skip unconfirmed transfer \
-rumours, routine match previews and fantasy content."""
+relevance, like a world title, a major record or a huge upset. Grand Slam tennis results \
+(Australian Open, French Open, Wimbledon, US Open), men's and women's, are always worth a pick \
+in the later rounds. Women's sport otherwise only when it's major football news: the Matildas \
+(news, squads and fixtures) or Women's World Cup qualifying and results. Skip other women's \
+club football, women's national teams other than the Matildas (including England manager or \
+contract news), and other women's sport. Skip unconfirmed transfer rumours, routine match \
+previews and fantasy content."""
 listener_note = "Adrian follows football closely, so don't explain how football works. Say 'football' for soccer and name other codes (AFL, NRL) explicitly."
 feeds = [
   { name = "BBC Football", url = "https://feeds.bbci.co.uk/sport/football/rss.xml", ranked = true, weight = 1.2 },
@@ -125,13 +135,15 @@ picks = 3                                # at most this many on a busy day
 target_chars_per_story = 380
 min_chars_per_story = 200
 max_chars_per_story = 650
-brief = """Match scores for Man City, the Chiefs, Croatia and Dinamo's European games are read out \
-separately in a scores roundup, so for those pick stories beyond the scoreline. Dinamo's Croatian \
+brief = """Match scores for Man City, the Chiefs, the Celtics, Croatia and Dinamo's European games \
+are read out separately in a scores roundup, so for those pick stories beyond the scoreline. Dinamo's Croatian \
 league (HNL) results are NOT in that roundup, so always pick a report of Dinamo's latest league \
 match when there is one. \
 Adrian's teams and interests: Dinamo Zagreb and Croatian football (the national team, \
-the HNL, Croatian players abroad), the Kansas City Chiefs, big league-wide NFL news, Manchester \
-City, the St George Illawarra Dragons, and Eurovision. Pick a story only if it's a result of a \
+the HNL, Croatian players abroad), the Kansas City Chiefs, big league-wide NFL news, the Boston \
+Celtics, big league-wide NBA news (blockbuster trades, major injuries to stars, coaching changes, \
+records, award winners, the playoffs and Finals), Manchester City, the St George Illawarra \
+Dragons, and Eurovision. Pick a story only if it's a result of a \
 game his team played, or genuinely good to know: a title, trophy or big win or loss, a major \
 signing, sale, injury or coach change, a big announcement, or for Eurovision major news like \
 hosts, entries, songs and results. Skip previews, rumours, minor squad news, opinion and \
@@ -145,7 +157,11 @@ feeds = [
   { name = "Google News: Kansas City Chiefs", url = "https://news.google.com/rss/search?q=%22Kansas+City+Chiefs%22+when:2d&hl=en-US&gl=US&ceid=US:en" },
   { name = "Guardian NFL", url = "https://www.theguardian.com/sport/nfl/rss", weight = 0.9 },
   { name = "CBS Sports NFL", url = "https://www.cbssports.com/rss/headlines/nfl/", weight = 0.8 },
-  { name = "BBC Man City", url = "https://feeds.bbci.co.uk/sport/football/teams/manchester-city/rss.xml", weight = 1.1 },
+  { name = "Google News: Boston Celtics", url = "https://news.google.com/rss/search?q=%22Boston+Celtics%22+when:2d&hl=en-US&gl=US&ceid=US:en" },
+  { name = "CelticsBlog", url = "https://www.celticsblog.com/rss/current.xml", weight = 0.8 },
+  { name = "ESPN NBA", url = "https://www.espn.com/espn/rss/nba/news", weight = 0.9 },
+  { name = "CBS Sports NBA", url = "https://www.cbssports.com/rss/headlines/nba/", weight = 0.8 },
+  { name = "BBC Man City", url ="https://feeds.bbci.co.uk/sport/football/teams/manchester-city/rss.xml", weight = 1.1 },
   { name = "Guardian Man City", url = "https://www.theguardian.com/football/manchestercity/rss" },
   { name = "Google News: St George Dragons", url = "https://news.google.com/rss/search?q=%22St+George+Illawarra%22+OR+%22Dragons%22+NRL+when:2d&hl=en-AU&gl=AU&ceid=AU:en" },
   { name = "Google News: Eurovision", url = "https://news.google.com/rss/search?q=Eurovision+when:2d&hl=en-AU&gl=AU&ceid=AU:en", weight = 0.9 },
@@ -160,12 +176,23 @@ picks = 4                                # how many items feed the roundup
 roundup_chars = 1600                     # about two minutes
 source_chars_per_story = 1400
 brief = """Pro wrestling: WWE, AEW and other major promotions. Pick the items that together give \
-the best overall picture of the last day in wrestling: the biggest event or show (including its \
-main event), the other notable results, the main storylines and where feuds are heading, and \
-confirmed news (title changes, signings, departures, injuries, big announcements). Avoid two \
-items about the same match. Skip speculation, reaction pieces, predictions and ratings columns."""
-listener_note = "Adrian is a wrestling fan and knows the major promotions, shows and names."
+the best overall picture of the last day in wrestling: the biggest televised show or premium \
+live event (Raw, SmackDown, NXT, Dynamite, Collision, PLEs and pay-per-views, including the main \
+event), the other notable results, the main storylines and where feuds are heading, and \
+confirmed news (title changes, signings, departures, injuries, big announcements). Skip house \
+shows, non-televised live events, tour stops and indie appearances, unless something there is \
+genuinely major (a title change or a serious injury). The SquaredCircle Reddit items show what \
+fans are talking about overnight: treat a story that's big there as more important, but never \
+pick memes, clips, polls, fan opinion or 'what if' threads, and only use a Reddit item if it \
+reports real news. Avoid two items about the same match. Skip speculation, reaction pieces, \
+predictions and ratings columns."""
+listener_note = "Adrian is a wrestling fan and knows the major promotions, shows and names. He doesn't care about house shows."
+skip_title_patterns = [
+  "\\bhouse show\\b", "\\blive event\\b", "\\bdark match", "discussion thread", "\\bmeme\\b",
+  "\\bgif\\b", "\\bpoll\\b", "^\\[?(serious|humor|humour|shitpost)",
+]
 feeds = [
+  { name = "Reddit r/SquaredCircle (top today)", url = "https://www.reddit.com/r/SquaredCircle/top/.rss?t=day&limit=25", ranked = true, weight = 0.7 },
   { name = "F4W / Wrestling Observer", url = "https://www.f4wonline.com/feed/", weight = 1.2 },
   { name = "POST Wrestling", url = "https://www.postwrestling.com/feed/", weight = 1.2 },
   { name = "PWTorch", url = "https://www.pwtorch.com/site/feed/", weight = 1.1 },
@@ -183,6 +210,15 @@ team_id = 1632250                              # 0 = segment off until you add y
 after_section = "teams"                  # plays straight after this section
 segment_chars = 1000                     # about a minute when everything is due
 remind_hours_before_deadline = 36        # deadline reminder this close to the deadline
+# Transfer ideas: like-for-like swaps (defender for defender etc.) that fit your bank, the
+# three-per-club rule and your free transfers, based on form, FPL's expected points and the
+# next few fixtures. When: "deadline" (with the deadline reminder), "recap" (after a gameweek
+# finishes), "both", or "off".
+transfer_ideas = "deadline"
+transfer_lookahead = 3                   # how many upcoming gameweeks of fixtures to weigh up
+max_transfer_ideas = 2                   # never more than this, and never more than your free transfers (min 1)
+transfer_min_gain = 1.5                  # how much better a replacement must be to be worth suggesting
+transfer_min_minutes = 270               # ignore players who've barely played this season
 
 # ---------------------------------------------------------------------------
 # Scores roundup: results of games finished since the last episode, read out
@@ -192,7 +228,7 @@ remind_hours_before_deadline = 36        # deadline reminder this close to the d
 [results]
 enabled = true
 before_section = "sport"
-follow_teams = ["Dinamo Zagreb", "Manchester City", "Croatia", "Kansas City Chiefs"]
+follow_teams = ["Dinamo Zagreb", "Manchester City", "Croatia", "Kansas City Chiefs", "Boston Celtics"]
 chars_per_result = 110
 leagues = [
   { name = "Premier League", path = "soccer/eng.1", mode = "all" },
@@ -206,4 +242,5 @@ leagues = [
   { name = "A-League Men", path = "soccer/aus.1", mode = "notable" },
   { name = "Nations League", path = "soccer/uefa.nations", mode = "teams" },
   { name = "NFL", path = "football/nfl", mode = "notable" },
+  { name = "NBA", path = "basketball/nba", mode = "notable" },
 ]
