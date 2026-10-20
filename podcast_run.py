@@ -125,7 +125,9 @@ def prepare_private_sections(cfg: dict) -> None:
             if name:
                 entries.append((name, terms or f'"{name}"', note))
         if not entries:
-            print(f"  {section['name']}: no {var} secret set, so this section is off", flush=True)
+            msg = f"{section['name']}: OFF, because the {var} secret isn't reaching the run (add the secret, and pass it in the workflow's env)"
+            cfg.setdefault("_watchlist_status", []).append(msg)
+            print(f"  {msg}", flush=True)
             continue
         section["private"] = True
         cfg["_private_salt"] = cfg.get("_private_salt", "") + raw
@@ -143,7 +145,9 @@ def prepare_private_sections(cfg: dict) -> None:
                 for form in {phrase, requests.utils.quote(phrase), phrase.replace(" ", "+")}:
                     REDACT.append(re.compile(rf"(?<!\w){re.escape(form)}(?!\w)", re.I))
         section["feeds"] = feeds
-        print(f"  {section['name']}: watching {len(feeds)} companies from the {var} secret", flush=True)
+        msg = f"{section['name']}: ON, watching {len(feeds)} companies from the {var} secret"
+        cfg.setdefault("_watchlist_status", []).append(msg)
+        print(f"  {msg}", flush=True)
         keep.append(section)
     cfg["sections"] = keep
 
@@ -323,7 +327,7 @@ def cluster_and_score(items: list[dict], cfg: dict, now: dt.datetime, covered: l
             lead = max(its, key=lambda i: (i["weight"], -i["rank"]))
             rank_score = max([max(0.0, 1 - i["rank"] / 15) for i in its if i["ranked"]] or [0.0])
             newest = max(i["published"] for i in its)
-            recency = max(0.0, 1 - (now - newest).total_seconds() / 3600 / lookback)
+            recency = min(1.0, max(0.0, 1 - (now - newest).total_seconds() / 3600 / lookback))  # some feeds are future-dated
             weight = max(i["weight"] for i in its)
             score = weight * (1 + 0.8 * (len(sources) - 1) + 0.6 * rank_score + 0.5 * recency)
             if section.get("private"):
@@ -585,6 +589,59 @@ def extract_article(url: str, limit: int = 4000) -> str:
     return re.sub(r"\s+", " ", " ".join(paras))[:limit]
 
 
+GN_BATCH = "https://news.google.com/_/DotsSplashUi/data/batchexecute"
+GN_CTX = [["X", "X", ["X", "X"], None, None, 1, 1, "US:en", None, 1, None, None, None, None, None, 0, 1],
+          "X", "X", 1, [1, 1, 1], 1, 1, None, 0, 0, None, 0]
+_GN_CACHE: dict[str, str] = {}
+
+
+def resolve_google_news(url: str) -> str:
+    """Google News feed links point at Google, not the article, so the article text can't be read.
+    Swap in the real article address. Google's own site does the same exchange: the article page
+    carries a signature, which a second request trades for the publisher's link. If anything about
+    that changes or fails, the original link comes back and the story falls back to its headline.
+    """
+    m = re.match(r"https?://news\.google\.com/(?:rss/)?(?:articles|read)/([^/?#]+)", url)
+    if not m:
+        return url
+    if url in _GN_CACHE:
+        return _GN_CACHE[url]
+    art = m.group(1)
+    page = requests.get(f"https://news.google.com/rss/articles/{art}?hl=en-AU&gl=AU&ceid=AU:en",
+                        headers=UA, timeout=15)
+    page.raise_for_status()
+    sg = re.search(r'data-n-a-sg="([^"]+)"', page.text)
+    ts = re.search(r'data-n-a-ts="([^"]+)"', page.text)
+    if not (sg and ts):
+        raise ValueError("no signature on the Google News page")
+    inner = ["garturlreq", GN_CTX, art, int(ts.group(1)) if ts.group(1).isdigit() else ts.group(1), sg.group(1)]
+    envelope = [[["Fbv4je", json.dumps(inner, separators=(",", ":")), None, "1"]]]
+    r = requests.post(GN_BATCH, timeout=15,
+                      data="f.req=" + requests.utils.quote(json.dumps(envelope, separators=(",", ":"))),
+                      headers={**UA, "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"})
+    r.raise_for_status()
+    found = None
+    try:
+        body = r.text.split("\n\n", 1)[1] if "\n\n" in r.text else r.text
+        body = body.lstrip()
+        if body.startswith(")]}'"):
+            body = body.split("\n", 1)[1]
+        for row in json.loads(body):
+            if isinstance(row, list) and len(row) >= 3 and isinstance(row[2], str) and "garturlres" in row[2]:
+                payload = json.loads(row[2])
+                if payload[0] == "garturlres":
+                    found = payload[1]
+                    break
+    except (ValueError, IndexError, TypeError):
+        m2 = re.search(r'garturlres\\",\\"(https?://[^"\\]+)', r.text)
+        found = m2.group(1) if m2 else None
+    if not (isinstance(found, str) and found.startswith("http") and "news.google.com" not in found):
+        raise ValueError("Google News didn't return an article link")
+    _GN_CACHE[url] = found
+    time.sleep(0.5)  # be polite
+    return found
+
+
 def gather_source_text(story: dict, cfg: dict, limit: int | None = None) -> str:
     limit = int(limit or cfg["fetch"].get("source_chars_per_story", 2400))
     ordered = sorted(story["items"], key=lambda i: (-i["weight"], i["rank"]))
@@ -593,8 +650,14 @@ def gather_source_text(story: dict, cfg: dict, limit: int | None = None) -> str:
         if used >= limit:
             break
         text = ""
+        url = it["url"]
+        if "news.google.com" in url:
+            try:
+                url = it["url"] = resolve_google_news(url)
+            except Exception as e:  # noqa: BLE001 - fall back to the headline
+                log(f"    couldn't find the article behind a {it['source']} link: {str(e)[:80]}")
         try:
-            text = extract_article(it["url"], limit=limit)
+            text = extract_article(url, limit=limit)
         except Exception as e:  # noqa: BLE001
             log(f"    couldn't read {it['source']}: {str(e)[:80]}")
         if len(text) < 300 and len(it.get("feed_body", "")) > len(text):
@@ -1858,6 +1921,11 @@ def write_site(site: Path, cfg: dict, state: dict, now: dt.datetime) -> None:
 def probe(cfg: dict, now: dt.datetime) -> None:
     log("Probing feeds…")
     items, report = collect_items(cfg, now)
+    private = {s["id"] for s in cfg["sections"] if s.get("private")}
+    summary("## Private sections\n")
+    for s in cfg.get("_watchlist_status", []):
+        summary(f"- {s}")
+    summary("")
     summary("## Feed check\n")
     summary("| Section | Feed | Status | Fresh items | Newest (hours ago) | Article text |")
     summary("|---|---|---|---|---|---|")
@@ -1865,9 +1933,16 @@ def probe(cfg: dict, now: dt.datetime) -> None:
         extract = ""
         if row.get("ok"):
             sample = next((i for i in items if i["source"] == row["feed"]), None)
+            if row["section"] in private:  # private feeds are labelled generically in the report
+                n = int(row["feed"].rsplit(" ", 1)[-1])
+                sec_feeds = next(s["feeds"] for s in cfg["sections"] if s["id"] == row["section"])
+                sample = next((i for i in items if i["source"] == sec_feeds[n - 1]["name"]), None)
             if sample:
                 try:
-                    extract = f"{len(extract_article(sample['url'])):,} chars"
+                    url = sample["url"]
+                    if "news.google.com" in url:
+                        url = resolve_google_news(url)
+                    extract = f"{len(extract_article(url)):,} chars"
                 except Exception as e:  # noqa: BLE001
                     extract = f"failed: {str(e)[:60]}"
         status = "✅" if row.get("ok") else f"❌ {row.get('error', '')}"
