@@ -548,6 +548,12 @@ WRITING RULES
 - Australian English. Contractions. Short sentences. One idea per breath.
 - Every fact comes from the SOURCE TEXT for that story. Never state a number, score, date, name, \
 quote or price that isn't in it. If the source is thin, say less rather than filling gaps.
+- Your own background knowledge is out of date: competition formats, who manages or plays for \
+whom, league positions and form have all changed. Never add those from memory. Use only the source \
+text, the data you're given and the CURRENT FACTS below. In particular, never say where a team sits \
+in a table (top, bottom, leaders, relegation zone, unbeaten) unless the source or data says so.
+- Read each source sentence carefully before reusing it: keep each statistic attached to the \
+person or team it's about, and don't merge two facts into one.
 - Never assert anything about the listener's own life, plans or opinions.
 - Never link a person to a team, club, company or role unless the source text does. If you're \
 not sure who someone plays for or manages, leave it out.
@@ -563,6 +569,108 @@ stage directions.
 PAUSE TAGS (use these exact strings)
 - Between stories: <break time="1.4s" />
 - Between beats inside a story: <break time="0.6s" />"""
+
+
+def current_facts(cfg: dict) -> str:
+    """The [context] facts from config.toml: things the model would otherwise get wrong from memory."""
+    facts = cfg.get("context", {}).get("facts", [])
+    if not facts:
+        return ""
+    return "CURRENT FACTS (true today, even if your memory says otherwise):\n" + "\n".join(f"- {f}" for f in facts)
+
+
+FACT_FIXES: list[dict] = []  # what the checker corrected, published in last_run.json
+
+CHECK_SYSTEM = "You are a meticulous fact-checker for a spoken news script. You compare claims to sources."
+
+
+def tidy_breaks(text: str) -> str:
+    """Clean up pause tags left doubled or dangling after a sentence was removed."""
+    beat, story = re.escape(BEAT_BREAK), re.escape(STORY_BREAK)
+    text = re.sub(rf"(?:{beat}\s*)+{story}", STORY_BREAK, text)
+    text = re.sub(rf"{story}\s*(?:{beat}\s*)+", f"{STORY_BREAK} ", text)
+    text = re.sub(rf"(?:{beat}\s*){{2,}}", f"{BEAT_BREAK} ", text)
+    text = re.sub(rf"(?:{story}\s*){{2,}}", f"{STORY_BREAK}\n", text)
+    text = re.sub(rf"^\s*(?:{beat}|{story})\s*", "", text)
+    text = re.sub(rf"\s*(?:{beat}|{story})\s*$", "", text)
+    return re.sub(r"[ \t]{2,}", " ", text).strip()
+
+
+def split_units(script: str) -> list[list]:
+    """The script as [is_pause_tag, text] units: pause tags on their own, text split into sentences."""
+    units: list[list] = []
+    for p in re.split(r"(<break[^>]*/>)", script):
+        if p.startswith("<break"):
+            units.append([True, p])
+        else:
+            units += [[False, s] for s in re.split(r"(?<=[.!?])\s+", p) if s.strip()]
+    return units
+
+
+def fact_check(script: str, source: str, cfg: dict, what: str) -> str:
+    """Second pass: find claims the source doesn't support and fix or drop just those sentences.
+
+    The checker returns exact find/replace pairs rather than a rewritten script, so nothing else in
+    the script can drift. Fixes that don't match the script word for word are ignored.
+    """
+    if not cfg["llm"].get("fact_check", True) or not script.strip():
+        return script
+    limit = int(cfg["llm"].get("fact_check_source_chars", 9000))
+    prompt = f"""Check this SCRIPT for {what} against its SOURCE.
+
+Find every sentence in the SCRIPT that states something the SOURCE doesn't support or that \
+contradicts it: wrong or invented numbers, scores, dates, names, table or league positions, \
+competition stages or formats, records, who did what, a statistic attached to the wrong person or \
+team, or anything added from outside knowledge. Anything that contradicts CURRENT FACTS is wrong too. \
+Fair paraphrase, tone and obvious general knowledge (that a match was at home, what a club is) are fine.
+
+{current_facts(cfg)}
+
+SOURCE
+{source[:limit]}
+
+SCRIPT
+{script}
+
+For each problem sentence, give "find": the sentence copied EXACTLY from the script (without any \
+pause tags), "replace": the corrected sentence using only the source (keep numbers in words, same \
+voice), or "" to delete it if the source can't support it, and "why": at most twelve words.
+If nothing is wrong, return an empty list.
+Return ONLY JSON: {{"fixes": [{{"find": "...", "replace": "...", "why": "..."}}]}}"""
+    try:
+        raw = groq_chat([{"role": "system", "content": CHECK_SYSTEM}, {"role": "user", "content": prompt}],
+                        cfg, max_tokens=4000, json_mode=True, temperature=0.1)
+        fixes = parse_json(raw).get("fixes", [])
+    except Exception as e:  # noqa: BLE001 - a failed check never stops the episode
+        log(f"    fact check skipped for {what}: {str(e)[:100]}")
+        return script
+    def norm(s: str) -> str:  # ignore hyphen, quote and spacing differences when matching
+        s = re.sub(r"[‐-―−]", "-", s)
+        s = s.replace("‘", "'").replace("’", "'").replace("“", '"').replace("”", '"')
+        return re.sub(r"\s+", " ", s).strip().lower().rstrip(".!?")
+
+    units = split_units(script)
+    for fx in fixes if isinstance(fixes, list) else []:
+        find = norm(re.sub(r"<[^>]*>", "", str(fx.get("find", ""))))
+        replace = re.sub(r"<[^>]*>", "", str(fx.get("replace", ""))).strip()
+        if len(find) < 12:
+            continue
+        for u in units:
+            sent = norm(u[1])
+            if u[0] or not sent or not (find == sent or (find in sent and len(find) >= 0.6 * len(sent))):
+                continue
+            if norm(replace) == sent:
+                break
+            FACT_FIXES.append({"part": what, "was": u[1].strip(), "now": replace or "(removed)",
+                               "why": str(fx.get("why", ""))[:120]})
+            log(f"    fact check ({what}): {'fixed' if replace else 'removed'}: {u[1].strip()[:90]}")
+            u[1] = replace
+            break
+    out = tidy_breaks(" ".join(u[1] for u in units if u[1]))
+    if spoken_len(out) < 0.45 * spoken_len(script):  # the checker gutted it: trust the original
+        log(f"    fact check ({what}) removed too much, keeping the original")
+        return script
+    return out
 
 
 def story_weight(stories: list[dict]) -> float:
@@ -624,6 +732,8 @@ def section_prompt(section: dict, stories: list[dict], cfg: dict, today: dt.date
 
 About the listener: {section.get('listener_note', '')}
 
+{current_facts(cfg)}
+
 {shape}
 
 Aim for about {target:,} characters of spoken text for this part, and no fewer than {floor:,}.
@@ -656,6 +766,11 @@ def write_section(section: dict, stories: list[dict], cfg: dict, today: dt.date,
     script = clean_script(groq_chat(messages, cfg, max_tokens=6000))
     chars = spoken_len(script)
     log(f"  {section['id']}: {chars:,} chars (floor {floor:,}, ceiling {ceiling:,})")
+    split = section.get("style") != "roundup"
+
+    def right_shape(text: str) -> bool:  # one segment per story, nothing tacked on after them
+        return not split or len([p for p in text.split(STORY_BREAK) if p.strip()]) == len(stories)
+
     fix = None
     if chars < floor:
         fix = (f"That script is {chars:,} characters. It must be at least {floor:,}. You wrote roughly "
@@ -665,17 +780,29 @@ def write_section(section: dict, stories: list[dict], cfg: dict, today: dt.date,
     elif chars > ceiling:
         fix = (f"That script is {chars:,} characters. It must be under {ceiling:,}. Tighten it: same "
                f"stories, same order, same voice, cut repetition and minor detail first.")
+    elif not right_shape(script):
+        fix = (f"That script has the wrong shape. Write exactly {len(stories)} stor"
+               f"{'y' if len(stories) == 1 else 'ies'}, with the story pause tag only between them, and "
+               f"nothing after the last one: no summary, no extra commentary paragraphs.")
     if fix:
+        if split:
+            fix += (f" Keep exactly {len(stories)} stories separated by the story pause tag. Add depth "
+                    f"inside each story; never add extra paragraphs or a wrap-up after them.")
         messages += [{"role": "assistant", "content": script}, {"role": "user", "content": fix}]
         try:
             retry = clean_script(groq_chat(messages, cfg, max_tokens=6000))
             new_chars = spoken_len(retry)
             log(f"  {section['id']} retry: {new_chars:,} chars")
-            if abs(new_chars - (floor + ceiling) / 2) < abs(chars - (floor + ceiling) / 2):
+            mid = (floor + ceiling) / 2
+            better_shape = right_shape(retry) and not right_shape(script)
+            worse_shape = right_shape(script) and not right_shape(retry)
+            if better_shape or (not worse_shape and abs(new_chars - mid) < abs(chars - mid)):
                 script = retry
         except LLMError as e:
             log(f"  {section['id']} retry failed, keeping first draft: {e}")
-    return script
+    source = "\n\n".join(f"--- STORY {n}: {s['label']}\n{s.get('source_text', '')}"
+                         for n, s in enumerate(stories, 1))
+    return fact_check(script, source, cfg, section["name"])
 
 
 def assemble(intro: str, sections: list[str], outro: str) -> str:
@@ -749,8 +876,55 @@ def describe_event(ev: dict, league: str, tz: ZoneInfo) -> dict | None:
     }
 
 
-def results_segment(cfg: dict, today: dt.date, now: dt.datetime, state: dict) -> tuple[str, str | None, dict]:
-    """Scores for games finished since the last episode. Returns (script, notes bullet, info)."""
+ESPN_STANDINGS = os.environ.get("ESPN_STANDINGS", "https://site.api.espn.com/apis/v2/sports")
+
+
+def ordinal(n: int) -> str:
+    return f"{n}{'th' if 10 <= n % 100 <= 20 else {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')}"
+
+
+def league_table(path: str) -> dict[str, str]:
+    """Current position of every team in a football league table: {team name: '19th of 20, 4 pts
+    from 8 games'}. Empty if ESPN has no single table for it."""
+    r = requests.get(f"{ESPN_STANDINGS}/{path}/standings", headers=UA, timeout=20)
+    r.raise_for_status()
+    data = r.json()
+    groups = [c.get("standings", {}) for c in data.get("children", [])] or [data.get("standings", {})]
+    if len(groups) != 1:  # split into groups or conferences: no single table to quote
+        return {}
+    entries = groups[0].get("entries", []) or []
+    rows = []
+    for e in entries:
+        stats = {s.get("name"): s.get("value") for s in e.get("stats", [])}
+        name = (e.get("team") or {}).get("displayName")
+        if name and stats.get("points") is not None:
+            rows.append((name, stats))
+    if len(rows) < 4:
+        return {}
+    if all(s.get("rank") for _, s in rows):
+        rows.sort(key=lambda r: r[1]["rank"])
+    else:
+        rows.sort(key=lambda r: (-(r[1].get("points") or 0), -(r[1].get("pointDifferential") or 0)))
+    total = len(rows)
+    out = {}
+    for pos, (name, s) in enumerate(rows, 1):
+        played = int(s.get("gamesPlayed") or 0)
+        out[name] = f"{ordinal(int(s.get('rank') or pos))} of {total}, {int(s['points'])} pts from {played} games"
+    return out
+
+
+TABLE_CLAIM = re.compile(r"\b(top of the (table|league|ladder)|bottom of the (table|league|ladder)|"
+                         r"(league|table) leaders|relegation zone|top four|top spot|bottom spot|"
+                         r"(stay|stays|keeps? \w+|move|moves|go|goes|climb|climbs) (top|bottom|clear)|"
+                         r"(first|second|third|last) place|in \w+(st|nd|rd|th) place)\b", re.I)
+
+
+def results_segment(cfg: dict, today: dt.date, now: dt.datetime, state: dict,
+                    later: list[str] | None = None) -> tuple[str, str | None, dict]:
+    """Scores for games finished since the last episode. Returns (script, notes bullet, info).
+
+    later: labels of stories that follow in the episode, so their matches only get the score here.
+    """
     rc = cfg.get("results", {})
     if not rc.get("enabled"):
         return "", None, {}
@@ -765,6 +939,7 @@ def results_segment(cfg: dict, today: dt.date, now: dt.datetime, state: dict) ->
     blocks: list[str] = []
     new_ids: list[str] = []
     info: dict = {"leagues": {}}
+    have_table = False
     for lg in rc.get("leagues", []):
         try:
             events = espn_events(lg["path"], start, end)
@@ -776,6 +951,12 @@ def results_segment(cfg: dict, today: dt.date, now: dt.datetime, state: dict) ->
                 if d and d["id"] not in seen and not (oldest and d["kickoff"] and d["kickoff"] < oldest)]
         info["leagues"][lg["name"]] = len(done)
         mode = lg.get("mode", "notable")
+        table: dict[str, str] = {}
+        if done and lg.get("table", lg["path"].startswith("soccer/") and "nations" not in lg["path"]):
+            try:
+                table = league_table(lg["path"])
+            except Exception as e:  # noqa: BLE001 - positions are optional
+                log(f"  results: no table for {lg['name']} ({str(e)[:80]})")
         rows = []
         for d in done:
             new_ids.append(d["id"])  # seen either way, so it's never considered again
@@ -783,6 +964,10 @@ def results_segment(cfg: dict, today: dt.date, now: dt.datetime, state: dict) ->
             if mode == "teams" and not mine:
                 continue
             line = f"{d['home']} {d['home_score']}-{d['away_score']} {d['away']}"
+            if table.get(d["home"]) or table.get(d["away"]):
+                have_table = True
+                line += (f" [table now: {d['home']} {table.get(d['home'], 'unknown')}; "
+                         f"{d['away']} {table.get(d['away'], 'unknown')}]")
             if d["note"]:
                 line += f" ({d['note']})"
             if d["scorers"]:
@@ -800,6 +985,11 @@ def results_segment(cfg: dict, today: dt.date, now: dt.datetime, state: dict) ->
     facts = "\n\n".join(blocks)
     log("  results facts:\n    " + facts.replace("\n", "\n    "))
     n_lines = sum(b.count("\n  ") for b in blocks)
+    later_note = ""
+    if later:
+        later_note = ("\n- These stories play straight after the scores. If a result below is part of "
+                      "one, give just the score and scorers for it and leave the rest to the story: "
+                      + "; ".join(later))
     target = int(rc.get("chars_per_result", 110)) * min(n_lines, 14) + 250
     prompt = f"""Write a quick-fire scores roundup for today's episode ({nice_date(today)}). It comes \
 after other stories, so its first sentence should make the shift to the scores obvious naturally, \
@@ -819,6 +1009,11 @@ them. If none are notable, leave that league out.
 - Put the beat pause tag between leagues. Write every score and number in words. Use the names \
 fans use (Man United, Spurs, Palace, Bayern, Real, Barca).
 - Use only the scores and scorers below. Never invent a scorer, minute, standing or table position.
+- Table positions: only from a "[table now: ...]" note, which is the table AFTER that game. Mention \
+one only when it's notable (top, bottom, first win, a big climb). With no note, say nothing about \
+where a team sits or how its season is going ("keeps the pressure on", "title charge", "struggling").{later_note}
+
+{current_facts(cfg)}
 
 Aim for about {target:,} characters of spoken text.
 
@@ -832,6 +1027,16 @@ Return only the script for this part."""
     except LLMError as e:
         warn(f"Scores roundup skipped today: {str(e)[:150]}")
         return "", None, info
+    if not have_table:  # nothing to back up a table claim, so any such sentence is a guess
+        units = split_units(script)
+        for u in units:
+            if not u[0] and TABLE_CLAIM.search(u[1]):
+                FACT_FIXES.append({"part": "Scores roundup", "was": u[1].strip(), "now": "(removed)",
+                                   "why": "table position with no table data"})
+                log(f"    removed unsupported table claim: {u[1][:90]}")
+                u[1] = ""
+        script = tidy_breaks(" ".join(u[1] for u in units if u[1]))
+    script = fact_check(script, facts, cfg, "Scores roundup")
     if spoken_len(script) < 60:
         warn("Scores roundup skipped today: the writer returned almost nothing")
         return "", None, info
@@ -1116,7 +1321,8 @@ FACTS
 ---
 Return only the script for this part."""
     messages = [{"role": "system", "content": WRITER_SYSTEM}, {"role": "user", "content": prompt}]
-    return clean_script(groq_chat(messages, cfg, max_tokens=5000))
+    script = clean_script(groq_chat(messages, cfg, max_tokens=5000))
+    return fact_check(script, facts, cfg, "FPL")
 
 
 def fpl_segment(cfg: dict, today: dt.date, now: dt.datetime, fstate: dict) -> tuple[str, str | None, dict]:
@@ -1662,8 +1868,11 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
         log(f"  {p['label'][:60]}: {len(p['source_text']):,} chars of source")
     chapters, first, written = [], True, []  # chapters: {"title", "text"} in playing order
     results_seen_before = list(state.get("results_seen", []))
-    res_script, res_bullet, res_info = results_segment(cfg, today, now, state)
     res_before = cfg.get("results", {}).get("before_section", "sport")
+    after_ids = [s["id"] for s in cfg["sections"]]
+    after_ids = after_ids[after_ids.index(res_before):] if res_before in after_ids else []
+    res_script, res_bullet, res_info = results_segment(
+        cfg, today, now, state, later=[p["label"] for p in picks if p["section"] in after_ids])
     fpl_script, fpl_bullet, fpl_info = fpl_segment(cfg, today, now, state.setdefault("fpl", {}))
     fpl_after = cfg.get("fpl", {}).get("after_section", "sport")
     res_chapter = {"title": "Scores roundup", "text": res_script} if res_script else None
@@ -1745,6 +1954,7 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
     (site / "last_run.json").write_text(json.dumps({
         "date": date_key, "ran_at": now.isoformat(timespec="seconds"), "engine": engine,
         "duration": fmt_duration(seconds), "spoken_chars": spoken_len(script), "warnings": WARNINGS,
+        "fact_check_fixes": FACT_FIXES,
         "fpl": fpl_info, "results": res_info,
         "feeds": report,
         "candidates": {sid: [{"title": c["lead"]["title"], "sources": c["sources"], "score": c["score"],

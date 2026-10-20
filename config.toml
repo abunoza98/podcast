@@ -26,6 +26,20 @@ model = "openai/gpt-oss-120b"
 fallback_models = ["llama-3.3-70b-versatile"]
 reasoning_effort = "low"
 tokens_per_minute = 8000                 # Groq free-tier limit for gpt-oss-120b
+fact_check = true                        # second pass: checks each part against its sources and fixes what's wrong
+
+# ---------------------------------------------------------------------------
+# Things the writing model gets wrong from its out-of-date memory. Every writer and the fact
+# checker see these. Add a line whenever the podcast states something stale.
+# ---------------------------------------------------------------------------
+[context]
+facts = [
+  "The Champions League, Europa League and Conference League have NO groups. Since 2024-25 each has a single 36-team league phase table. Teams play eight league-phase matches (six in the Conference League) against different opponents. The top eight go straight to the round of sixteen, ninth to twenty-fourth play a knockout play-off, and the rest are out. Say 'league phase', never 'group stage', 'group' or 'tops the group'.",
+  "The Champions League league phase runs from September to late January; the knockout play-offs are in February.",
+  "The 2026 men's World Cup (USA, Canada and Mexico, 48 teams) was played in June and July 2026. The 2027 Women's World Cup is in Brazil.",
+  "Football's 2026-27 club season is under way.",
+  "Never say where a team sits in a league table, or describe its season or form, unless the source text or results data says so.",
+]
 
 [voice]
 engine = "elevenlabs"                    # "elevenlabs" or "kokoro" (free, runs on GitHub)
