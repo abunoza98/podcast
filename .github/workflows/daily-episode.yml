@@ -57,6 +57,7 @@ jobs:
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          CLIENT_WATCHLIST: ${{ secrets.CLIENT_WATCHLIST }}
           MODE: ${{ inputs.mode || 'run' }}
         run: python podcast_run.py --site site --mode "$MODE"
 
