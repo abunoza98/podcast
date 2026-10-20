@@ -51,13 +51,22 @@ SUMMARY_LINES: list[str] = []
 
 # ---------------------------------------------------------------- utilities
 
+REDACT: list[re.Pattern] = []  # private watchlist names, hidden from the public run logs
+
+
+def redact(text: str) -> str:
+    for pat in REDACT:
+        text = pat.sub("[private]", text)
+    return text
+
+
 def log(*args) -> None:
-    print(*args, flush=True)
+    print(redact(" ".join(str(a) for a in args)), flush=True)
 
 
 def summary(line: str = "") -> None:
     """Collect lines for the GitHub Actions run summary page."""
-    SUMMARY_LINES.append(line)
+    SUMMARY_LINES.append(redact(line))
 
 
 WARNINGS: list[str] = []
@@ -74,7 +83,69 @@ def write_summary() -> None:
     path = os.environ.get("GITHUB_STEP_SUMMARY")
     if path and SUMMARY_LINES:
         with open(path, "a", encoding="utf-8") as f:
-            f.write("\n".join(SUMMARY_LINES) + "\n")
+            f.write(redact("\n".join(SUMMARY_LINES)) + "\n")
+
+
+# ------------------------------------------------------------ private sections
+
+def is_private(cfg: dict, section_id: str) -> bool:
+    return any(s["id"] == section_id and s.get("private") for s in cfg["sections"])
+
+
+def private_hash(cfg: dict, word: str) -> str:
+    """Hide a headline word in the public state file, keyed by the private watchlist itself."""
+    salt = cfg.get("_private_salt", "")
+    return hashlib.sha256(f"{salt}:{word}".encode()).hexdigest()[:12]
+
+
+def prepare_private_sections(cfg: dict) -> None:
+    """Build feeds for sections whose watchlist lives in a GitHub secret.
+
+    The secret has one company per line. Optionally add search terms after an equals sign:
+        Woolworths
+        Coles = "Coles Group" OR "Coles supermarkets"
+    Names never appear in the config, published files or run logs. A section whose secret is
+    missing is switched off.
+    """
+    keep = []
+    for section in cfg["sections"]:
+        var = section.get("watchlist_secret")
+        if not var:
+            keep.append(section)
+            continue
+        raw = os.environ.get(var, "")
+        entries = []
+        for line in raw.splitlines():
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            name, _, terms = line.partition("=")
+            terms, _, note = terms.partition("|")  # optional note for the editor after a "|"
+            name, terms, note = name.strip(), terms.strip(), note.strip()
+            if name:
+                entries.append((name, terms or f'"{name}"', note))
+        if not entries:
+            print(f"  {section['name']}: no {var} secret set, so this section is off", flush=True)
+            continue
+        section["private"] = True
+        cfg["_private_salt"] = cfg.get("_private_salt", "") + raw
+        lang = section.get("watchlist_region", "hl=en-AU&gl=AU&ceid=AU:en")
+        feeds = []
+        notes = [f"{name}: {note}" for name, _, note in entries if note]
+        if notes:  # only ever sent to the editor model, never logged or published
+            section["brief"] = section["brief"] + " Notes on specific companies (the source shows which " \
+                "company's search found a story): " + "; ".join(notes)
+        for name, terms, _ in entries:
+            q = requests.utils.quote(f"({terms}) when:2d")
+            feeds.append({"name": f"Watchlist: {name}", "url": f"https://news.google.com/rss/search?q={q}&{lang}"})
+            REDACT.append(re.compile(re.escape(q), re.I))  # the whole encoded search, e.g. in an error message
+            for phrase in {name, *re.findall(r'"([^"]{3,})"', terms)}:
+                for form in {phrase, requests.utils.quote(phrase), phrase.replace(" ", "+")}:
+                    REDACT.append(re.compile(rf"(?<!\w){re.escape(form)}(?!\w)", re.I))
+        section["feeds"] = feeds
+        print(f"  {section['name']}: watching {len(feeds)} companies from the {var} secret", flush=True)
+        keep.append(section)
+    cfg["sections"] = keep
 
 
 def set_output(**values) -> None:
@@ -152,8 +223,10 @@ def collect_items(cfg: dict, now: dt.datetime, since: dt.datetime | None = None)
     for section in cfg["sections"]:
         # A section can add its own skip patterns on top of the global ones.
         skip = skip_all + [re.compile(p, re.I) for p in section.get("skip_title_patterns", [])]
-        for feed in section["feeds"]:
+        for n, feed in enumerate(section["feeds"], 1):
             row = {"section": section["id"], "feed": feed["name"], "url": feed["url"]}
+            if section.get("private"):
+                row.update(feed=f"watchlist item {n}", url="(private)")
             try:
                 parsed = fetch_feed(feed["url"])
             except Exception as e:  # noqa: BLE001 - any failure just skips the feed
@@ -229,7 +302,8 @@ def same_story(a: set[str], b: set[str]) -> bool:
 
 def cluster_and_score(items: list[dict], cfg: dict, now: dt.datetime, covered: list[dict]) -> dict[str, list[dict]]:
     lookback = cfg["fetch"].get("lookback_hours", 30)
-    covered_tokens = [(tokens(c["title"]), c) for c in covered]
+    covered_tokens = [(tokens(c["title"]), c) for c in covered if not c.get("private")]
+    private_tokens = [(set(c.get("tokens_h", [])), c) for c in covered if c.get("private")]
     by_section: dict[str, list[dict]] = {}
     for section in cfg["sections"]:
         sid = section["id"]
@@ -252,12 +326,16 @@ def cluster_and_score(items: list[dict], cfg: dict, now: dt.datetime, covered: l
             recency = max(0.0, 1 - (now - newest).total_seconds() / 3600 / lookback)
             weight = max(i["weight"] for i in its)
             score = weight * (1 + 0.8 * (len(sources) - 1) + 0.6 * rank_score + 0.5 * recency)
-            prior = next((cv for tk, cv in covered_tokens if same_story(tokens(lead["title"]), tk)), None)
+            if section.get("private"):
+                hashed = {private_hash(cfg, t) for t in tokens(lead["title"])}
+                prior = next((cv for tk, cv in private_tokens if same_story(hashed, tk)), None)
+            else:
+                prior = next((cv for tk, cv in covered_tokens if same_story(tokens(lead["title"]), tk)), None)
             if prior:
                 score *= 0.6
             c.update(section=sid, lead=lead, sources=sources, score=round(score, 3), covered=prior)
         clusters.sort(key=lambda c: c["score"], reverse=True)
-        by_section[sid] = clusters[: cfg["fetch"].get("candidates_per_section", 12)]
+        by_section[sid] = clusters[: int(section.get("candidates", cfg["fetch"].get("candidates_per_section", 12)))]
         log(f"  {sid}: {len(clusters)} stories from {sum(len(c['items']) for c in clusters)} items")
     return by_section
 
@@ -375,7 +453,7 @@ DROP_RULES = """- DROP every time: opinion and analysis columns, explainers with
 def covered_block(covered: list[dict] | None) -> str:
     if not covered:
         return ""
-    lines = "\n".join(f"  - {c['date']}: {c['label']}" for c in covered[-40:])
+    lines = "\n".join(f"  - {c['date']}: {c['label']}" for c in covered[-40:] if not c.get("private"))
     return ("\n- ALREADY COVERED in recent episodes. Don't pick these again, or another write-up of the "
             "same match, event or announcement, unless there's a genuinely new development:\n" + lines)
 
@@ -386,7 +464,7 @@ def ask_editor(flat: list[dict], indices: list[int], wanted: str, today: dt.date
     for idx in indices:
         c = flat[idx]
         lead = c["lead"]
-        blurb = (lead["summary"] or "")[:220]
+        blurb = (lead["summary"] or "")[: int(cfg["fetch"].get("editor_blurb_chars", 160))]
         note = f"\n     (already covered on {c['covered']['date']})" if c["covered"] else ""
         lines.append(f"[{idx}] {c['section']} | {', '.join(c['sources'])} ({len(c['sources'])}) | "
                      f"{lead['title']}\n     {blurb}{note}")
@@ -607,7 +685,7 @@ def split_units(script: str) -> list[list]:
     return units
 
 
-def fact_check(script: str, source: str, cfg: dict, what: str) -> str:
+def fact_check(script: str, source: str, cfg: dict, what: str, private: bool = False) -> str:
     """Second pass: find claims the source doesn't support and fix or drop just those sentences.
 
     The checker returns exact find/replace pairs rather than a rewritten script, so nothing else in
@@ -661,9 +739,13 @@ Return ONLY JSON: {{"fixes": [{{"find": "...", "replace": "...", "why": "..."}}]
                 continue
             if norm(replace) == sent:
                 break
-            FACT_FIXES.append({"part": what, "was": u[1].strip(), "now": replace or "(removed)",
-                               "why": str(fx.get("why", ""))[:120]})
-            log(f"    fact check ({what}): {'fixed' if replace else 'removed'}: {u[1].strip()[:90]}")
+            if private:
+                FACT_FIXES.append({"part": what, "was": "(private)", "now": "(private)", "why": "(private)"})
+                log(f"    fact check ({what}): {'fixed' if replace else 'removed'} a sentence")
+            else:
+                FACT_FIXES.append({"part": what, "was": u[1].strip(), "now": replace or "(removed)",
+                                   "why": str(fx.get("why", ""))[:120]})
+                log(f"    fact check ({what}): {'fixed' if replace else 'removed'}: {u[1].strip()[:90]}")
             u[1] = replace
             break
     out = tidy_breaks(" ".join(u[1] for u in units if u[1]))
@@ -719,8 +801,9 @@ def section_prompt(section: dict, stories: list[dict], cfg: dict, today: dt.date
     for n, s in enumerate(stories, 1):
         cov = ""
         if s.get("covered"):
-            cov = (f"\nThe listener heard about this on {s['covered']['date']} "
-                   f"(\"{s['covered']['label']}\"). Lead with what's new; one sentence of recap at most.")
+            what = "" if s["covered"].get("private") else f" (\"{s['covered']['label']}\")"
+            cov = (f"\nThe listener heard about this on {s['covered']['date']}{what}. "
+                   f"Lead with what's new; one sentence of recap at most.")
         blocks.append(f"--- STORY {n}: {s['label']}\nWhy it was picked: {s['why']}{cov}\n"
                       f"SOURCE TEXT:\n{s['source_text']}")
     opening = ("This part opens the episode, straight after a short greeting. Start with the lead "
@@ -802,7 +885,7 @@ def write_section(section: dict, stories: list[dict], cfg: dict, today: dt.date,
             log(f"  {section['id']} retry failed, keeping first draft: {e}")
     source = "\n\n".join(f"--- STORY {n}: {s['label']}\n{s.get('source_text', '')}"
                          for n, s in enumerate(stories, 1))
-    return fact_check(script, source, cfg, section["name"])
+    return fact_check(script, source, cfg, section["name"], private=bool(section.get("private")))
 
 
 def assemble(intro: str, sections: list[str], outro: str) -> str:
@@ -1649,6 +1732,8 @@ def embed_chapters(mp3: Path, chapters: list[dict], total: float) -> None:
 
 def section_chapters(section: dict, stories: list[dict], script: str) -> list[dict]:
     """One chapter per story when the section is cleanly split into stories, else one for the section."""
+    if section.get("private"):  # neutral title, and the text is kept out of the published script
+        return [{"title": section["name"], "text": script, "private": True}]
     parts = [p.strip() for p in script.split(STORY_BREAK) if p.strip()]
     if section.get("style") != "roundup" and len(stories) > 1 and len(parts) == len(stories):
         return [{"title": s["label"], "text": p} for s, p in zip(stories, parts)]
@@ -1859,13 +1944,17 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
     if not picks:
         raise SystemExit("The editor model picked nothing — check the run log.")
     for p in picks:
-        log(f"  [{p['section']}] {p['label']}  ({', '.join(p['sources'])}) — {p['why']} [{p.get('picked_by')}]")
+        if is_private(cfg, p["section"]):
+            log(f"  [{p['section']}] (private story) [{p.get('picked_by')}]")
+        else:
+            log(f"  [{p['section']}] {p['label']}  ({', '.join(p['sources'])}) — {p['why']} [{p.get('picked_by')}]")
 
     log("4/5 Reading articles and writing the script…")
     for p in picks:
         sec = next(x for x in cfg["sections"] if x["id"] == p["section"])
         p["source_text"] = gather_source_text(p, cfg, sec.get("source_chars_per_story"))
-        log(f"  {p['label'][:60]}: {len(p['source_text']):,} chars of source")
+        name = "(private story)" if sec.get("private") else p["label"][:60]
+        log(f"  {name}: {len(p['source_text']):,} chars of source")
     chapters, first, written = [], True, []  # chapters: {"title", "text"} in playing order
     results_seen_before = list(state.get("results_seen", []))
     res_before = cfg.get("results", {}).get("before_section", "sport")
@@ -1907,7 +1996,16 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
     chapters[0]["text"] = f"{intro} {BEAT_BREAK}\n{chapters[0]['text']}"
     chapters[-1]["text"] = f"{chapters[-1]['text']} {STORY_BREAK}\n{outro}"
     script = f" {STORY_BREAK}\n".join(ch["text"] for ch in chapters).strip()
-    (site / "last_script.txt").write_text(script, encoding="utf-8")
+    # The published copy leaves out private sections (the greeting or sign-off riding on one stays).
+    public_parts = []
+    for n, ch in enumerate(chapters):
+        if not ch.get("private"):
+            public_parts.append(ch["text"])
+            continue
+        public_parts.append(" ".join(
+            ([intro] if n == 0 else []) + [f"[{ch['title']}: not published]"] + ([outro] if n == len(chapters) - 1 else [])))
+    public_script = redact(f" {STORY_BREAK}\n".join(public_parts).strip())
+    (site / "last_script.txt").write_text(public_script, encoding="utf-8")
     log(f"  script: {spoken_len(script):,} spoken characters, {len(chapters)} chapters")
 
     log("5/5 Rendering audio…")
@@ -1943,7 +2041,12 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
         "bullets": [f"{fmt_duration(c['start'])} {c['title']}" for c in chapter_list],
         "chapters_file": f"{date_key}-{digest}.chapters.json", "engine": engine,
     })
-    state["covered"] += [{"date": date_key, "label": p["label"], "title": p["lead"]["title"]} for p in picks]
+    for p in picks:
+        if is_private(cfg, p["section"]):  # remembered as hashed words, so the state file reveals nothing
+            state["covered"].append({"date": date_key, "label": "(private)", "title": "", "private": True,
+                                     "tokens_h": sorted(private_hash(cfg, t) for t in tokens(p["lead"]["title"]))})
+        else:
+            state["covered"].append({"date": date_key, "label": p["label"], "title": p["lead"]["title"]})
     if state.get("last_run_date") != date_key:
         state["prev_run_at"] = state.get("last_run_at") or (prev.isoformat() if prev else None)
         state["prev_results_seen"] = results_seen_before
@@ -1951,18 +2054,23 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
     state["last_run_date"] = date_key
     write_site(site, cfg, state, now)
     # A record of how today's episode was chosen, published with the site for troubleshooting.
-    (site / "last_run.json").write_text(json.dumps({
+    private_ids = {s["id"] for s in cfg["sections"] if s.get("private")}
+    private_names = {s["name"] for s in cfg["sections"] if s.get("private")}
+    (site / "last_run.json").write_text(redact(json.dumps({
         "date": date_key, "ran_at": now.isoformat(timespec="seconds"), "engine": engine,
         "duration": fmt_duration(seconds), "spoken_chars": spoken_len(script), "warnings": WARNINGS,
-        "fact_check_fixes": FACT_FIXES,
+        "fact_check_fixes": [f for f in FACT_FIXES if f["part"] not in private_names],
         "fpl": fpl_info, "results": res_info,
-        "feeds": report,
+        "feeds": [r for r in report if r["section"] not in private_ids],
+        "private_sections": {sid: {"feeds_ok": sum(1 for r in report if r["section"] == sid and r.get("ok")),
+                                   "feeds": sum(1 for r in report if r["section"] == sid),
+                                   "stories": sum(1 for p in picks if p["section"] == sid)} for sid in private_ids},
         "candidates": {sid: [{"title": c["lead"]["title"], "sources": c["sources"], "score": c["score"],
                               "covered": bool(c["covered"])} for c in cands]
-                       for sid, cands in by_section.items()},
+                       for sid, cands in by_section.items() if sid not in private_ids},
         "picks": [{"section": p["section"], "label": p["label"], "why": p["why"], "picked_by": p.get("picked_by"),
-                   "sources": p["sources"], "url": p["lead"]["url"]} for p in picks],
-    }, indent=1, ensure_ascii=False), encoding="utf-8")
+                   "sources": p["sources"], "url": p["lead"]["url"]} for p in picks if p["section"] not in private_ids],
+    }, indent=1, ensure_ascii=False)), encoding="utf-8")
 
     credits = len(script) * float(cfg["voice"].get("elevenlabs_credits_per_char", 1.0))
     SUMMARY_LINES.insert(0, f"## {nice_date(today)}\n")
@@ -1971,10 +2079,13 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
     summary("| Section | Story | Sources | Why |")
     summary("|---|---|---|---|")
     for p in picks:
-        summary(f"| {p['section']} | {p['label']} | {', '.join(p['sources'])} | {p['why']} |")
+        if p["section"] in private_ids:
+            summary(f"| {p['section']} | (private) | | |")
+        else:
+            summary(f"| {p['section']} | {p['label']} | {', '.join(p['sources'])} | {p['why']} |")
     if dead:
         summary(f"\nFeeds that failed today: {', '.join(dead)}")
-    summary("\n<details><summary>Script</summary>\n\n" + html.escape(script).replace("\n", "\n\n") + "\n</details>")
+    summary("\n<details><summary>Script</summary>\n\n" + html.escape(public_script).replace("\n", "\n\n") + "\n</details>")
     set_output(publish="true", date=date_key)
 
 
@@ -1986,6 +2097,7 @@ def main() -> None:
     args = ap.parse_args()
     with open(args.config, "rb") as f:
         cfg = tomllib.load(f)
+    prepare_private_sections(cfg)
     now = dt.datetime.now(ZoneInfo(cfg["show"]["timezone"]))
     site = Path(args.site)
     site.mkdir(parents=True, exist_ok=True)
