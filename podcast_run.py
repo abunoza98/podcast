@@ -98,6 +98,27 @@ def private_hash(cfg: dict, word: str) -> str:
     return hashlib.sha256(f"{salt}:{word}".encode()).hexdigest()[:12]
 
 
+def watchlist_query(terms: str) -> str:
+    """Google News search for one watchlist line. Exclusions (-"phrase") have to sit outside the
+    brackets: inside them, Google News returns nothing."""
+    neg = r'-(?:"[^"]+"|[^\s"()]+)'
+    negatives = re.findall(rf"(?:^|\s)({neg})", terms)
+    positive = re.sub(rf"(?:^|\s){neg}", " ", terms).strip()
+    def wrapped(t: str) -> bool:  # one pair of brackets around the whole thing
+        if not (t.startswith("(") and t.endswith(")")):
+            return False
+        depth = 0
+        for i, ch in enumerate(t):
+            depth += ch == "("
+            depth -= ch == ")"
+            if depth == 0 and i < len(t) - 1:
+                return False
+        return True
+    while wrapped(positive):
+        positive = positive[1:-1].strip()
+    return re.sub(r"\s+", " ", f"({positive}) {' '.join(negatives)} when:2d")
+
+
 def prepare_private_sections(cfg: dict) -> None:
     """Build feeds for sections whose watchlist lives in a GitHub secret.
 
@@ -138,11 +159,14 @@ def prepare_private_sections(cfg: dict) -> None:
             section["brief"] = section["brief"] + " Notes on specific companies (the source shows which " \
                 "company's search found a story): " + "; ".join(notes)
         for name, terms, _ in entries:
-            q = requests.utils.quote(f"({terms}) when:2d")
-            feeds.append({"name": f"Watchlist: {name}", "url": f"https://news.google.com/rss/search?q={q}&{lang}"})
-            REDACT.append(re.compile(re.escape(q), re.I))  # the whole encoded search, e.g. in an error message
+            q = requests.utils.quote(watchlist_query(terms))
+            simple = requests.utils.quote(f'"{name}" when:2d')
+            feeds.append({"name": f"Watchlist: {name}", "url": f"https://news.google.com/rss/search?q={q}&{lang}",
+                          "fallback_url": f"https://news.google.com/rss/search?q={simple}&{lang}"})
+            for enc in (q, simple):  # the whole encoded search, e.g. in an error message
+                REDACT.append(re.compile(re.escape(enc), re.I))
             for phrase in {name, *re.findall(r'"([^"]{3,})"', terms)}:
-                for form in {phrase, requests.utils.quote(phrase), phrase.replace(" ", "+")}:
+                for form in {phrase, requests.utils.quote(phrase), phrase.replace(" ", "+"), phrase.replace(" ", "-")}:
                     REDACT.append(re.compile(rf"(?<!\w){re.escape(form)}(?!\w)", re.I))
         section["feeds"] = feeds
         msg = f"{section['name']}: ON, watching {len(feeds)} companies from the {var} secret"
@@ -232,7 +256,14 @@ def collect_items(cfg: dict, now: dt.datetime, since: dt.datetime | None = None)
             if section.get("private"):
                 row.update(feed=f"watchlist item {n}", url="(private)")
             try:
-                parsed = fetch_feed(feed["url"])
+                try:
+                    parsed = fetch_feed(feed["url"])
+                except ValueError:
+                    if not feed.get("fallback_url"):
+                        raise
+                    parsed = fetch_feed(feed["fallback_url"])  # main search found nothing: try the plain name
+                    row["fallback"] = True
+                    log(f"  {feed['name']}: main search returned nothing, used the plain name instead")
             except Exception as e:  # noqa: BLE001 - any failure just skips the feed
                 row.update(ok=False, error=str(e)[:120])
                 report.append(row)
@@ -586,7 +617,14 @@ def extract_article(url: str, limit: int = 4000) -> str:
         return ""
     paras = [p.get_text(" ", strip=True) for p in node.find_all("p")]
     paras = [p for p in paras if len(p) > 60 and not BOILERPLATE.search(p)]
-    return re.sub(r"\s+", " ", " ".join(paras))[:limit]
+    text = re.sub(r"\s+", " ", " ".join(paras))
+    if len(text) < 300:  # page built by JavaScript or oddly marked up: the publisher's own summary helps
+        for attrs in ({"property": "og:description"}, {"name": "description"}, {"name": "twitter:description"}):
+            tag = soup.find("meta", attrs=attrs)
+            desc = (tag.get("content") or "").strip() if tag else ""
+            if len(desc) > len(text):
+                text = desc
+    return text[:limit]
 
 
 GN_BATCH = "https://news.google.com/_/DotsSplashUi/data/batchexecute"
@@ -642,8 +680,17 @@ def resolve_google_news(url: str) -> str:
     return found
 
 
+def short_error(e: Exception, private: bool = False) -> str:
+    """An error for the log. For private sections, never the address (it can name the company)."""
+    if private:
+        code = getattr(getattr(e, "response", None), "status_code", None)
+        return f"{code} (blocked or paywalled)" if code else type(e).__name__
+    return str(e)[:80]
+
+
 def gather_source_text(story: dict, cfg: dict, limit: int | None = None) -> str:
     limit = int(limit or cfg["fetch"].get("source_chars_per_story", 2400))
+    private = is_private(cfg, story.get("section", ""))
     ordered = sorted(story["items"], key=lambda i: (-i["weight"], i["rank"]))
     parts, used = [], 0
     for it in ordered[:3]:
@@ -655,11 +702,11 @@ def gather_source_text(story: dict, cfg: dict, limit: int | None = None) -> str:
             try:
                 url = it["url"] = resolve_google_news(url)
             except Exception as e:  # noqa: BLE001 - fall back to the headline
-                log(f"    couldn't find the article behind a {it['source']} link: {str(e)[:80]}")
+                log(f"    couldn't find the article behind a {it['source']} link: {short_error(e, private)}")
         try:
             text = extract_article(url, limit=limit)
         except Exception as e:  # noqa: BLE001
-            log(f"    couldn't read {it['source']}: {str(e)[:80]}")
+            log(f"    couldn't read {it['source']}: {short_error(e, private)}")
         if len(text) < 300 and len(it.get("feed_body", "")) > len(text):
             text = it["feed_body"][:limit]
         if len(text) < 200:
@@ -1944,8 +1991,8 @@ def probe(cfg: dict, now: dt.datetime) -> None:
                         url = resolve_google_news(url)
                     extract = f"{len(extract_article(url)):,} chars"
                 except Exception as e:  # noqa: BLE001
-                    extract = f"failed: {str(e)[:60]}"
-        status = "✅" if row.get("ok") else f"❌ {row.get('error', '')}"
+                    extract = f"failed: {short_error(e, row['section'] in private)}"
+        status = ("✅ (plain-name search)" if row.get("fallback") else "✅") if row.get("ok") else f"❌ {row.get('error', '')}"
         summary(f"| {row['section']} | {row['feed']} | {status} | {row.get('kept', '')} | "
                 f"{row.get('newest_hours', '')} | {extract} |")
     rc = cfg.get("results", {})
