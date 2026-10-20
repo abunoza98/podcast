@@ -63,6 +63,8 @@ skip_title_patterns = [
   "\\bphotos?:", "\\bwordle\\b", "\\bhoroscope", "\\bsponsored\\b",
   "\\bpredictions?\\b", "\\bpreview\\b", "what channel", "live stream", "►", "injury report",
   "ratings$", "player ratings",
+  # share-tip and stock-chatter sites that turn up in company searches
+  "- Kalkine( Media)?$", "- Simply Wall St", "- MarketBeat$", "- The Motley Fool", "- TipRanks",
 ]
 
 # ---------------------------------------------------------------------------
