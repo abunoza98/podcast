@@ -53,7 +53,8 @@ kokoro_lang = "b"                        # b = British English (closest to Austr
 [fetch]
 lookback_hours = 30                      # only consider items published in this window
 max_items_per_feed = 25
-candidates_per_section = 12              # how many each section shows the editor model
+candidates_per_section = 12              # how many each section shows the editor model (a section can set its own "candidates")
+editor_blurb_chars = 160                 # summary length per candidate; keeps the editor's request under Groq's free-tier limit
 source_chars_per_story = 2400            # article text sent to the writer per story
 # Headlines matching any of these (case-insensitive regex) are skipped before ranking.
 skip_title_patterns = [
@@ -115,6 +116,39 @@ feeds = [
 ]
 
 [[sections]]
+id = "clients"
+name = "Company news"                    # neutral on purpose: it's what the chapter is called in the public notes
+optional = true                          # silent on days with nothing worth knowing
+style = "brief"
+picks = 2
+candidates = 8                           # the editor sees this section's top 8 stories
+target_chars_per_story = 420
+min_chars_per_story = 220
+max_chars_per_story = 700
+# The company list lives in a GitHub secret, never in this file: Settings → Secrets and variables
+# → Actions → New repository secret, named CLIENT_WATCHLIST, one company per line. Add search terms
+# after "=" for names that are common words or shared with other companies, for example:
+#   Coles = "Coles Group" OR "Coles supermarkets"
+# Nothing about this section is published: the script, run record, logs and state file leave it
+# out, and its chapter is just called "Company news". No secret set = section off.
+watchlist_secret = "CLIENT_WATCHLIST"
+feeds = []                               # built from the secret
+brief = """News about companies on Adrian's private watchlist (each candidate here came from a \
+search for one of them). Pick a story only if it's worth knowing before a meeting with that \
+company: financial results, guidance or a profit warning; a merger, acquisition, sale or big \
+investment; a CEO, CFO, CTO or head of payments, digital or e-commerce change; layoffs or \
+restructuring; a major outage, data breach or cyber attack; a regulator's action or fine; a big \
+expansion, launch, store or market closure; or a change to how they sell or take payments \
+(checkout, loyalty, buy now pay later, apps). Skip share-price moves on their own, analyst ratings \
+and price targets, marketing campaigns, sponsorships, minor promotions, and stories that only \
+mention the company in passing. Some searches include a company's brands (its stores, banners \
+or insurance brands): brand news only counts when it affects the business nationally, so skip \
+single-store or local stories (one store opening or closing, a local robbery, fire, community \
+event or sponsorship). Check the story is really about that company and not one with a similar \
+name or acronym. Don't pick a story already picked for another section."""
+listener_note = "Adrian works with these companies in his day job in payments, so he wants what's useful to know before talking to them: what happened and what it could mean for them, especially their payments, checkout or customers. Never call them his clients, never mention his employer, and never speculate about his work with them: just report the company news."
+
+[[sections]]
 id = "sport"
 name = "Football and sport"
 picks = 2
@@ -173,13 +207,14 @@ feeds = [
   { name = "CBS Sports NFL", url = "https://www.cbssports.com/rss/headlines/nfl/", weight = 0.8 },
   { name = "Google News: Boston Celtics", url = "https://news.google.com/rss/search?q=%22Boston+Celtics%22+when:2d&hl=en-US&gl=US&ceid=US:en" },
   { name = "CelticsBlog", url = "https://www.celticsblog.com/rss/current.xml", weight = 0.8 },
-  { name = "ESPN NBA", url = "https://www.espn.com/espn/rss/nba/news", weight = 0.9 },
+  { name = "Yahoo Sports NBA", url = "https://sports.yahoo.com/nba/rss.xml", weight = 0.9 },
   { name = "CBS Sports NBA", url = "https://www.cbssports.com/rss/headlines/nba/", weight = 0.8 },
   { name = "BBC Man City", url ="https://feeds.bbci.co.uk/sport/football/teams/manchester-city/rss.xml", weight = 1.1 },
   { name = "Guardian Man City", url = "https://www.theguardian.com/football/manchestercity/rss" },
   { name = "Google News: St George Dragons", url = "https://news.google.com/rss/search?q=%22St+George+Illawarra%22+OR+%22Dragons%22+NRL+when:2d&hl=en-AU&gl=AU&ceid=AU:en" },
   { name = "Google News: Eurovision", url = "https://news.google.com/rss/search?q=Eurovision+when:2d&hl=en-AU&gl=AU&ceid=AU:en", weight = 0.9 },
   { name = "ESCXtra (Eurovision)", url = "https://escxtra.com/feed/", weight = 0.9 },
+  { name = "Eurovoix (Eurovision)", url = "https://eurovoix.com/feed/", weight = 0.9 },
 ]
 
 [[sections]]
