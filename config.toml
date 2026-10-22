@@ -38,6 +38,7 @@ facts = [
   "The Champions League league phase runs from September to late January; the knockout play-offs are in February.",
   "The 2026 men's World Cup (USA, Canada and Mexico, 48 teams) was played in June and July 2026. The 2027 Women's World Cup is in Brazil.",
   "Football's 2026-27 club season is under way.",
+  "Call Dinamo Zagreb 'Dinamo' (or 'Dinamo Zagreb'), never just 'Zagreb'.",
   "Never say where a team sits in a league table, or describe its season or form, unless the source text or results data says so.",
 ]
 
@@ -108,13 +109,14 @@ brief = """The payments industry: card schemes, acquirers, processors and fintec
 Mastercard, American Express, Adyen, Stripe, Square, PayPal, Tyro, eftpos and the like), plus \
 regulation that affects them (RBA surcharging and interchange reform, scheme fees, open banking). \
 Favour Australian stories and big industry moves. Skip product puff pieces, partnership \
-announcements with no real substance, and sponsored content."""
+announcements with no real substance, and sponsored content. "Visa" here means the card \
+network: stories about immigration, travel or student visas are never payments stories."""
 listener_note = "Adrian works full-time in the payments industry, so skip the basics of how cards and acquiring work. Do explain what a story means in practice for merchants and the industry."
 feeds = [
   { name = "Payments Dive", url = "https://www.paymentsdive.com/feeds/news/", weight = 1.1 },
   { name = "Finextra", url = "https://www.finextra.com/rss/headlines.aspx" },
   { name = "PYMNTS", url = "https://www.pymnts.com/feed/", weight = 0.8 },
-  { name = "Google News (AU payments)", url = "https://news.google.com/rss/search?q=(Visa+OR+Mastercard+OR+Amex+OR+Adyen+OR+Stripe+OR+Tyro+OR+eftpos+OR+surcharging)+when:2d&hl=en-AU&gl=AU&ceid=AU:en", weight = 1.2 },
+  { name = "Google News (AU payments)", url = "https://news.google.com/rss/search?q=(Visa+OR+Mastercard+OR+Amex+OR+Adyen+OR+Stripe+OR+Tyro+OR+eftpos+OR+surcharging)+-immigration+-migration+-%22student+visa%22+-%22visa+holders%22+-%22visa+grants%22+-%22visa+applications%22+-%22working+holiday%22+-%22Home+Affairs%22+-%22Amex+Stadium%22+-%22Tip-Off%22+when:2d&hl=en-AU&gl=AU&ceid=AU:en", weight = 1.2 },
 ]
 
 [[sections]]
@@ -252,6 +254,20 @@ feeds = [
 ]
 
 # ---------------------------------------------------------------------------
+# Today's weather from Open-Meteo (free, no key; uses the Bureau of Meteorology's
+# model among others). Built straight from the forecast numbers, so nothing is made up.
+# position = "start" plays it right after the greeting, "end" just before the sign-off.
+# ---------------------------------------------------------------------------
+[weather]
+enabled = true
+name = "St Leonards"                     # what it's called on air
+latitude = -33.823
+longitude = 151.194
+position = "start"
+morning_hour = 8                         # "about sixteen degrees at eight"
+windy_kmh = 45                           # only mention wind when gusts reach this
+
+# ---------------------------------------------------------------------------
 # Your Fantasy Premier League team. Find the ID in your team's address on the
 # FPL site: fantasy.premierleague.com/entry/1234567/event/8 → team_id = 1234567
 # ---------------------------------------------------------------------------
@@ -263,9 +279,10 @@ segment_chars = 1000                     # about a minute when everything is due
 remind_hours_before_deadline = 36        # deadline reminder this close to the deadline
 # Transfer ideas: like-for-like swaps (defender for defender etc.) that fit your bank, the
 # three-per-club rule and your free transfers, based on form, FPL's expected points and the
-# next few fixtures. When: "deadline" (with the deadline reminder), "recap" (after a gameweek
-# finishes), "both", or "off".
-transfer_ideas = "deadline"
+# next few fixtures. When: "recap" (the morning after a gameweek finishes, before you've made
+# moves), "deadline" (with the deadline reminder), "both", or "off". FPL hides transfers made
+# since the last deadline, so on deadline day the podcast can't see your latest team.
+transfer_ideas = "recap"
 transfer_lookahead = 3                   # how many upcoming gameweeks of fixtures to weigh up
 max_transfer_ideas = 2                   # never more than this, and never more than your free transfers (min 1)
 transfer_min_gain = 1.5                  # how much better a replacement must be to be worth suggesting

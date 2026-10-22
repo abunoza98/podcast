@@ -1069,6 +1069,127 @@ def describe_event(ev: dict, league: str, tz: ZoneInfo) -> dict | None:
     }
 
 
+# ------------------------------------------------------------------ weather
+
+OPEN_METEO = os.environ.get("OPEN_METEO", "https://api.open-meteo.com/v1/forecast")
+_ONES = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven",
+         "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+_TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+
+
+def words(n: float) -> str:
+    """A whole number as a newsreader says it (the script never uses digits)."""
+    n = int(round(n))
+    if n < 0:
+        return "minus " + words(-n)
+    if n < 20:
+        return _ONES[n]
+    if n < 100:
+        return _TENS[n // 10] + ("" if n % 10 == 0 else "-" + _ONES[n % 10])
+    if n < 1000:
+        rest = n % 100
+        return _ONES[n // 100] + " hundred" + ("" if rest == 0 else " and " + words(rest))
+    return str(n)
+
+
+def compass(deg: float) -> str:
+    points = ["northerly", "north-easterly", "easterly", "south-easterly",
+              "southerly", "south-westerly", "westerly", "north-westerly"]
+    return points[int((deg % 360) / 45 + 0.5) % 8]
+
+
+def weather_segment(cfg: dict, today: dt.date) -> tuple[str, str | None, dict]:
+    """Today's forecast from Open-Meteo, as one or two spoken sentences built straight from the
+    numbers (no model involved, so nothing can be invented). Returns (script, chapter title, info)."""
+    w = cfg.get("weather", {})
+    if not w.get("enabled"):
+        return "", None, {}
+    tz = cfg["show"]["timezone"]
+    try:
+        r = requests.get(OPEN_METEO, headers=UA, timeout=20, params={
+            "latitude": w["latitude"], "longitude": w["longitude"], "timezone": tz, "forecast_days": 1,
+            "daily": "temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,"
+                     "uv_index_max,wind_gusts_10m_max,wind_direction_10m_dominant",
+            "hourly": "temperature_2m,precipitation_probability,weather_code",
+        })
+        r.raise_for_status()
+        data = r.json()
+        d = {k: v[0] for k, v in data["daily"].items() if isinstance(v, list) and v}
+        hours = data["hourly"]
+        by_hour = {int(t[11:13]): i for i, t in enumerate(hours["time"]) if t.startswith(today.isoformat())}
+    except Exception as e:  # noqa: BLE001 - the episode goes out without weather
+        warn(f"Weather left out today: {str(e)[:150]}")
+        return "", None, {}
+
+    def hourly(key: str, h: int):
+        i = by_hour.get(h)
+        return hours[key][i] if i is not None and hours[key][i] is not None else None
+
+    # The sky: the most common daytime condition, ignoring rain codes (rain is described separately).
+    sky_words = {0: "sunny", 1: "mostly sunny", 2: "partly cloudy", 3: "cloudy", 45: "foggy", 48: "foggy"}
+    day_codes = [hourly("weather_code", h) for h in range(7, 19)]
+    skies = [c for c in day_codes if c in sky_words]
+    clear = [c for c in skies if c < 45]
+    sky = sky_words[max(set(skies), key=skies.count)] if skies else "cloudy"
+    if sum(1 for c in day_codes[:4] if c in (45, 48)) >= 2:  # fog for the first few hours
+        later = [c for c in day_codes[4:] if c in sky_words and c < 45] or clear or [3]
+        sky = "a foggy start, then " + sky_words[max(set(later), key=later.count)]
+
+    top, low = d.get("temperature_2m_max"), d.get("temperature_2m_min")
+    morning = hourly("temperature_2m", int(w.get("morning_hour", 8)))
+    rain_p = d.get("precipitation_probability_max") or 0
+    rain_mm = d.get("precipitation_sum") or 0
+    storms = any(c is not None and c >= 95 for c in day_codes)
+    place = w.get("name", "Sydney")
+
+    first = f"In {place} today, {sky}"
+    if top is not None:
+        first += f", with a top of {words(top)}"
+    if morning is not None:
+        first += f" and about {words(morning)} degrees at {words(int(w.get('morning_hour', 8)))}"
+    sentences = [first + "."]
+
+    if rain_p >= 20:
+        cut = max(30, rain_p - 15)
+        periods = [("this morning", range(6, 12)), ("this afternoon", range(12, 18)), ("tonight", range(18, 24))]
+        when = [name for name, hrs in periods if any((hourly("precipitation_probability", h) or 0) >= cut for h in hrs)]
+        when_txt = " and ".join(when) if len(when) < 3 else "on and off all day"
+        kind = "a storm" if storms else "rain" if rain_p >= 50 else "a shower"
+        line = f"{words(rain_p)[0].upper()}{words(rain_p)[1:]} percent chance of {kind}" + (f", mostly {when_txt}" if when else "")
+        if rain_mm >= 1:
+            line += f", around {words(rain_mm)} millimetre{'s' if round(rain_mm) != 1 else ''}"
+        sentences.append(line + ".")
+    elif rain_p < 10:
+        sentences.append("No rain expected.")
+
+    extras = []
+    uv = d.get("uv_index_max") or 0
+    if uv >= 11:
+        extras.append("UV is extreme")
+    elif uv >= 8:
+        extras.append("UV is very high")
+    gust = d.get("wind_gusts_10m_max") or 0
+    if gust >= float(w.get("windy_kmh", 45)):
+        direction = d.get("wind_direction_10m_dominant")
+        extras.append((f"{compass(direction)} " if direction is not None else "") +
+                      f"winds gusting to {words(gust)} kilometres an hour")
+    if extras:
+        joined = ", and ".join(extras)
+        sentences.append(joined[0].upper() + joined[1:] + ".")
+    script = " ".join(sentences)
+
+    # Chapter title, also the line in the episode notes: a glance at the day.
+    bits = [f"{round(top)}° top" if top is not None else ""]
+    if rain_p >= 50:
+        bits.append(f"{'storms' if storms else 'rain'} likely")
+    elif rain_p >= 20:
+        bits.append(f"{rain_p}% chance of {'storms' if storms else 'showers'}")
+    title = "Weather: " + ", ".join(b for b in bits if b)
+    info = {"place": place, "top": top, "low": low, "rain_chance": rain_p, "rain_mm": rain_mm, "uv": uv, "gusts": gust}
+    log(f"  weather: {script}")
+    return script, title, info
+
+
 ESPN_STANDINGS = os.environ.get("ESPN_STANDINGS", "https://site.api.espn.com/apis/v2/sports")
 
 
@@ -1106,6 +1227,26 @@ def league_table(path: str) -> dict[str, str]:
     return out
 
 
+GENERIC_TEAM_WORDS = {"united", "city", "club", "athletic", "athletico", "sporting", "town", "rovers", "county",
+                      "wanderers", "albion", "football", "real", "the", "and", "de", "la", "del", "fc", "cf",
+                      "sc", "afc", "ac", "as", "us", "ssc", "rb", "vfb", "vfl", "1.", "fk", "nk", "hnk"}
+
+
+def team_keys(name: str) -> set[str]:
+    """Words that identify a team in a headline: 'Bayern Munich' -> {'bayern', 'munich'}."""
+    words_ = {w for w in re.findall(r"[a-zà-ž0-9]+", name.lower()) if len(w) >= 4 and w not in GENERIC_TEAM_WORDS}
+    return words_ or {name.lower()}
+
+
+def covered_by_story(home: str, away: str, stories: list[str]) -> bool:
+    """True if one of the day's stories is about this match (both teams named in it)."""
+    for text in stories:
+        t = set(re.findall(r"[a-zà-ž0-9]+", text.lower()))  # whole words, so 'Roma' doesn't match 'Romania'
+        if team_keys(home) & t and team_keys(away) & t:
+            return True
+    return False
+
+
 TABLE_CLAIM = re.compile(r"\b(top of the (table|league|ladder)|bottom of the (table|league|ladder)|"
                          r"(league|table) leaders|relegation zone|top four|top spot|bottom spot|"
                          r"(stay|stays|keeps? \w+|move|moves|go|goes|climb|climbs) (top|bottom|clear)|"
@@ -1133,6 +1274,7 @@ def results_segment(cfg: dict, today: dt.date, now: dt.datetime, state: dict,
     new_ids: list[str] = []
     info: dict = {"leagues": {}}
     have_table = False
+    dropped: list[str] = []
     for lg in rc.get("leagues", []):
         try:
             events = espn_events(lg["path"], start, end)
@@ -1156,6 +1298,9 @@ def results_segment(cfg: dict, today: dt.date, now: dt.datetime, state: dict,
             mine = any(t in d["home"].lower() or t in d["away"].lower() for t in follow)
             if mode == "teams" and not mine:
                 continue
+            if later and covered_by_story(d["home"], d["away"], later):
+                dropped.append(f"{d['home']} v {d['away']}")
+                continue  # it has its own story straight after, which gives the score
             line = f"{d['home']} {d['home_score']}-{d['away_score']} {d['away']}"
             if table.get(d["home"]) or table.get(d["away"]):
                 have_table = True
@@ -1179,10 +1324,13 @@ def results_segment(cfg: dict, today: dt.date, now: dt.datetime, state: dict,
     log("  results facts:\n    " + facts.replace("\n", "\n    "))
     n_lines = sum(b.count("\n  ") for b in blocks)
     later_note = ""
-    if later:
-        later_note = ("\n- These stories play straight after the scores. If a result below is part of "
-                      "one, give just the score and scorers for it and leave the rest to the story: "
-                      + "; ".join(later))
+    if later:  # anything the matching above missed
+        later_note = ("\n- These stories play straight after the scores and give their own scores. If a "
+                      "result below is the match in one of them, leave it out entirely: "
+                      + "; ".join(s.split(" ||| ")[0] for s in later))
+    if dropped:
+        log(f"  results: left out (they have their own story): {', '.join(dropped)}")
+        info["left_out_for_stories"] = dropped
     target = int(rc.get("chars_per_result", 110)) * min(n_lines, 14) + 250
     prompt = f"""Write a quick-fire scores roundup for today's episode ({nice_date(today)}). It comes \
 after other stories, so its first sentence should make the shift to the scores obvious naturally, \
@@ -1328,6 +1476,21 @@ def fpl_facts(team_id: int, tz: ZoneInfo, now: dt.datetime) -> tuple[str, dict]:
                 note_roles(prev_picks)
             except Exception:  # noqa: BLE001
                 squad = []
+        # Transfers already made for the coming gameweek. FPL's public data usually hides these until
+        # the deadline, so this is often empty even when he has made moves; use them when it isn't.
+        try:
+            pending = [t for t in fpl_get(f"entry/{team_id}/transfers/") if t.get("event") == upcoming["id"]]
+        except Exception:  # noqa: BLE001
+            pending = []
+        for t in sorted(pending, key=lambda t: t.get("time", "")):
+            if t.get("element_out") in squad and t.get("element_in") in players:
+                squad[squad.index(t["element_out"])] = t["element_in"]
+                role[t["element_in"]] = "new signing"
+        if pending:
+            lines.append(f"Transfers he has already made for gameweek {upcoming['id']}: " + "; ".join(
+                f"{pname(t['element_out'])} out, {pname(t['element_in'])} in" for t in pending
+                if t.get("element_out") in players and t.get("element_in") in players) + ". His squad below includes them.")
+        info["pending_transfers_visible"] = bool(pending)
         fixtures = fpl_get(f"fixtures/?event={upcoming['id']}")
         fx = []
         for pid in squad:
@@ -1349,7 +1512,8 @@ def fpl_facts(team_id: int, tz: ZoneInfo, now: dt.datetime) -> tuple[str, dict]:
                          + (f" ({chance}% chance of playing)" if chance is not None else ""))
     lines.append("Injury and availability flags in your squad: " + ("; ".join(flags) if flags else "none"))
     info["flags"] = flags
-    info["_ctx"] = {"boot": boot, "entry": entry, "squad": squad, "next_gw": upcoming["id"] if upcoming else None}
+    info["_ctx"] = {"boot": boot, "entry": entry, "squad": squad, "next_gw": upcoming["id"] if upcoming else None,
+                    "pending": pending if upcoming else []}
     return "\n".join(lines), info
 
 
@@ -1395,10 +1559,11 @@ def fpl_transfer_ideas(team_id: int, info: dict, fcfg: dict) -> tuple[list[str],
     history = fpl_get(f"entry/{team_id}/history/")
     fixtures = [f for f in fpl_get("fixtures/?future=1") if f.get("event") in window]
 
-    ft = estimate_free_transfers(history, entry, next_gw)
+    pending = ctx.get("pending") or []
+    ft = max(0, estimate_free_transfers(history, entry, next_gw) - len(pending))
     played = history.get("current", [])
     bank = (played[-1].get("bank") if played else entry.get("last_deadline_bank")) or 0
-    bank = bank / 10
+    bank = (bank + sum(t.get("element_out_cost", 0) - t.get("element_in_cost", 0) for t in pending)) / 10
 
     runs: dict[int, list[str]] = {}
     ease: dict[int, float] = {}
@@ -1470,8 +1635,10 @@ def fpl_transfer_ideas(team_id: int, info: dict, fcfg: dict) -> tuple[list[str],
         club_count = counts
         club_count[best["team"]] = club_count.get(best["team"], 0) + 1
 
+    made = f"after the {len(pending)} transfer{'s' if len(pending) != 1 else ''} he has already made" if pending \
+        else "as of the last deadline"
     lines = [f"Free transfers for gameweek {next_gw}: about {ft} (worked out from his transfer history, "
-             f"before any transfers he has already made this week). Money in the bank: £{bank:.1f}m."]
+             f"{made}). Money in the bank: £{bank:.1f}m."]
     if ideas:
         lines.append(f"Suggested swaps (same position, within budget, max three per club; fixtures shown as "
                      f"opponent, home or away, difficulty 1 easy to 5 hard, over the next {look} gameweeks):")
@@ -1543,8 +1710,14 @@ def fpl_segment(cfg: dict, today: dt.date, now: dt.datetime, fstate: dict) -> tu
         recap_due = True
     remind_hours = int(f.get("remind_hours_before_deadline", 36))
     if nxt and info.get("deadline_hours", 999) <= remind_hours and fstate.get("reminded_gw") != nxt:
-        focus.append(f"Deadline reminder for gameweek {nxt}: when it is, plus notable fixtures for his "
-                     f"players (blanks, doubles, very easy or hard games).")
+        if info.get("pending_transfers_visible"):
+            focus.append(f"Deadline reminder for gameweek {nxt}: when it is, plus notable fixtures for his "
+                         f"players (blanks, doubles, very easy or hard games).")
+        else:
+            focus.append(f"Deadline reminder for gameweek {nxt}: when it is, in one or two sentences. Don't "
+                         f"talk through his players or their fixtures: FPL hides transfers made since the last "
+                         f"deadline, so the squad in the facts may already be out of date. Only mention a player "
+                         f"if his team has a blank or double gameweek.")
         bullet_bits.append(f"gameweek {nxt} deadline")
         remind_due = True
     def flag_key(flag: str) -> str:  # "Name (TEAM), starter: news (x%)" -> "Name (TEAM): news"
@@ -1555,14 +1728,16 @@ def fpl_segment(cfg: dict, today: dt.date, now: dt.datetime, fstate: dict) -> tu
     new_flags = [x for x in info.get("flags", []) if flag_key(x) not in known]
     old_flags = [x for x in info.get("flags", []) if flag_key(x) in known]
     if new_flags:
-        focus.append("NEW injury or availability news in his squad (make clear it's new): " + "; ".join(new_flags))
+        where = "his squad" if info.get("pending_transfers_visible") or recap_due else \
+            "his last saved squad (he may already have transferred some of them out, so say 'if he's still in your team')"
+        focus.append(f"NEW injury or availability news in {where} (make clear it's new): " + "; ".join(new_flags))
         bullet_bits.append("new injury news")
-    if focus and old_flags:
+    if recap_due and old_flags:  # once per gameweek, with the recap; not repeated every day
         names = ", ".join(x.partition(": ")[0] for x in old_flags)
         focus.append(f"A one-sentence reminder only, names and starter or bench, no details: still flagged: {names}")
 
     # Transfer ideas: on the days set by transfer_ideas ("deadline", "recap", "both" or "off").
-    ideas_when = str(f.get("transfer_ideas", "deadline")).lower()
+    ideas_when = str(f.get("transfer_ideas", "recap")).lower()
     ideas_due = (remind_due and ideas_when in ("deadline", "both")) or (recap_due and ideas_when in ("recap", "both"))
     if ideas_due:
         try:
@@ -2008,6 +2183,10 @@ def probe(cfg: dict, now: dt.datetime) -> None:
                 summary(f"| {lg['name']} | ✅ | {done} |")
             except Exception as e:  # noqa: BLE001
                 summary(f"| {lg['name']} | ❌ {str(e)[:80]} | |")
+    if cfg.get("weather", {}).get("enabled"):
+        summary("\n## Weather\n")
+        script, title, _ = weather_segment(cfg, now.date())
+        summary(f"✅ {title}: {script}" if script else "❌ couldn't get the forecast (see warnings)")
     set_output(publish="false")
 
 
@@ -2083,7 +2262,8 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
     after_ids = [s["id"] for s in cfg["sections"]]
     after_ids = after_ids[after_ids.index(res_before):] if res_before in after_ids else []
     res_script, res_bullet, res_info = results_segment(
-        cfg, today, now, state, later=[p["label"] for p in picks if p["section"] in after_ids])
+        cfg, today, now, state, later=[f"{p['label']} ||| {p['lead']['title']} {p['lead'].get('summary', '')}"
+                                        for p in picks if p["section"] in after_ids and not is_private(cfg, p["section"])])
     fpl_script, fpl_bullet, fpl_info = fpl_segment(cfg, today, now, state.setdefault("fpl", {}))
     fpl_after = cfg.get("fpl", {}).get("after_section", "sport")
     res_chapter = {"title": "Scores roundup", "text": res_script} if res_script else None
@@ -2111,6 +2291,13 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
     if not written:
         raise SystemExit("No section could be written — check the run log.")
     picks = written
+    weather_script, weather_title, weather_info = weather_segment(cfg, today)
+    if weather_script:  # its own chapter, straight after the greeting (or before the sign-off)
+        chapter = {"title": weather_title, "text": weather_script}
+        if cfg.get("weather", {}).get("position", "start") == "end":
+            chapters.append(chapter)
+        else:
+            chapters.insert(0, chapter)
     intro = f"Morning, {cfg['show']['listener']}. It's {spoken_date(today)}."
     outro = cfg["show"].get("outro", "That's your brief.")
     # The greeting rides on the first chapter and the sign-off on the last. Each chapter is voiced
@@ -2182,6 +2369,7 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
         "date": date_key, "ran_at": now.isoformat(timespec="seconds"), "engine": engine,
         "duration": fmt_duration(seconds), "spoken_chars": spoken_len(script), "warnings": WARNINGS,
         "fact_check_fixes": [f for f in FACT_FIXES if f["part"] not in private_names],
+        "weather": weather_info,
         "fpl": fpl_info, "results": res_info,
         "feeds": [r for r in report if r["section"] not in private_ids],
         "private_sections": {sid: {"feeds_ok": sum(1 for r in report if r["section"] == sid and r.get("ok")),
