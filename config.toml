@@ -23,9 +23,11 @@ max_chars_per_story = 1100               # above this, the writer is asked to ti
 
 [llm]
 model = "openai/gpt-oss-120b"
-fallback_models = ["llama-3.3-70b-versatile"]
+fallback_models = ["openai/gpt-oss-20b", "llama-3.3-70b-versatile"]   # each has its own daily limit
 reasoning_effort = "low"
 tokens_per_minute = 8000                 # Groq free-tier limit for gpt-oss-120b
+extras_until_minutes = 20               # after this, fact checks and length retries are skipped so the run finishes
+stop_waiting_after_minutes = 30         # after this, a rate-limited part is given up rather than waited for
 fact_check = true                        # second pass: checks each part against its sources and fixes what's wrong
 
 # ---------------------------------------------------------------------------

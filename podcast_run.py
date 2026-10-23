@@ -381,13 +381,44 @@ class LLMError(RuntimeError):
     pass
 
 
+RUN_START = time.time()
+GROQ_USAGE: dict[str, int] = {}          # tokens used per model this run, for the run record
+GROQ_EXHAUSTED: set[str] = set()         # models that hit their daily limit this run
+
+
+def minutes_running() -> float:
+    return (time.time() - RUN_START) / 60
+
+
+def groq_wait_seconds(r: requests.Response) -> float:
+    """How long Groq asks us to wait. Its message says e.g. 'try again in 7m12.5s' or '450ms'."""
+    m = re.search(r"try again in ((?:\d+h)?(?:\d+m(?!s))?(?:[\d.]+(?:ms|s))?)", r.text)
+    if m and m.group(1):
+        t = m.group(1)
+        h = re.search(r"(\d+)h", t)
+        mi = re.search(r"(\d+)m(?!s)", t)
+        sec = re.search(r"([\d.]+)s", t.replace("ms", "#"))
+        ms = re.search(r"([\d.]+)ms", t)
+        total = (int(h.group(1)) * 3600 if h else 0) + (int(mi.group(1)) * 60 if mi else 0) + \
+                (float(sec.group(1)) if sec else 0) + (float(ms.group(1)) / 1000 if ms else 0)
+        if total > 0:
+            return total
+    wait = r.headers.get("retry-after", "")
+    return float(wait) if wait.replace(".", "").isdigit() else 20
+
+
 def groq_chat(messages: list[dict], cfg: dict, max_tokens: int, json_mode: bool = False,
               temperature: float = 0.7) -> str:
+    """One chat call, with retries. A model that hits its daily limit is skipped for the rest of the
+    run and the next fallback model is used straight away, instead of waiting out the limit."""
     key = os.environ.get("GROQ_API_KEY")
     if not key:
         raise LLMError("GROQ_API_KEY is not set (add it under Settings → Secrets and variables → Actions)")
     lcfg = cfg["llm"]
-    models = [lcfg["model"], *lcfg.get("fallback_models", [])]
+    models = [m for m in [lcfg["model"], *lcfg.get("fallback_models", [])] if m not in GROQ_EXHAUSTED]
+    if not models:
+        raise LLMError("every Groq model has hit its daily limit")
+    hard_stop = float(lcfg.get("stop_waiting_after_minutes", 30))
     est_prompt = sum(len(m["content"]) for m in messages) // 3 + 100
     budget = int(lcfg.get("tokens_per_minute", 8000))
     want = max(1000, min(max_tokens, budget - est_prompt - 150))
@@ -408,11 +439,16 @@ def groq_chat(messages: list[dict], cfg: dict, max_tokens: int, json_mode: bool 
                 time.sleep(10)
                 continue
             if r.status_code == 429:
-                wait = r.headers.get("retry-after")
-                m = re.search(r"try again in ([\d.]+)(ms|s)", r.text)
-                secs = float(wait) if wait and wait.replace(".", "").isdigit() else (
-                    float(m.group(1)) / (1000 if m.group(2) == "ms" else 1) if m else 20)
-                secs = min(max(secs, 2) + 1, 90)
+                secs = groq_wait_seconds(r)
+                daily = bool(re.search(r"per day|\(TPD\)|\(RPD\)", r.text, re.I)) or secs > 120
+                if daily:
+                    GROQ_EXHAUSTED.add(model)
+                    last_error = f"{model} hit its daily limit"
+                    warn(f"Groq: {model} hit its daily limit, switching to the next model")
+                    break
+                if minutes_running() > hard_stop:
+                    raise LLMError("still rate limited late in the run, giving up on this part")
+                secs = min(max(secs, 2) + 1, 75)
                 log(f"    rate limited by Groq, waiting {secs:.0f}s")
                 time.sleep(secs)
                 continue
@@ -441,6 +477,7 @@ def groq_chat(messages: list[dict], cfg: dict, max_tokens: int, json_mode: bool 
             data = r.json()
             choice = data["choices"][0]
             usage = data.get("usage", {})
+            GROQ_USAGE[model] = GROQ_USAGE.get(model, 0) + int(usage.get("total_tokens") or 0)
             log(f"    {model}: {usage.get('prompt_tokens')} in / {usage.get('completion_tokens')} out, "
                 f"finish={choice.get('finish_reason')}")
             if choice.get("finish_reason") == "length":
@@ -567,8 +604,11 @@ def select_stories(by_section: dict, cfg: dict, today: dt.date, covered: list[di
         return f"- {sec['id']}: pick exactly {sec['picks']}. {sec['brief']}"
 
     wanted = "\n".join(want_line(s) for s in cfg["sections"] if sec_idx.get(s["id"]))
-    accept(ask_editor(flat, list(range(len(flat))), wanted, today, cfg, lead_rule=True, covered=covered),
-           set(range(len(flat))), "editor")
+    try:
+        accept(ask_editor(flat, list(range(len(flat))), wanted, today, cfg, lead_rule=True, covered=covered),
+               set(range(len(flat))), "editor")
+    except LLMError as e:  # the per-section asks and then the ranking below fill in
+        warn(f"The editor model failed ({str(e)[:100]}), so stories were chosen section by section or by ranking")
 
     # The editor sometimes skips a whole section. Ask again for just that section, and if it
     # still comes back short, fall back to the highest-ranked stories.
@@ -803,7 +843,10 @@ def fact_check(script: str, source: str, cfg: dict, what: str, private: bool = F
     """
     if not cfg["llm"].get("fact_check", True) or not script.strip():
         return script
-    limit = int(cfg["llm"].get("fact_check_source_chars", 9000))
+    if minutes_running() > float(cfg["llm"].get("extras_until_minutes", 20)):
+        log(f"    fact check skipped for {what}: the run is running long")
+        return script
+    limit = int(cfg["llm"].get("fact_check_source_chars", 6000))
     prompt = f"""Check this SCRIPT for {what} against its SOURCE.
 
 Find every sentence in the SCRIPT that states something the SOURCE doesn't support or that \
@@ -827,7 +870,7 @@ If nothing is wrong, return an empty list.
 Return ONLY JSON: {{"fixes": [{{"find": "...", "replace": "...", "why": "..."}}]}}"""
     try:
         raw = groq_chat([{"role": "system", "content": CHECK_SYSTEM}, {"role": "user", "content": prompt}],
-                        cfg, max_tokens=4000, json_mode=True, temperature=0.1)
+                        cfg, max_tokens=2500, json_mode=True, temperature=0.1)
         fixes = parse_json(raw).get("fixes", [])
     except Exception as e:  # noqa: BLE001 - a failed check never stops the episode
         log(f"    fact check skipped for {what}: {str(e)[:100]}")
@@ -952,6 +995,16 @@ def clean_script(text: str) -> str:
     return text
 
 
+def headline_fallback(section: dict, stories: list[dict]) -> str:
+    """When the writing model is unavailable: just the headlines, so the episode still goes out."""
+    heads = []
+    for s in stories:
+        h = re.sub(r"\s+[-–|]\s+[^-–|]{2,40}$", "", s.get("label") or s["lead"]["title"]).strip()  # drop "- Publisher"
+        heads.append(h.rstrip(".") + ".")
+    return f"The writing service was down for {section['name'].lower()} this morning, so just the headlines. " \
+        f"{BEAT_BREAK} " + f" {BEAT_BREAK} ".join(heads)
+
+
 def write_section(section: dict, stories: list[dict], cfg: dict, today: dt.date, first: bool) -> str:
     _, floor, ceiling = section_lengths(section, story_weight(stories), cfg)
     messages = [{"role": "system", "content": WRITER_SYSTEM},
@@ -977,6 +1030,9 @@ def write_section(section: dict, stories: list[dict], cfg: dict, today: dt.date,
         fix = (f"That script has the wrong shape. Write exactly {len(stories)} stor"
                f"{'y' if len(stories) == 1 else 'ies'}, with the story pause tag only between them, and "
                f"nothing after the last one: no summary, no extra commentary paragraphs.")
+    if fix and minutes_running() > float(cfg["llm"].get("extras_until_minutes", 20)):
+        log(f"  {section['id']}: skipping the length retry, the run is running long")
+        fix = None
     if fix:
         if split:
             fix += (f" Keep exactly {len(stories)} stories separated by the story pause tag. Add depth "
@@ -2280,7 +2336,11 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
                 written += stories
                 first = False
             except LLMError as e:
-                warn(f"{section['name']} left out today: {str(e)[:150]}")
+                warn(f"{section['name']} read as headlines only today: {str(e)[:150]}")
+                chapters.append({"title": section["name"], "text": headline_fallback(section, stories),
+                                 "private": bool(section.get("private"))})
+                written += stories
+                first = False
         if fpl_chapter and section["id"] == fpl_after:
             chapters.append(fpl_chapter)
             fpl_chapter = None
@@ -2369,6 +2429,7 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
         "date": date_key, "ran_at": now.isoformat(timespec="seconds"), "engine": engine,
         "duration": fmt_duration(seconds), "spoken_chars": spoken_len(script), "warnings": WARNINGS,
         "fact_check_fixes": [f for f in FACT_FIXES if f["part"] not in private_names],
+        "groq_tokens": GROQ_USAGE, "minutes": round(minutes_running(), 1),
         "weather": weather_info,
         "fpl": fpl_info, "results": res_info,
         "feeds": [r for r in report if r["section"] not in private_ids],
@@ -2385,7 +2446,9 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
     credits = len(script) * float(cfg["voice"].get("elevenlabs_credits_per_char", 1.0))
     SUMMARY_LINES.insert(0, f"## {nice_date(today)}\n")
     summary(f"**{fmt_duration(seconds)}** · {spoken_len(script):,} spoken characters · voice: {engine}"
-            + (f" · about {credits:,.0f} ElevenLabs credits" if engine == "elevenlabs" else "") + "\n")
+            + (f" · about {credits:,.0f} ElevenLabs credits" if engine == "elevenlabs" else "")
+            + f" · Groq tokens: {sum(GROQ_USAGE.values()):,} ({', '.join(f'{k} {v:,}' for k, v in GROQ_USAGE.items())})"
+            + f" · {minutes_running():.0f} min\n")
     summary("| Section | Story | Sources | Why |")
     summary("|---|---|---|---|")
     for p in picks:
