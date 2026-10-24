@@ -1,0 +1,1192 @@
+{
+ "date": "2026-10-25",
+ "ran_at": "2026-10-25T05:46:50+11:00",
+ "engine": "elevenlabs",
+ "duration": "9:52",
+ "spoken_chars": 9738,
+ "warnings": [],
+ "fact_check_fixes": [
+  {
+   "part": "Scores roundup",
+   "was": "Napoli and Roma shared the spoils in a three‑all thriller, with Frank Anguissa and Scott McTominay scoring twice for Napoli and Matìas Soulè and Leonardo Balerdi netting for Roma.",
+   "now": "Napoli and Roma shared the spoils in a three‑all thriller, with Frank Anguissa scoring once and Scott McTominay scoring twice for Napoli, and Matìas Soulè and Leonardo Balerdi netting for Roma.",
+   "why": "Anguissa scored once, not twice"
+  },
+  {
+   "part": "Scores roundup",
+   "was": "Germany saw Borussia Dortmund claim a one‑nil victory over Eintracht Frankfurt, Maximilian Beier scoring at eighty minutes to keep Dortmund top of the table.",
+   "now": "Germany saw Borussia Dortmund claim a one‑nil victory over Eintracht Frankfurt, Maximilian Beier scoring at eighty minutes.",
+   "why": "Table position unsupported"
+  },
+  {
+   "part": "Scores roundup",
+   "was": "In the NBA, the Celtics beat the Knicks one‑oh‑seven to one‑oh‑three, Jayson Tatum leading Boston with thirty‑six points.",
+   "now": "(removed)",
+   "why": "Duplicate of earlier sentence"
+  },
+  {
+   "part": "FPL",
+   "was": "Looks like there’s some fresh injury news to note for Arrow Sport XI, if they’re still in your line‑up.",
+   "now": "(removed)",
+   "why": "Source gives no such commentary"
+  },
+  {
+   "part": "News",
+   "was": "The attack left Haines with both legs amputated and shocked the community.",
+   "now": "The attack left Haines with both legs amputated.",
+   "why": "Community shock not in source"
+  },
+  {
+   "part": "News",
+   "was": "The case will remain in the public eye as authorities consider further charges.",
+   "now": "(removed)",
+   "why": "Not supported by source"
+  },
+  {
+   "part": "Payments",
+   "was": "Polygon will now promote the regulated stack to fintechs and enterprises, and the industry will be watching for early adopters to test the full‑journey solution in real‑world commerce.",
+   "now": "(removed)",
+   "why": "Speculation not in source"
+  }
+ ],
+ "groq_tokens": {
+  "openai/gpt-oss-120b": 50974
+ },
+ "minutes": 6.1,
+ "weather": {
+  "place": "St Leonards",
+  "top": 30.3,
+  "low": 19.5,
+  "rain_chance": 74,
+  "rain_mm": 9.2,
+  "uv": 8.3,
+  "gusts": 51.1
+ },
+ "fpl": {
+  "team": "Arrow Sport XI",
+  "gameweek": 8,
+  "finished": false,
+  "points": 8,
+  "rank": 7114756,
+  "deadline": "2026-10-31T22:00:00+11:00",
+  "deadline_hours": 160,
+  "next_gameweek": 9,
+  "pending_transfers_visible": false,
+  "flags": [
+   "N.Williams (NFO), starter: Arm injury - 75% chance of playing (75% chance of playing)",
+   "Calafiori (ARS), starter: Hip injury - 75% chance of playing (75% chance of playing)",
+   "João Pedro (CHE), starter: Unspecified injury - 75% chance of playing (75% chance of playing)",
+   "Calvert-Lewin (LEE), bench: Foot injury - 50% chance of playing (50% chance of playing)"
+  ],
+  "focus": [
+   "NEW injury or availability news in his last saved squad (he may already have transferred some of them out, so say 'if he's still in your team') (make clear it's new): N.Williams (NFO), starter: Arm injury - 75% chance of playing (75% chance of playing); Calafiori (ARS), starter: Hip injury - 75% chance of playing (75% chance of playing); João Pedro (CHE), starter: Unspecified injury - 75% chance of playing (75% chance of playing)"
+  ]
+ },
+ "results": {
+  "leagues": {
+   "Premier League": 5,
+   "La Liga": 4,
+   "Serie A": 4,
+   "Bundesliga": 7,
+   "Ligue 1": 1,
+   "Champions League": 0,
+   "Europa League": 0,
+   "Conference League": 0,
+   "A-League Men": 3,
+   "Nations League": 0,
+   "NFL": 0,
+   "NBA": 12
+  },
+  "new_results": 36,
+  "left_out_for_stories": [
+   "Aston Villa v Manchester City",
+   "Chelsea v Tottenham Hotspur"
+  ]
+ },
+ "feeds": [
+  {
+   "section": "news",
+   "feed": "ABC Top Stories",
+   "url": "https://www.abc.net.au/news/feed/10719986/rss.xml",
+   "ok": true,
+   "kept": 22,
+   "skipped": 0,
+   "old": 3,
+   "newest_hours": 0.8
+  },
+  {
+   "section": "news",
+   "feed": "ABC Just In",
+   "url": "https://www.abc.net.au/news/feed/10719976/rss.xml",
+   "ok": true,
+   "kept": 23,
+   "skipped": 2,
+   "old": 0,
+   "newest_hours": 0.3
+  },
+  {
+   "section": "news",
+   "feed": "ABC World",
+   "url": "https://www.abc.net.au/news/feed/104217382/rss.xml",
+   "ok": true,
+   "kept": 0,
+   "skipped": 0,
+   "old": 4,
+   "newest_hours": 23.4
+  },
+  {
+   "section": "news",
+   "feed": "Guardian Australia",
+   "url": "https://www.theguardian.com/australia-news/rss",
+   "ok": true,
+   "kept": 6,
+   "skipped": 0,
+   "old": 14,
+   "newest_hours": 4.8
+  },
+  {
+   "section": "news",
+   "feed": "SBS News",
+   "url": "https://www.sbs.com.au/news/topic/latest/feed",
+   "ok": true,
+   "kept": 11,
+   "skipped": 0,
+   "old": 14,
+   "newest_hours": 11.7
+  },
+  {
+   "section": "news",
+   "feed": "BBC World",
+   "url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+   "ok": true,
+   "kept": 20,
+   "skipped": 0,
+   "old": 5,
+   "newest_hours": 1.4
+  },
+  {
+   "section": "news",
+   "feed": "Guardian World",
+   "url": "https://www.theguardian.com/world/rss",
+   "ok": true,
+   "kept": 14,
+   "skipped": 0,
+   "old": 11,
+   "newest_hours": 0.3
+  },
+  {
+   "section": "news",
+   "feed": "Al Jazeera",
+   "url": "https://www.aljazeera.com/xml/rss/all.xml",
+   "ok": true,
+   "kept": 24,
+   "skipped": 1,
+   "old": 0,
+   "newest_hours": 0.8
+  },
+  {
+   "section": "payments",
+   "feed": "Payments Dive",
+   "url": "https://www.paymentsdive.com/feeds/news/",
+   "ok": true,
+   "kept": 0,
+   "skipped": 0,
+   "old": 10,
+   "newest_hours": 27.0
+  },
+  {
+   "section": "payments",
+   "feed": "Finextra",
+   "url": "https://www.finextra.com/rss/headlines.aspx",
+   "ok": true,
+   "kept": 2,
+   "skipped": 0,
+   "old": 23,
+   "newest_hours": 22.4
+  },
+  {
+   "section": "payments",
+   "feed": "PYMNTS",
+   "url": "https://www.pymnts.com/feed/",
+   "ok": true,
+   "kept": 10,
+   "skipped": 0,
+   "old": 0,
+   "newest_hours": 10.8
+  },
+  {
+   "section": "payments",
+   "feed": "Google News (AU payments)",
+   "url": "https://news.google.com/rss/search?q=(Visa+OR+Mastercard+OR+Amex+OR+Adyen+OR+Stripe+OR+Tyro+OR+eftpos+OR+surcharging)+-immigration+-migration+-%22student+visa%22+-%22visa+holders%22+-%22visa+grants%22+-%22visa+applications%22+-%22working+holiday%22+-%22Home+Affairs%22+-%22Amex+Stadium%22+-%22Tip-Off%22+when:2d&hl=en-AU&gl=AU&ceid=AU:en",
+   "ok": true,
+   "kept": 0,
+   "skipped": 0,
+   "old": 25,
+   "newest_hours": 31.8
+  },
+  {
+   "section": "sport",
+   "feed": "BBC Football",
+   "url": "https://feeds.bbci.co.uk/sport/football/rss.xml",
+   "ok": true,
+   "kept": 19,
+   "skipped": 2,
+   "old": 4,
+   "newest_hours": 0.3
+  },
+  {
+   "section": "sport",
+   "feed": "Guardian Football",
+   "url": "https://www.theguardian.com/football/rss",
+   "ok": true,
+   "kept": 13,
+   "skipped": 0,
+   "old": 12,
+   "newest_hours": 0.2
+  },
+  {
+   "section": "sport",
+   "feed": "Guardian A-League",
+   "url": "https://www.theguardian.com/football/a-league/rss",
+   "ok": true,
+   "kept": 0,
+   "skipped": 0,
+   "old": 20,
+   "newest_hours": 28.8
+  },
+  {
+   "section": "sport",
+   "feed": "Guardian Australia Sport",
+   "url": "https://www.theguardian.com/sport/australia-sport/rss",
+   "ok": true,
+   "kept": 3,
+   "skipped": 1,
+   "old": 8,
+   "newest_hours": 7.5
+  },
+  {
+   "section": "sport",
+   "feed": "Sky Sports Football",
+   "url": "https://www.skysports.com/rss/11095",
+   "ok": true,
+   "kept": 17,
+   "skipped": 0,
+   "old": 3,
+   "newest_hours": -0.7
+  },
+  {
+   "section": "sport",
+   "feed": "ABC Sport",
+   "url": "https://www.abc.net.au/news/feed/103728570/rss.xml",
+   "ok": true,
+   "kept": 4,
+   "skipped": 0,
+   "old": 0,
+   "newest_hours": 18.3
+  },
+  {
+   "section": "sport",
+   "feed": "BBC Sport",
+   "url": "https://feeds.bbci.co.uk/sport/rss.xml",
+   "ok": true,
+   "kept": 22,
+   "skipped": 3,
+   "old": 0,
+   "newest_hours": 0.3
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Dinamo Zagreb",
+   "url": "https://news.google.com/rss/search?q=%22Dinamo+Zagreb%22+when:2d&hl=en-AU&gl=AU&ceid=AU:en",
+   "ok": true,
+   "kept": 2,
+   "skipped": 0,
+   "old": 23,
+   "newest_hours": 10.3
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Croatian football",
+   "url": "https://news.google.com/rss/search?q=Dinamo+OR+Hajduk+OR+HNL+OR+reprezentacija+when:2d&hl=hr&gl=HR&ceid=HR:hr",
+   "ok": true,
+   "kept": 9,
+   "skipped": 2,
+   "old": 14,
+   "newest_hours": 1.8
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Croatia national team",
+   "url": "https://news.google.com/rss/search?q=%22Croatia%22+football+OR+Modric+OR+Gvardiol+when:2d&hl=en-AU&gl=AU&ceid=AU:en",
+   "ok": true,
+   "kept": 3,
+   "skipped": 0,
+   "old": 4,
+   "newest_hours": 3.8
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Kansas City Chiefs",
+   "url": "https://news.google.com/rss/search?q=%22Kansas+City+Chiefs%22+when:2d&hl=en-US&gl=US&ceid=US:en",
+   "ok": true,
+   "kept": 17,
+   "skipped": 5,
+   "old": 3,
+   "newest_hours": 0.3
+  },
+  {
+   "section": "teams",
+   "feed": "Guardian NFL",
+   "url": "https://www.theguardian.com/sport/nfl/rss",
+   "ok": true,
+   "kept": 3,
+   "skipped": 0,
+   "old": 17,
+   "newest_hours": 1.9
+  },
+  {
+   "section": "teams",
+   "feed": "CBS Sports NFL",
+   "url": "https://www.cbssports.com/rss/headlines/nfl/",
+   "ok": true,
+   "kept": 9,
+   "skipped": 6,
+   "old": 10,
+   "newest_hours": 0.9
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Boston Celtics",
+   "url": "https://news.google.com/rss/search?q=%22Boston+Celtics%22+when:2d&hl=en-US&gl=US&ceid=US:en",
+   "ok": true,
+   "kept": 21,
+   "skipped": 2,
+   "old": 2,
+   "newest_hours": 1.1
+  },
+  {
+   "section": "teams",
+   "feed": "CelticsBlog",
+   "url": "https://www.celticsblog.com/rss/current.xml",
+   "ok": true,
+   "kept": 9,
+   "skipped": 0,
+   "old": 1,
+   "newest_hours": 6.4
+  },
+  {
+   "section": "teams",
+   "feed": "Yahoo Sports NBA",
+   "url": "https://sports.yahoo.com/nba/rss.xml",
+   "ok": true,
+   "kept": 24,
+   "skipped": 1,
+   "old": 0,
+   "newest_hours": 1.9
+  },
+  {
+   "section": "teams",
+   "feed": "CBS Sports NBA",
+   "url": "https://www.cbssports.com/rss/headlines/nba/",
+   "ok": true,
+   "kept": 3,
+   "skipped": 5,
+   "old": 17,
+   "newest_hours": 1.4
+  },
+  {
+   "section": "teams",
+   "feed": "BBC Man City",
+   "url": "https://feeds.bbci.co.uk/sport/football/teams/manchester-city/rss.xml",
+   "ok": true,
+   "kept": 3,
+   "skipped": 0,
+   "old": 21,
+   "newest_hours": 2.4
+  },
+  {
+   "section": "teams",
+   "feed": "Guardian Man City",
+   "url": "https://www.theguardian.com/football/manchestercity/rss",
+   "ok": true,
+   "kept": 2,
+   "skipped": 1,
+   "old": 17,
+   "newest_hours": 3.5
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: St George Dragons",
+   "url": "https://news.google.com/rss/search?q=%22St+George+Illawarra%22+OR+%22Dragons%22+NRL+when:2d&hl=en-AU&gl=AU&ceid=AU:en",
+   "ok": true,
+   "kept": 17,
+   "skipped": 0,
+   "old": 8,
+   "newest_hours": 0.7
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Eurovision",
+   "url": "https://news.google.com/rss/search?q=Eurovision+when:2d&hl=en-AU&gl=AU&ceid=AU:en",
+   "ok": true,
+   "kept": 18,
+   "skipped": 2,
+   "old": 5,
+   "newest_hours": 2.7
+  },
+  {
+   "section": "teams",
+   "feed": "ESCXtra (Eurovision)",
+   "url": "https://escxtra.com/feed/",
+   "ok": true,
+   "kept": 0,
+   "skipped": 0,
+   "old": 10,
+   "newest_hours": 49.8
+  },
+  {
+   "section": "teams",
+   "feed": "Eurovoix (Eurovision)",
+   "url": "https://eurovoix.com/feed/",
+   "ok": true,
+   "kept": 9,
+   "skipped": 0,
+   "old": 6,
+   "newest_hours": 3.8
+  },
+  {
+   "section": "wrestling",
+   "feed": "Reddit r/SquaredCircle (top today)",
+   "url": "https://www.reddit.com/r/SquaredCircle/top/.rss?t=day&limit=25",
+   "ok": true,
+   "kept": 22,
+   "skipped": 0,
+   "old": 3,
+   "newest_hours": 0.8
+  },
+  {
+   "section": "wrestling",
+   "feed": "F4W / Wrestling Observer",
+   "url": "https://www.f4wonline.com/feed/",
+   "ok": true,
+   "kept": 24,
+   "skipped": 1,
+   "old": 0,
+   "newest_hours": 0.6
+  },
+  {
+   "section": "wrestling",
+   "feed": "POST Wrestling",
+   "url": "https://www.postwrestling.com/feed/",
+   "ok": true,
+   "kept": 7,
+   "skipped": 0,
+   "old": 13,
+   "newest_hours": 0.4
+  },
+  {
+   "section": "wrestling",
+   "feed": "PWTorch",
+   "url": "https://www.pwtorch.com/site/feed/",
+   "ok": true,
+   "kept": 10,
+   "skipped": 4,
+   "old": 11,
+   "newest_hours": 0.9
+  },
+  {
+   "section": "wrestling",
+   "feed": "Wrestling Inc",
+   "url": "https://www.wrestlinginc.com/feed/",
+   "ok": true,
+   "kept": 20,
+   "skipped": 0,
+   "old": 0,
+   "newest_hours": 1.3
+  },
+  {
+   "section": "wrestling",
+   "feed": "Wrestleview",
+   "url": "https://www.wrestleview.com/feed/",
+   "ok": true,
+   "kept": 9,
+   "skipped": 0,
+   "old": 1,
+   "newest_hours": 0.3
+  }
+ ],
+ "private_sections": {
+  "clients": {
+   "feeds_ok": 5,
+   "feeds": 5,
+   "stories": 0
+  }
+ },
+ "candidates": {
+  "news": [
+   {
+    "title": "Fire breaks out at Hitler's mountain retreat, suspect arrested",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories",
+     "BBC World",
+     "Guardian World"
+    ],
+    "score": 5.685,
+    "covered": false
+   },
+   {
+    "title": "Australian MP's condition improves after alleged car attack",
+    "sources": [
+     "BBC World",
+     "Guardian Australia",
+     "Guardian World",
+     "SBS News"
+    ],
+    "score": 4.679,
+    "covered": false
+   },
+   {
+    "title": "'Shouldn't have to wear a flak jacket': Haines spoke of risks to MPs before attack",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 3.753,
+    "covered": false
+   },
+   {
+    "title": "Ghosts of past reports linger for NT child protection review",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 3.701,
+    "covered": false
+   },
+   {
+    "title": "What it takes to keep an independent restaurant open",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 3.592,
+    "covered": false
+   },
+   {
+    "title": "Kiwi expats could prove crucial in New Zealand's 'knife edge' election",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 3.493,
+    "covered": false
+   },
+   {
+    "title": "Ukraine says Starlink connection 'now stable' after network limits",
+    "sources": [
+     "BBC World",
+     "Guardian World"
+    ],
+    "score": 3.42,
+    "covered": false
+   },
+   {
+    "title": "Years of conflict splits voters in former Netanyahu stronghold",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 3.35,
+    "covered": false
+   },
+   {
+    "title": "Daughters joyful to 'breathe same air' as Donna Nelson returns to Perth",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 3.344,
+    "covered": false
+   },
+   {
+    "title": "Women report stalkers abusing exercise apps to harass them",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 3.337,
+    "covered": false
+   },
+   {
+    "title": "Ukraine says Starlink at normal speed after delays impede military",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 3.336,
+    "covered": false
+   },
+   {
+    "title": "Met Police received letter about Meghan Markle's father in 2019",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 3.296,
+    "covered": false
+   }
+  ],
+  "payments": [
+   {
+    "title": "Argentine payment infrastructure company Rebill raises $5.4m",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.127,
+    "covered": false
+   },
+   {
+    "title": "TEN Credit Union selects Bankjoy for its Corelation KeyStone conversion",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.116,
+    "covered": false
+   },
+   {
+    "title": "Who You Gonna Call? The Librarian.",
+    "sources": [
+     "PYMNTS"
+    ],
+    "score": 1.056,
+    "covered": false
+   },
+   {
+    "title": "American Express Expands Travel Platform With Airbnb Integration",
+    "sources": [
+     "PYMNTS"
+    ],
+    "score": 0.963,
+    "covered": false
+   },
+   {
+    "title": "Fiserv Appoints Mastercard Senior Strategic Advisor Raj Seshadri to Board",
+    "sources": [
+     "PYMNTS"
+    ],
+    "score": 0.958,
+    "covered": false
+   },
+   {
+    "title": "Customers Bank Uses AI to Close Commercial Loans in 7 Days",
+    "sources": [
+     "PYMNTS"
+    ],
+    "score": 0.954,
+    "covered": false
+   },
+   {
+    "title": "Polygon Secures US Money Transmitter Licenses",
+    "sources": [
+     "PYMNTS"
+    ],
+    "score": 0.945,
+    "covered": false
+   },
+   {
+    "title": "eInvoicing Mandates Turn Bills Into B2B Payment Data",
+    "sources": [
+     "PYMNTS"
+    ],
+    "score": 0.937,
+    "covered": false
+   },
+   {
+    "title": "LianLian Taps PayPal and Venmo to Speed Up Cross-Border Payouts",
+    "sources": [
+     "PYMNTS"
+    ],
+    "score": 0.919,
+    "covered": false
+   },
+   {
+    "title": "Cognitive Credit Lands $40 Million Investment to Expand US Operations",
+    "sources": [
+     "PYMNTS"
+    ],
+    "score": 0.906,
+    "covered": false
+   },
+   {
+    "title": "Same Day ACH Volume Jumps 37% as Businesses Fill the Gap Between Batch and Instant",
+    "sources": [
+     "PYMNTS"
+    ],
+    "score": 0.894,
+    "covered": false
+   },
+   {
+    "title": "Sezzle Pursues National Bank Charter to Add FDIC-Insured Deposit Accounts",
+    "sources": [
+     "PYMNTS"
+    ],
+    "score": 0.564,
+    "covered": true
+   }
+  ],
+  "sport": [
+   {
+    "title": "Hayen sacked by Burnley after just 14 games",
+    "sources": [
+     "BBC Football",
+     "BBC Sport",
+     "Guardian Football"
+    ],
+    "score": 4.282,
+    "covered": false
+   },
+   {
+    "title": "Leaving the technical area? Arteta has the receipts",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 3.368,
+    "covered": false
+   },
+   {
+    "title": "Man City's leaky defence highlights Donnarumma & Guehi struggles",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 3.358,
+    "covered": false
+   },
+   {
+    "title": "From Chelsea reject to Watkins 'upgrade' - Jackson makes fast Villa start",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 3.348,
+    "covered": false
+   },
+   {
+    "title": "Arsenal relieve pressure with Spurs win - can they kick on now?",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 3.178,
+    "covered": false
+   },
+   {
+    "title": "Infantino says he is backed by 'vast majority'",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 3.026,
+    "covered": false
+   },
+   {
+    "title": "Arsenal fight back to beat Tottenham and ease pressure on Slegers",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 3.007,
+    "covered": false
+   },
+   {
+    "title": "'It's harsh' - was Arsenal's winning penalty a controversial decision?",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 2.974,
+    "covered": false
+   },
+   {
+    "title": "Tottenham stun Chelsea for second league win in a week as Cole Palmer is sent off",
+    "sources": [
+     "Guardian Football",
+     "Sky Sports Football"
+    ],
+    "score": 2.53,
+    "covered": false
+   },
+   {
+    "title": "Clinical Arsenal earn precious win against Everton thanks to Konsa and Gabriel",
+    "sources": [
+     "Guardian Football",
+     "Sky Sports Football"
+    ],
+    "score": 2.502,
+    "covered": false
+   },
+   {
+    "title": "Fulham climb out of drop zone after Oscar Bobb’s late show sinks Coventry",
+    "sources": [
+     "Guardian Football",
+     "Sky Sports Football"
+    ],
+    "score": 2.502,
+    "covered": false
+   },
+   {
+    "title": "Nicolas Jackson double sees Aston Villa end Manchester City’s perfect start",
+    "sources": [
+     "Guardian Football",
+     "Sky Sports Football"
+    ],
+    "score": 2.502,
+    "covered": false
+   }
+  ],
+  "teams": [
+   {
+    "title": "Jayson Tatum extends olive branch to Jaylen Brown amid rumored rift: ‘There’s no beef’ - CelticsBlog",
+    "sources": [
+     "CBS Sports NBA",
+     "CelticsBlog",
+     "Google News: Boston Celtics"
+    ],
+    "score": 3.073,
+    "covered": false
+   },
+   {
+    "title": "Three Boston Celtics Takeaways From Win vs. Knicks - Yahoo Sports",
+    "sources": [
+     "CelticsBlog",
+     "Google News: Boston Celtics",
+     "Yahoo Sports NBA"
+    ],
+    "score": 3.051,
+    "covered": false
+   },
+   {
+    "title": "It’s taken two Celtics games for me to become a Paul George stan - CelticsBlog",
+    "sources": [
+     "CelticsBlog",
+     "Google News: Boston Celtics",
+     "Yahoo Sports NBA"
+    ],
+    "score": 2.994,
+    "covered": false
+   },
+   {
+    "title": "The Celtics’ play of the night was years in the making - CelticsBlog",
+    "sources": [
+     "CelticsBlog",
+     "Google News: Boston Celtics",
+     "Yahoo Sports NBA"
+    ],
+    "score": 2.994,
+    "covered": false
+   },
+   {
+    "title": "Maresca 'not worried' about Guehi form",
+    "sources": [
+     "BBC Man City",
+     "Guardian Man City"
+    ],
+    "score": 2.47,
+    "covered": false
+   },
+   {
+    "title": "GNK Dinamo Zagreb Plavi U11 vs NK Primorac Stobreč Bijeli U11 live score, H2H and lineups - Sofascore",
+    "sources": [
+     "Google News: Croatian football",
+     "Google News: Dinamo Zagreb"
+    ],
+    "score": 2.13,
+    "covered": false
+   },
+   {
+    "title": "Online voting and where to watch Junior Eurovision 2026 - Aussievision",
+    "sources": [
+     "Eurovoix (Eurovision)",
+     "Google News: Eurovision"
+    ],
+    "score": 2.014,
+    "covered": false
+   },
+   {
+    "title": "🇵🇹 Portugal: Carina Jorge & José Carlos Malato to Commentate on Junior Eurovision 2026",
+    "sources": [
+     "Eurovoix (Eurovision)",
+     "Google News: Eurovision"
+    ],
+    "score": 2.014,
+    "covered": false
+   },
+   {
+    "title": "Jayson Tatum dismantled the Knicks’ defense in a primetime statement",
+    "sources": [
+     "CelticsBlog",
+     "Yahoo Sports NBA"
+    ],
+    "score": 1.974,
+    "covered": false
+   },
+   {
+    "title": "Man City fan on 'frustrating' first league defeat of the season",
+    "sources": [
+     "BBC Man City"
+    ],
+    "score": 1.607,
+    "covered": false
+   },
+   {
+    "title": "Man City's leaky defence highlights Donnarumma & Guehi struggles",
+    "sources": [
+     "BBC Man City"
+    ],
+    "score": 1.582,
+    "covered": false
+   },
+   {
+    "title": "Let’s Argue: Chiefs need to improve or will go .500 the rest of the way - Arrowhead Pride",
+    "sources": [
+     "Google News: Kansas City Chiefs"
+    ],
+    "score": 1.495,
+    "covered": false
+   }
+  ],
+  "wrestling": [
+   {
+    "title": "Ric Flair out of hospital, provides update after fall",
+    "sources": [
+     "F4W / Wrestling Observer",
+     "POST Wrestling",
+     "PWTorch",
+     "Wrestleview"
+    ],
+    "score": 4.673,
+    "covered": false
+   },
+   {
+    "title": "WWE SMACKDOWN RESULTS (10/23): Corbridge’s report on Bliss & Paxley vs. Michin & B-Fab for Tag Titles; Green vs. Perez for WWE Women’s Title; Giulia vs. Monroe in a Street Fight",
+    "sources": [
+     "PWTorch",
+     "Reddit r/SquaredCircle (top today)",
+     "Wrestleview",
+     "Wrestling Inc"
+    ],
+    "score": 4.191,
+    "covered": false
+   },
+   {
+    "title": "New Women’s Tag Team Champions crowned on WWE SmackDown",
+    "sources": [
+     "F4W / Wrestling Observer",
+     "Reddit r/SquaredCircle (top today)",
+     "Wrestling Inc"
+    ],
+    "score": 3.677,
+    "covered": false
+   },
+   {
+    "title": "Ric Flair posts from home, says he is focused on recovery after hospitalization",
+    "sources": [
+     "POST Wrestling",
+     "Reddit r/SquaredCircle (top today)"
+    ],
+    "score": 3.115,
+    "covered": false
+   },
+   {
+    "title": "Backstage update on Sheamus potentially joining AEW",
+    "sources": [
+     "F4W / Wrestling Observer",
+     "Wrestleview"
+    ],
+    "score": 2.746,
+    "covered": false
+   },
+   {
+    "title": "AEW Fright Night Dynamite ticket sales update ahead of this week’s show (10-24-2026)",
+    "sources": [
+     "F4W / Wrestling Observer",
+     "Wrestling Inc"
+    ],
+    "score": 2.742,
+    "covered": false
+   },
+   {
+    "title": "Master Wato & KUUKAI win main event as NJPW Super Junior Tag League opens",
+    "sources": [
+     "F4W / Wrestling Observer",
+     "POST Wrestling"
+    ],
+    "score": 2.724,
+    "covered": false
+   },
+   {
+    "title": "Jay White to speak, new match added to AEW Collision",
+    "sources": [
+     "F4W / Wrestling Observer",
+     "Reddit r/SquaredCircle (top today)"
+    ],
+    "score": 2.593,
+    "covered": false
+   },
+   {
+    "title": "WWE sets date for CM Punk vs. Kevin Owens match",
+    "sources": [
+     "F4W / Wrestling Observer",
+     "Wrestleview"
+    ],
+    "score": 2.472,
+    "covered": false
+   },
+   {
+    "title": "NYT: Iran in ‘advanced stages’ of planning attacks on Americans as Crown Jewel remains set for Riyadh",
+    "sources": [
+     "POST Wrestling"
+    ],
+    "score": 1.791,
+    "covered": false
+   },
+   {
+    "title": "Huge UFC 333 favorite loses fight in controversial decision",
+    "sources": [
+     "F4W / Wrestling Observer"
+    ],
+    "score": 1.789,
+    "covered": false
+   },
+   {
+    "title": "18-1 UFC Featherweight wants Alexander Volkanovski fight instead of Justin Gaethje superfight",
+    "sources": [
+     "F4W / Wrestling Observer"
+    ],
+    "score": 1.777,
+    "covered": false
+   }
+  ]
+ },
+ "picks": [
+  {
+   "section": "news",
+   "label": "MP condition improves after car attack",
+   "why": "MP attacked, national shock",
+   "picked_by": "editor",
+   "sources": [
+    "BBC World",
+    "Guardian Australia",
+    "Guardian World",
+    "SBS News"
+   ],
+   "url": "https://www.bbc.co.uk/news/articles/c670pr1ryxyno?at_medium=RSS&at_campaign=rss"
+  },
+  {
+   "section": "news",
+   "label": "Fire at Hitler's Eagle's Nest",
+   "why": "Historic site fire draws attention",
+   "picked_by": "editor",
+   "sources": [
+    "ABC Just In",
+    "ABC Top Stories",
+    "BBC World",
+    "Guardian World"
+   ],
+   "url": "https://www.abc.net.au/news/2026-10-24/hitler-mountain-resort-in-germany-fire-suspect-arrested/107305190"
+  },
+  {
+   "section": "payments",
+   "label": "LianLian taps PayPal and Venmo",
+   "why": "LianLian adds PayPal, Venmo payouts",
+   "picked_by": "editor",
+   "sources": [
+    "PYMNTS"
+   ],
+   "url": "https://www.pymnts.com/news/cross-border-payments/2026/lianlian-taps-paypal-venmo-speed-up-cross-border-payouts/"
+  },
+  {
+   "section": "payments",
+   "label": "Polygon secures US licences",
+   "why": "Polygon gains US money‑transmitter licences",
+   "picked_by": "editor",
+   "sources": [
+    "PYMNTS"
+   ],
+   "url": "https://www.pymnts.com/blockchain/2026/polygon-secures-us-money-transmitter-licenses/"
+  },
+  {
+   "section": "sport",
+   "label": "Man City leaky defence vs Aston Villa",
+   "why": "Man City defence exposed vs Villa",
+   "picked_by": "editor",
+   "sources": [
+    "BBC Football",
+    "BBC Sport"
+   ],
+   "url": "https://www.bbc.co.uk/sport/football/articles/c6kg7z700k7jo?at_medium=RSS&at_campaign=rss"
+  },
+  {
+   "section": "sport",
+   "label": "Tottenham stun Chelsea, Palmer red card",
+   "why": "Tottenham beat Chelsea, Palmer sent off",
+   "picked_by": "editor",
+   "sources": [
+    "Guardian Football",
+    "Sky Sports Football"
+   ],
+   "url": "https://www.theguardian.com/football/2026/oct/24/chelsea-tottenham-premier-league-match-report"
+  },
+  {
+   "section": "wrestling",
+   "label": "Ric Flair out of hospital",
+   "why": "Ric Flair discharged after fall",
+   "picked_by": "editor",
+   "sources": [
+    "F4W / Wrestling Observer",
+    "POST Wrestling",
+    "PWTorch",
+    "Wrestleview"
+   ],
+   "url": "https://www.f4wonline.com/news/aew/ric-flair-out-of-hospital-provides-update-after-fall/"
+  },
+  {
+   "section": "wrestling",
+   "label": "WWE SmackDown results October 23",
+   "why": "SmackDown results, title matches",
+   "picked_by": "editor",
+   "sources": [
+    "PWTorch",
+    "Reddit r/SquaredCircle (top today)",
+    "Wrestleview",
+    "Wrestling Inc"
+   ],
+   "url": "https://www.pwtorch.com/site/2026/10/23/wwe-smackdown-results-10-23-corbridges-report-on-bliss-paxley-vs-michin-b-fab-for-tag-titles-green-vs-perez-for-wwe-womens-title-giulia-vs-monroe-in-a-street-figh/"
+  },
+  {
+   "section": "wrestling",
+   "label": "Women’s Tag Team Champions crowned",
+   "why": "New women’s tag champions crowned",
+   "picked_by": "editor",
+   "sources": [
+    "F4W / Wrestling Observer",
+    "Reddit r/SquaredCircle (top today)",
+    "Wrestling Inc"
+   ],
+   "url": "https://www.f4wonline.com/news/wwe/new-womens-tag-team-champions-crowned-on-wwe-smackdown-2/"
+  },
+  {
+   "section": "wrestling",
+   "label": "WWE sets Punk‑Owens SmackDown match",
+   "why": "CM Punk vs Owens match announced",
+   "picked_by": "editor",
+   "sources": [
+    "F4W / Wrestling Observer",
+    "Wrestleview"
+   ],
+   "url": "https://www.f4wonline.com/news/wwe/wwe-sets-date-for-cm-punk-vs-kevin-owens-match/"
+  }
+ ]
+}

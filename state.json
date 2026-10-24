@@ -1,0 +1,696 @@
+{
+ "episodes": [
+  {
+   "date": "2026-10-25",
+   "title": "Sunday, 25 October",
+   "guid": "2026-10-25-58ef7805",
+   "file": "2026-10-25-58ef7805.mp3",
+   "bytes": 9468344,
+   "duration": "9:52",
+   "pub_date": "Sat, 24 Oct 2026 18:46:50 +0000",
+   "bullets": [
+    "0:00 Weather: 30\u00b0 top, rain likely",
+    "0:21 MP condition improves after car attack",
+    "1:06 Fire at Hitler's Eagle's Nest",
+    "2:01 Payments",
+    "3:50 Scores roundup",
+    "6:13 Man City leaky defence vs Aston Villa",
+    "6:55 Tottenham stun Chelsea, Palmer red card",
+    "7:34 Your FPL team: new injury news",
+    "7:57 Pro wrestling"
+   ],
+   "chapters_file": "2026-10-25-58ef7805.chapters.json",
+   "engine": "elevenlabs"
+  },
+  {
+   "date": "2026-10-24",
+   "title": "Saturday, 24 October",
+   "guid": "2026-10-24-d4099631",
+   "file": "2026-10-24-d4099631.mp3",
+   "bytes": 5803466,
+   "duration": "6:03",
+   "pub_date": "Fri, 23 Oct 2026 20:24:40 +0000",
+   "bullets": [
+    "0:00 Weather: 24\u00b0 top",
+    "0:13 Weekend washout for most states",
+    "0:46 One dead, four injured in Paris attack",
+    "1:20 HSBC launches first stablecoin",
+    "1:51 American Express reports Q3 2026 results",
+    "1:57 Scores roundup",
+    "2:35 A\u2011League eyes Melbourne derby showdown",
+    "3:11 Arsenal fear Saka could be out",
+    "3:41 Dinamo Zagreb 2\u20114 NEC",
+    "3:49 Your FPL team: new injury news",
+    "4:10 Pro wrestling"
+   ],
+   "chapters_file": "2026-10-24-d4099631.chapters.json",
+   "engine": "elevenlabs"
+  },
+  {
+   "date": "2026-10-23",
+   "title": "Friday, 23 October",
+   "guid": "2026-10-23-f4aebbd3",
+   "file": "2026-10-23-f4aebbd3.mp3",
+   "bytes": 6974009,
+   "duration": "7:16",
+   "pub_date": "Thu, 22 Oct 2026 18:54:24 +0000",
+   "bullets": [
+    "0:00 Helen Haines car attack sparks outrage",
+    "0:36 Zelenskyy says Russian strikes unchanged",
+    "1:11 Banks limit agents' account access",
+    "2:11 Australian visa grants become unpredictable",
+    "2:57 Scores roundup",
+    "4:12 Real Madrid dominate Leipzig in Champions League",
+    "4:40 Rice scores as Arsenal draw Bayern",
+    "4:52 Your FPL team: gameweek 8 deadline, transfer ideas",
+    "6:06 Pro wrestling"
+   ],
+   "chapters_file": "2026-10-23-f4aebbd3.chapters.json",
+   "engine": "elevenlabs"
+  },
+  {
+   "date": "2026-10-22",
+   "title": "Thursday, 22 October",
+   "guid": "2026-10-22-517e00f3",
+   "file": "2026-10-22-517e00f3.mp3",
+   "bytes": 7041805,
+   "duration": "7:20",
+   "pub_date": "Wed, 21 Oct 2026 18:54:34 +0000",
+   "bullets": [
+    "0:00 Fire seasons threaten half of homes",
+    "1:15 Israel\u2019s map redrawn since Oct 7 attack",
+    "2:31 Visa aims to boost business payment trust",
+    "2:48 Stripe unveils AI Treasury service",
+    "3:10 Scores roundup",
+    "4:41 Foden hat\u2011trick leads City victory",
+    "5:15 PSG\u2019s Kvaratskhelia out after ACL injury",
+    "6:02 Your FPL team: new injury news",
+    "6:18 Pro wrestling"
+   ],
+   "chapters_file": "2026-10-22-517e00f3.chapters.json",
+   "engine": "elevenlabs"
+  },
+  {
+   "date": "2026-10-21",
+   "title": "Wednesday, 21 October",
+   "guid": "2026-10-21-6eca4e2e",
+   "file": "2026-10-21-6eca4e2e.mp3",
+   "bytes": 7271034,
+   "duration": "7:34",
+   "pub_date": "Tue, 20 Oct 2026 18:53:24 +0000",
+   "bullets": [
+    "0:00 Helen Haines attacker to appear in court",
+    "0:40 Google Cloud outage disrupts banks",
+    "1:13 Payments",
+    "3:03 Scores roundup",
+    "4:09 Maddison's magic moment for Spurs",
+    "4:58 PSG vs Barcelona: top Champions League tie",
+    "5:43 Your FPL team: gameweek 7 recap",
+    "6:25 Pro wrestling"
+   ],
+   "chapters_file": "2026-10-21-6eca4e2e.chapters.json",
+   "engine": "elevenlabs"
+  },
+  {
+   "date": "2026-10-20",
+   "title": "Tuesday, 20 October",
+   "guid": "2026-10-20-00971dd7",
+   "file": "2026-10-20-00971dd7.mp3",
+   "bytes": 7476497,
+   "duration": "7:47",
+   "pub_date": "Mon, 19 Oct 2026 18:55:58 +0000",
+   "bullets": [
+    "Football scores roundup",
+    "Australia exported biofuel as pumps ran dry",
+    "Ukraine hit by Russian missile attack",
+    "Mastercard launches stablecoin risk intelligence",
+    "Visa teams with Mesh for crypto payments",
+    "Ronaldo receives 30\u2011day suspension",
+    "England women manager signs new deal",
+    "Five takeaways from Chiefs win over Chargers",
+    "Bayley makes surprise indie appearance",
+    "R\u2011Truth vs. Priest ends early due injury",
+    "Middle East alert issued ahead of WWE Crown Jewel",
+    "Bron Breakker takes fall at WWE live event",
+    "Your FPL team: new injury news"
+   ],
+   "engine": "elevenlabs"
+  },
+  {
+   "date": "2026-10-19",
+   "title": "Monday, 19 October",
+   "guid": "2026-10-19-a9dd3973",
+   "file": "2026-10-19-a9dd3973.mp3",
+   "bytes": 4720056,
+   "duration": "4:55",
+   "pub_date": "Sun, 18 Oct 2026 18:44:30 +0000",
+   "bullets": [
+    "Israeli settlers attack diplomats",
+    "Boland double\u2011strike in SA Test",
+    "Visa, Mastercard, Stripe boost crypto payments",
+    "Mastercard launches Agent Detection Score",
+    "Haaland double puts City ahead",
+    "Shaw brace keeps Women\u2019s City unbeaten",
+    "AEW WrestleDream recap",
+    "WWE Honolulu house show results",
+    "Moxley retains Continental Championship",
+    "Young Bucks retain Tag Team titles",
+    "Your FPL team: injury news"
+   ],
+   "engine": "elevenlabs"
+  },
+  {
+   "date": "2026-10-18",
+   "title": "Sunday, 18 October",
+   "guid": "2026-10-18-b98ca386",
+   "file": "2026-10-18-b98ca386.mp3",
+   "bytes": 6756771,
+   "duration": "7:02",
+   "pub_date": "Sun, 18 Oct 2026 09:24:24 +0000",
+   "bullets": [
+    "Assistant Treasurer knew of ATO credit\u2011card ban",
+    "Violent clashes and arrests in France",
+    "Visa and Mastercard debut stablecoin remittance service",
+    "Mastercard unveils stablecoin payment platform",
+    "Liverpool rally to beat nine\u2011man Brentford",
+    "Wirtz delivers as Liverpool secure victory",
+    "AEW WrestleDream 2026 Review: Clockwork Carnage",
+    "Hangman Page, Bandido & Brody King win Trios",
+    "Andrade El Idolo keeps AEW National title",
+    "Ilja Dragunov appears as new AEW signing",
+    "Your FPL team: injury news"
+   ],
+   "engine": "elevenlabs"
+  }
+ ],
+ "covered": [
+  {
+   "date": "2026-10-21",
+   "label": "Helen Haines attacker to appear in court",
+   "title": "Brendan Nugent to face court over alleged attack on MP Helen Haines"
+  },
+  {
+   "date": "2026-10-21",
+   "label": "Google Cloud outage disrupts banks",
+   "title": "European banks, websites hit as Google Cloud data centre goes offline for hours"
+  },
+  {
+   "date": "2026-10-21",
+   "label": "Mastercard AI tool for digital services",
+   "title": "Mastercard Debuts Tool to Help AI Agents Purchase Digital Services - PYMNTS.com"
+  },
+  {
+   "date": "2026-10-21",
+   "label": "Ramp seeks national bank charter",
+   "title": "Ramp seeks bank charter"
+  },
+  {
+   "date": "2026-10-21",
+   "label": "Maddison's magic moment for Spurs",
+   "title": "Maddison's magic moment for Spurs - 18 months in the making"
+  },
+  {
+   "date": "2026-10-21",
+   "label": "PSG vs Barcelona: top Champions League tie",
+   "title": "PSG v Barcelona - Europe's most exciting match-up?"
+  },
+  {
+   "date": "2026-10-21",
+   "label": "WWE Raw review \u2013 Reigns vs Zayn",
+   "title": "WWE Raw 10/19/26 Review: Reigns & Zayn Face-to-Face"
+  },
+  {
+   "date": "2026-10-21",
+   "label": "Barthel's battery case motion denied",
+   "title": "Judge denies Marcel Barthel\u2019s motion to dismiss in battery case"
+  },
+  {
+   "date": "2026-10-21",
+   "label": "Anya Rune takes break from wrestling",
+   "title": "Anya Rune says she is taking a step back from pro wrestling"
+  },
+  {
+   "date": "2026-10-21",
+   "label": "Bayley vs Valkyria no\u2011DQ match set",
+   "title": "Bayley vs. Lyra Valkyria no disqualification match set for next week\u2019s WWE Raw"
+  },
+  {
+   "date": "2026-10-22",
+   "label": "Fire seasons threaten half of homes",
+   "title": "Supercharged fire seasons now threaten half Australia's homes: report"
+  },
+  {
+   "date": "2026-10-22",
+   "label": "Israel\u2019s map redrawn since Oct 7 attack",
+   "title": "How Israel has redrawn the map since the October 7 terrorist attack"
+  },
+  {
+   "date": "2026-10-22",
+   "label": "Visa aims to boost business payment trust",
+   "title": "Visa targets trust in business payments - Finextra Research"
+  },
+  {
+   "date": "2026-10-22",
+   "label": "Stripe unveils AI Treasury service",
+   "title": "Stripe Launches Stripe Treasury To Manage Finances Using AI Agents - TradingView"
+  },
+  {
+   "date": "2026-10-22",
+   "label": "Foden hat\u2011trick leads City victory",
+   "title": "Foden hat-trick helps Manchester City cut through noise and crush AEK Athens"
+  },
+  {
+   "date": "2026-10-22",
+   "label": "PSG\u2019s Kvaratskhelia out after ACL injury",
+   "title": "PSG's Kvaratskhelia to have surgery on ruptured ACL"
+  },
+  {
+   "date": "2026-10-22",
+   "label": "Dragon Lee re\u2011signs to WWE",
+   "title": "Dragon Lee reportedly re-signs with WWE"
+  },
+  {
+   "date": "2026-10-22",
+   "label": "Jordynne Grace\u2019s WWE return details",
+   "title": "Report: New update on Jordynne Grace\u2019s WWE absence"
+  },
+  {
+   "date": "2026-10-22",
+   "label": "Ospreay teams with Copeland on AEW Dynamite",
+   "title": "AEW Dynamite: Will Ospreay teams with Adam Copeland, Dragunov\u2019s opponent revealed, Maya World returns"
+  },
+  {
+   "date": "2026-10-22",
+   "label": "NXT Dusty Classic quarterfinals recap",
+   "title": "NXT Quick Results \u2013 10/20/26 (Dusty Rhodes Classic Quarterfinals and more!)"
+  },
+  {
+   "date": "2026-10-23",
+   "label": "Helen Haines car attack sparks outrage",
+   "title": "Helen Haines pressed PM on regional health days before car attack"
+  },
+  {
+   "date": "2026-10-23",
+   "label": "Zelenskyy says Russian strikes unchanged",
+   "title": "Zelenskyy says fresh Russian strikes show 'no change' in Kremlin position"
+  },
+  {
+   "date": "2026-10-23",
+   "label": "Banks limit agents' account access",
+   "title": "Banks move to limit agents' access to customer accounts"
+  },
+  {
+   "date": "2026-10-23",
+   "label": "Australian visa grants become unpredictable",
+   "title": "Australian visa grants become less predictable - eTNW"
+  },
+  {
+   "date": "2026-10-23",
+   "label": "Real Madrid dominate Leipzig in Champions League",
+   "title": "Real Madrid dominate Leipzig for third straight win"
+  },
+  {
+   "date": "2026-10-23",
+   "label": "Rice scores as Arsenal draw Bayern",
+   "title": "Rice strikes to earn Arsenal draw at Bayern"
+  },
+  {
+   "date": "2026-10-23",
+   "label": "WWE NXT to clash with AEW Dynamite",
+   "title": "WWE NXT scheduled to go head-to-head with AEW Dynamite: Blood and Guts"
+  },
+  {
+   "date": "2026-10-23",
+   "label": "Backstage talk on Rey Mysterio retirement",
+   "title": "\u2018Backstage chatter\u2019 within WWE about possible Rey Mysterio 2027 retirement"
+  },
+  {
+   "date": "2026-10-23",
+   "label": "WOR: WWE, Saudi, Dynamite, Full Gear news",
+   "title": "WOR: WWE and Saudi, Dynamite, Full Gear, NXT TV, all the news"
+  },
+  {
+   "date": "2026-10-23",
+   "label": "AEW Dynamite results: title eliminator and more",
+   "title": "AEW Dynamite Results \u2013 10/21/26 (Fallout from WrestleDream: Title Eliminator Match and more!)"
+  },
+  {
+   "date": "2026-10-24",
+   "label": "Weekend washout for most states",
+   "title": "Weekend washout for most states as storm season intensifies"
+  },
+  {
+   "date": "2026-10-24",
+   "label": "One dead, four injured in Paris attack",
+   "title": "One dead, four injured in Paris after 'terrorist and racist attack'"
+  },
+  {
+   "date": "2026-10-24",
+   "label": "HSBC launches first stablecoin",
+   "title": "HSBC launches first stablecoin"
+  },
+  {
+   "date": "2026-10-24",
+   "label": "American Express reports Q3 2026 results",
+   "title": "American Express Reports Third-Quarter 2026 Financial Results - American Express"
+  },
+  {
+   "date": "2026-10-24",
+   "label": "A\u2011League eyes Melbourne derby showdown",
+   "title": "A-Leagues look past Manchester City distraction to \u2018showpiece\u2019 Melbourne derby"
+  },
+  {
+   "date": "2026-10-24",
+   "label": "Arsenal fear Saka could be out",
+   "title": "Arsenal fear Saka could be out for two months"
+  },
+  {
+   "date": "2026-10-24",
+   "label": "Dinamo Zagreb 2\u20114 NEC",
+   "title": "Dinamo Zagreb 2-4 NEC (23 Oct, 2026) Team Stats - ESPN"
+  },
+  {
+   "date": "2026-10-24",
+   "label": "Emanuel on WWE Crown Jewel in Saudi",
+   "title": "Ari Emanuel on WWE Crown Jewel in Saudi Arabia: \u201cRight now, everything\u2019s still set\u201d"
+  },
+  {
+   "date": "2026-10-24",
+   "label": "Deeper look at Austin Creed & Kofi deals",
+   "title": "Deeper Look At Austin Creed & Kofi's AEW Deals"
+  },
+  {
+   "date": "2026-10-24",
+   "label": "AEW star to play Gorgeous George",
+   "title": "AEW star to play Gorgeous George in Amazon Prime Video\u2019s \u2018The Greatest\u2019"
+  },
+  {
+   "date": "2026-10-24",
+   "label": "AEW New Year\u2019s Smash dates revealed",
+   "title": "AEW New Year\u2019s Smash announced for January 1 & 2 in Georgia"
+  },
+  {
+   "date": "2026-10-25",
+   "label": "MP condition improves after car attack",
+   "title": "Australian MP's condition improves after alleged car attack"
+  },
+  {
+   "date": "2026-10-25",
+   "label": "Fire at Hitler's Eagle's Nest",
+   "title": "Fire breaks out at Hitler's mountain retreat, suspect arrested"
+  },
+  {
+   "date": "2026-10-25",
+   "label": "LianLian taps PayPal and Venmo",
+   "title": "LianLian Taps PayPal and Venmo to Speed Up Cross-Border Payouts"
+  },
+  {
+   "date": "2026-10-25",
+   "label": "Polygon secures US licences",
+   "title": "Polygon Secures US Money Transmitter Licenses"
+  },
+  {
+   "date": "2026-10-25",
+   "label": "Man City leaky defence vs Aston Villa",
+   "title": "Man City's leaky defence highlights Donnarumma & Guehi struggles"
+  },
+  {
+   "date": "2026-10-25",
+   "label": "Tottenham stun Chelsea, Palmer red card",
+   "title": "Tottenham stun Chelsea for second league win in a week as Cole Palmer is sent off"
+  },
+  {
+   "date": "2026-10-25",
+   "label": "Ric Flair out of hospital",
+   "title": "Ric Flair out of hospital, provides update after fall"
+  },
+  {
+   "date": "2026-10-25",
+   "label": "WWE SmackDown results October 23",
+   "title": "WWE SMACKDOWN RESULTS (10/23): Corbridge\u2019s report on Bliss & Paxley vs. Michin & B-Fab for Tag Titles; Green vs. Perez for WWE Women\u2019s Title; Giulia vs. Monroe in a Street Fight"
+  },
+  {
+   "date": "2026-10-25",
+   "label": "Women\u2019s Tag Team Champions crowned",
+   "title": "New Women\u2019s Tag Team Champions crowned on WWE SmackDown"
+  },
+  {
+   "date": "2026-10-25",
+   "label": "WWE sets Punk\u2011Owens SmackDown match",
+   "title": "WWE sets date for CM Punk vs. Kevin Owens match"
+  }
+ ],
+ "fpl": {
+  "flags": [
+   "N.Williams (NFO), starter: Arm injury - 75% chance of playing (75% chance of playing)",
+   "Calafiori (ARS), starter: Hip injury - 75% chance of playing (75% chance of playing)",
+   "Jo\u00e3o Pedro (CHE), starter: Unspecified injury - 75% chance of playing (75% chance of playing)",
+   "Calvert-Lewin (LEE), bench: Foot injury - 50% chance of playing (50% chance of playing)"
+  ],
+  "recapped_gw": 7,
+  "reminded_gw": 8
+ },
+ "results_seen": [
+  "Premier League:401878769",
+  "La Liga:401882845",
+  "La Liga:401882841",
+  "La Liga:401882839",
+  "Serie A:401874978",
+  "Serie A:401874765",
+  "Serie A:401874762",
+  "Bundesliga:401884768",
+  "Ligue 1:401876438",
+  "Ligue 1:401876435",
+  "Ligue 1:401876433",
+  "Ligue 1:401876434",
+  "NFL:401872999",
+  "NFL:401872997",
+  "NFL:401873003",
+  "NFL:401873001",
+  "NFL:401873000",
+  "NFL:401872998",
+  "NFL:401873002",
+  "NFL:401873004",
+  "NFL:401873006",
+  "NFL:401873005",
+  "NFL:401873007",
+  "Premier League:401879257",
+  "La Liga:401882842",
+  "Serie A:401874784",
+  "Champions League:401915403",
+  "Champions League:401915404",
+  "NFL:401873008",
+  "Champions League:401915402",
+  "Champions League:401915398",
+  "Champions League:401915397",
+  "Champions League:401915401",
+  "Champions League:401915400",
+  "Champions League:401915399",
+  "Champions League:401915392",
+  "Champions League:401915395",
+  "Champions League:401915396",
+  "NBA:401909088",
+  "NBA:401909089",
+  "NBA:401909090",
+  "La Liga:401882870",
+  "Champions League:401915394",
+  "Champions League:401915312",
+  "Champions League:401915388",
+  "Champions League:401915390",
+  "Champions League:401915389",
+  "Champions League:401915313",
+  "Champions League:401915391",
+  "Europa League:401915548",
+  "Europa League:401915556",
+  "Europa League:401915558",
+  "Europa League:401915547",
+  "Europa League:401915546",
+  "Europa League:401915559",
+  "Europa League:401915557",
+  "Europa League:401915545",
+  "Conference League:401915846",
+  "Conference League:401915844",
+  "Conference League:401915840",
+  "Conference League:401915845",
+  "Conference League:401915839",
+  "Conference League:401915842",
+  "Conference League:401915841",
+  "Conference League:401915838",
+  "Conference League:401915843",
+  "Conference League:401915745",
+  "NBA:401909834",
+  "NBA:401909835",
+  "NBA:401909091",
+  "NBA:401909836",
+  "NBA:401909837",
+  "NBA:401909838",
+  "NBA:401909839",
+  "NBA:401909840",
+  "NBA:401909092",
+  "NBA:401909841",
+  "NBA:401909842",
+  "Europa League:401915552",
+  "Europa League:401915553",
+  "Europa League:401915555",
+  "Europa League:401915542",
+  "Europa League:401915540",
+  "Europa League:401915541",
+  "Europa League:401915554",
+  "Europa League:401915544",
+  "Europa League:401915543",
+  "Europa League:401915539",
+  "Conference League:401915744",
+  "Conference League:401915837",
+  "Conference League:401915836",
+  "Conference League:401915743",
+  "Conference League:401915832",
+  "Conference League:401915835",
+  "Conference League:401915834",
+  "Conference League:401915833",
+  "A-League Men:401892156",
+  "NFL:401873010",
+  "NBA:401909093",
+  "NBA:401909094",
+  "Premier League:401879253",
+  "Premier League:401879256",
+  "Premier League:401878768",
+  "Premier League:401879255",
+  "Premier League:401878767",
+  "La Liga:401882836",
+  "La Liga:401882830",
+  "La Liga:401882831",
+  "La Liga:401882827",
+  "Serie A:401874957",
+  "Serie A:401874958",
+  "Serie A:401874961",
+  "Serie A:401874948",
+  "Bundesliga:401884761",
+  "Bundesliga:401884758",
+  "Bundesliga:401884756",
+  "Bundesliga:401884757",
+  "Bundesliga:401884762",
+  "Bundesliga:401884755",
+  "Bundesliga:401884763",
+  "Ligue 1:401876428",
+  "A-League Men:401892155",
+  "A-League Men:401892154",
+  "A-League Men:401892153",
+  "NBA:401909848",
+  "NBA:401909095",
+  "NBA:401909843",
+  "NBA:401909844",
+  "NBA:401909845",
+  "NBA:401909846",
+  "NBA:401909847",
+  "NBA:401909096",
+  "NBA:401909849",
+  "NBA:401909850",
+  "NBA:401909851",
+  "NBA:401909852"
+ ],
+ "prev_run_at": "2026-10-24T07:24:40+11:00",
+ "prev_results_seen": [
+  "Premier League:401878769",
+  "La Liga:401882845",
+  "La Liga:401882841",
+  "La Liga:401882839",
+  "Serie A:401874978",
+  "Serie A:401874765",
+  "Serie A:401874762",
+  "Bundesliga:401884768",
+  "Ligue 1:401876438",
+  "Ligue 1:401876435",
+  "Ligue 1:401876433",
+  "Ligue 1:401876434",
+  "NFL:401872999",
+  "NFL:401872997",
+  "NFL:401873003",
+  "NFL:401873001",
+  "NFL:401873000",
+  "NFL:401872998",
+  "NFL:401873002",
+  "NFL:401873004",
+  "NFL:401873006",
+  "NFL:401873005",
+  "NFL:401873007",
+  "Premier League:401879257",
+  "La Liga:401882842",
+  "Serie A:401874784",
+  "Champions League:401915403",
+  "Champions League:401915404",
+  "NFL:401873008",
+  "Champions League:401915402",
+  "Champions League:401915398",
+  "Champions League:401915397",
+  "Champions League:401915401",
+  "Champions League:401915400",
+  "Champions League:401915399",
+  "Champions League:401915392",
+  "Champions League:401915395",
+  "Champions League:401915396",
+  "NBA:401909088",
+  "NBA:401909089",
+  "NBA:401909090",
+  "La Liga:401882870",
+  "Champions League:401915394",
+  "Champions League:401915312",
+  "Champions League:401915388",
+  "Champions League:401915390",
+  "Champions League:401915389",
+  "Champions League:401915313",
+  "Champions League:401915391",
+  "Europa League:401915548",
+  "Europa League:401915556",
+  "Europa League:401915558",
+  "Europa League:401915547",
+  "Europa League:401915546",
+  "Europa League:401915559",
+  "Europa League:401915557",
+  "Europa League:401915545",
+  "Conference League:401915846",
+  "Conference League:401915844",
+  "Conference League:401915840",
+  "Conference League:401915845",
+  "Conference League:401915839",
+  "Conference League:401915842",
+  "Conference League:401915841",
+  "Conference League:401915838",
+  "Conference League:401915843",
+  "Conference League:401915745",
+  "NBA:401909834",
+  "NBA:401909835",
+  "NBA:401909091",
+  "NBA:401909836",
+  "NBA:401909837",
+  "NBA:401909838",
+  "NBA:401909839",
+  "NBA:401909840",
+  "NBA:401909092",
+  "NBA:401909841",
+  "NBA:401909842",
+  "Europa League:401915552",
+  "Europa League:401915553",
+  "Europa League:401915555",
+  "Europa League:401915542",
+  "Europa League:401915540",
+  "Europa League:401915541",
+  "Europa League:401915554",
+  "Europa League:401915544",
+  "Europa League:401915543",
+  "Europa League:401915539",
+  "Conference League:401915744",
+  "Conference League:401915837",
+  "Conference League:401915836",
+  "Conference League:401915743",
+  "Conference League:401915832",
+  "Conference League:401915835",
+  "Conference League:401915834",
+  "Conference League:401915833",
+  "A-League Men:401892156",
+  "NFL:401873010",
+  "NBA:401909093",
+  "NBA:401909094"
+ ],
+ "last_run_at": "2026-10-25T05:46:50+11:00",
+ "last_run_date": "2026-10-25"
+}

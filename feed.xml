@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:podcast="https://podcastindex.org/namespace/1.0">
+  <channel>
+    <title>Adrian's Daily Brief</title>
+    <link>https://abunoza98.github.io/podcast/</link>
+    <atom:link href="https://abunoza98.github.io/podcast/feed.xml" rel="self" type="application/rss+xml"/>
+    <language>en-au</language>
+    <description>A private daily brief: Australian and world news, football, and pro wrestling.</description>
+    <itunes:author>Adrian</itunes:author>
+    <itunes:owner><itunes:name>Adrian</itunes:name></itunes:owner>
+    <itunes:image href="https://abunoza98.github.io/podcast/cover-45b60ba3.jpg"/>
+    <image><url>https://abunoza98.github.io/podcast/cover-45b60ba3.jpg</url><title>Adrian's Daily Brief</title><link>https://abunoza98.github.io/podcast/</link></image>
+    <itunes:category text="News"><itunes:category text="Daily News"/></itunes:category>
+    <itunes:explicit>false</itunes:explicit>
+    <itunes:type>episodic</itunes:type>
+    <lastBuildDate>Sat, 24 Oct 2026 18:46:50 +0000</lastBuildDate>
+    <item>
+      <title>Sunday, 25 October</title>
+      <description>0:00 Weather: 30° top, rain likely
+0:21 MP condition improves after car attack
+1:06 Fire at Hitler's Eagle's Nest
+2:01 Payments
+3:50 Scores roundup
+6:13 Man City leaky defence vs Aston Villa
+6:55 Tottenham stun Chelsea, Palmer red card
+7:34 Your FPL team: new injury news
+7:57 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Weather: 30° top, rain likely<br>0:21 MP condition improves after car attack<br>1:06 Fire at Hitler&#x27;s Eagle&#x27;s Nest<br>2:01 Payments<br>3:50 Scores roundup<br>6:13 Man City leaky defence vs Aston Villa<br>6:55 Tottenham stun Chelsea, Palmer red card<br>7:34 Your FPL team: new injury news<br>7:57 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Sat, 24 Oct 2026 18:46:50 +0000</pubDate>
+      <guid isPermaLink="false">2026-10-25-58ef7805</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-10-25-58ef7805.mp3" length="9468344" type="audio/mpeg"/>
+      <itunes:duration>9:52</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-10-25-58ef7805.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Saturday, 24 October</title>
+      <description>0:00 Weather: 24° top
+0:13 Weekend washout for most states
+0:46 One dead, four injured in Paris attack
+1:20 HSBC launches first stablecoin
+1:51 American Express reports Q3 2026 results
+1:57 Scores roundup
+2:35 A‑League eyes Melbourne derby showdown
+3:11 Arsenal fear Saka could be out
+3:41 Dinamo Zagreb 2‑4 NEC
+3:49 Your FPL team: new injury news
+4:10 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Weather: 24° top<br>0:13 Weekend washout for most states<br>0:46 One dead, four injured in Paris attack<br>1:20 HSBC launches first stablecoin<br>1:51 American Express reports Q3 2026 results<br>1:57 Scores roundup<br>2:35 A‑League eyes Melbourne derby showdown<br>3:11 Arsenal fear Saka could be out<br>3:41 Dinamo Zagreb 2‑4 NEC<br>3:49 Your FPL team: new injury news<br>4:10 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Fri, 23 Oct 2026 20:24:40 +0000</pubDate>
+      <guid isPermaLink="false">2026-10-24-d4099631</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-10-24-d4099631.mp3" length="5803466" type="audio/mpeg"/>
+      <itunes:duration>6:03</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-10-24-d4099631.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Friday, 23 October</title>
+      <description>0:00 Helen Haines car attack sparks outrage
+0:36 Zelenskyy says Russian strikes unchanged
+1:11 Banks limit agents' account access
+2:11 Australian visa grants become unpredictable
+2:57 Scores roundup
+4:12 Real Madrid dominate Leipzig in Champions League
+4:40 Rice scores as Arsenal draw Bayern
+4:52 Your FPL team: gameweek 8 deadline, transfer ideas
+6:06 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Helen Haines car attack sparks outrage<br>0:36 Zelenskyy says Russian strikes unchanged<br>1:11 Banks limit agents&#x27; account access<br>2:11 Australian visa grants become unpredictable<br>2:57 Scores roundup<br>4:12 Real Madrid dominate Leipzig in Champions League<br>4:40 Rice scores as Arsenal draw Bayern<br>4:52 Your FPL team: gameweek 8 deadline, transfer ideas<br>6:06 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Thu, 22 Oct 2026 18:54:24 +0000</pubDate>
+      <guid isPermaLink="false">2026-10-23-f4aebbd3</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-10-23-f4aebbd3.mp3" length="6974009" type="audio/mpeg"/>
+      <itunes:duration>7:16</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-10-23-f4aebbd3.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Thursday, 22 October</title>
+      <description>0:00 Fire seasons threaten half of homes
+1:15 Israel’s map redrawn since Oct 7 attack
+2:31 Visa aims to boost business payment trust
+2:48 Stripe unveils AI Treasury service
+3:10 Scores roundup
+4:41 Foden hat‑trick leads City victory
+5:15 PSG’s Kvaratskhelia out after ACL injury
+6:02 Your FPL team: new injury news
+6:18 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Fire seasons threaten half of homes<br>1:15 Israel’s map redrawn since Oct 7 attack<br>2:31 Visa aims to boost business payment trust<br>2:48 Stripe unveils AI Treasury service<br>3:10 Scores roundup<br>4:41 Foden hat‑trick leads City victory<br>5:15 PSG’s Kvaratskhelia out after ACL injury<br>6:02 Your FPL team: new injury news<br>6:18 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Wed, 21 Oct 2026 18:54:34 +0000</pubDate>
+      <guid isPermaLink="false">2026-10-22-517e00f3</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-10-22-517e00f3.mp3" length="7041805" type="audio/mpeg"/>
+      <itunes:duration>7:20</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-10-22-517e00f3.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Wednesday, 21 October</title>
+      <description>0:00 Helen Haines attacker to appear in court
+0:40 Google Cloud outage disrupts banks
+1:13 Payments
+3:03 Scores roundup
+4:09 Maddison's magic moment for Spurs
+4:58 PSG vs Barcelona: top Champions League tie
+5:43 Your FPL team: gameweek 7 recap
+6:25 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Helen Haines attacker to appear in court<br>0:40 Google Cloud outage disrupts banks<br>1:13 Payments<br>3:03 Scores roundup<br>4:09 Maddison&#x27;s magic moment for Spurs<br>4:58 PSG vs Barcelona: top Champions League tie<br>5:43 Your FPL team: gameweek 7 recap<br>6:25 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Tue, 20 Oct 2026 18:53:24 +0000</pubDate>
+      <guid isPermaLink="false">2026-10-21-6eca4e2e</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-10-21-6eca4e2e.mp3" length="7271034" type="audio/mpeg"/>
+      <itunes:duration>7:34</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-10-21-6eca4e2e.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Tuesday, 20 October</title>
+      <description>• Football scores roundup
+• Australia exported biofuel as pumps ran dry
+• Ukraine hit by Russian missile attack
+• Mastercard launches stablecoin risk intelligence
+• Visa teams with Mesh for crypto payments
+• Ronaldo receives 30‑day suspension
+• England women manager signs new deal
+• Five takeaways from Chiefs win over Chargers
+• Bayley makes surprise indie appearance
+• R‑Truth vs. Priest ends early due injury
+• Middle East alert issued ahead of WWE Crown Jewel
+• Bron Breakker takes fall at WWE live event
+• Your FPL team: new injury news</description>
+      <content:encoded><![CDATA[<ul><li>Football scores roundup</li><li>Australia exported biofuel as pumps ran dry</li><li>Ukraine hit by Russian missile attack</li><li>Mastercard launches stablecoin risk intelligence</li><li>Visa teams with Mesh for crypto payments</li><li>Ronaldo receives 30‑day suspension</li><li>England women manager signs new deal</li><li>Five takeaways from Chiefs win over Chargers</li><li>Bayley makes surprise indie appearance</li><li>R‑Truth vs. Priest ends early due injury</li><li>Middle East alert issued ahead of WWE Crown Jewel</li><li>Bron Breakker takes fall at WWE live event</li><li>Your FPL team: new injury news</li></ul>]]></content:encoded>
+      <pubDate>Mon, 19 Oct 2026 18:55:58 +0000</pubDate>
+      <guid isPermaLink="false">2026-10-20-00971dd7</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-10-20-00971dd7.mp3" length="7476497" type="audio/mpeg"/>
+      <itunes:duration>7:47</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>Monday, 19 October</title>
+      <description>• Israeli settlers attack diplomats
+• Boland double‑strike in SA Test
+• Visa, Mastercard, Stripe boost crypto payments
+• Mastercard launches Agent Detection Score
+• Haaland double puts City ahead
+• Shaw brace keeps Women’s City unbeaten
+• AEW WrestleDream recap
+• WWE Honolulu house show results
+• Moxley retains Continental Championship
+• Young Bucks retain Tag Team titles
+• Your FPL team: injury news</description>
+      <content:encoded><![CDATA[<ul><li>Israeli settlers attack diplomats</li><li>Boland double‑strike in SA Test</li><li>Visa, Mastercard, Stripe boost crypto payments</li><li>Mastercard launches Agent Detection Score</li><li>Haaland double puts City ahead</li><li>Shaw brace keeps Women’s City unbeaten</li><li>AEW WrestleDream recap</li><li>WWE Honolulu house show results</li><li>Moxley retains Continental Championship</li><li>Young Bucks retain Tag Team titles</li><li>Your FPL team: injury news</li></ul>]]></content:encoded>
+      <pubDate>Sun, 18 Oct 2026 18:44:30 +0000</pubDate>
+      <guid isPermaLink="false">2026-10-19-a9dd3973</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-10-19-a9dd3973.mp3" length="4720056" type="audio/mpeg"/>
+      <itunes:duration>4:55</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>Sunday, 18 October</title>
+      <description>• Assistant Treasurer knew of ATO credit‑card ban
+• Violent clashes and arrests in France
+• Visa and Mastercard debut stablecoin remittance service
+• Mastercard unveils stablecoin payment platform
+• Liverpool rally to beat nine‑man Brentford
+• Wirtz delivers as Liverpool secure victory
+• AEW WrestleDream 2026 Review: Clockwork Carnage
+• Hangman Page, Bandido &amp; Brody King win Trios
+• Andrade El Idolo keeps AEW National title
+• Ilja Dragunov appears as new AEW signing
+• Your FPL team: injury news</description>
+      <content:encoded><![CDATA[<ul><li>Assistant Treasurer knew of ATO credit‑card ban</li><li>Violent clashes and arrests in France</li><li>Visa and Mastercard debut stablecoin remittance service</li><li>Mastercard unveils stablecoin payment platform</li><li>Liverpool rally to beat nine‑man Brentford</li><li>Wirtz delivers as Liverpool secure victory</li><li>AEW WrestleDream 2026 Review: Clockwork Carnage</li><li>Hangman Page, Bandido &amp; Brody King win Trios</li><li>Andrade El Idolo keeps AEW National title</li><li>Ilja Dragunov appears as new AEW signing</li><li>Your FPL team: injury news</li></ul>]]></content:encoded>
+      <pubDate>Sun, 18 Oct 2026 09:24:24 +0000</pubDate>
+      <guid isPermaLink="false">2026-10-18-b98ca386</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-10-18-b98ca386.mp3" length="6756771" type="audio/mpeg"/>
+      <itunes:duration>7:02</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+  </channel>
+</rss>
