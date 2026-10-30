@@ -1,0 +1,1194 @@
+{
+ "date": "2026-10-31",
+ "ran_at": "2026-10-31T05:58:18+11:00",
+ "engine": "elevenlabs",
+ "duration": "8:15",
+ "spoken_chars": 8314,
+ "warnings": [],
+ "fact_check_fixes": [
+  {
+   "part": "Scores roundup",
+   "was": "Fiorentina and Atalanta split two‑all, Charles De Ketelaere and Nicola Zalewski scoring for Ataluna, and Alieu Njie and João Mário replying for Fiorentina.",
+   "now": "Fiorentina and Atalanta split two‑all, Charles De Ketelaere and Nicola Zalewski scoring for Atalanta, and Alieu Njie and João Mário replying for Fiorentina.",
+   "why": "Team name misspelled"
+  },
+  {
+   "part": "News",
+   "was": "The report says the Renfe train was travelling at between one‑hundred and sixty and two‑hundred kilometres an hour when it struck the Iryo service, but the exact speed will be confirmed once the black‑box data is extracted.",
+   "now": "The report says the Renfe train was travelling at between one hundred sixty and two hundred kilometres an hour when it struck the Iryo service, but the exact speed will be confirmed once the black‑box data is extracted.",
+   "why": "Speed range mis‑stated and garbled."
+  },
+  {
+   "part": "Payments",
+   "was": "The new risk chief will now steer Amex’s compliance programme, and the industry will be watching how the bank addresses regulatory scrutiny in the months ahead.",
+   "now": "(removed)",
+   "why": "Details not in source"
+  },
+  {
+   "part": "Football and sport",
+   "was": "The FA upheld Arsenal’s appeal, meaning Dowman will serve a three‑match ban and miss the next league games, while the Gunners regroup ahead of their upcoming Premier League fixture.",
+   "now": "The FA upheld the decision, meaning Dowman will serve a three‑match ban and miss the next league games, while the Gunners regroup ahead of their upcoming Premier League fixture.",
+   "why": "Source says FA upheld decision, not Arsenal’s appeal"
+  },
+  {
+   "part": "Your teams",
+   "was": "The Champions League league phase keeps ticking, and over in the NBA the Celtics have been turning heads.",
+   "now": "(removed)",
+   "why": "Source does not mention Champions League"
+  },
+  {
+   "part": "Pro wrestling",
+   "was": "Looking ahead, Crown Jewel will head to its new home later this year, while Halloween Havoc is set for Halloween night with Danhausen hosting the live broadcast.",
+   "now": "Crown Jewel’s new venue has been confirmed for 2026, and Halloween Havoc is set for Halloween night with Danhausen hosting the live broadcast.",
+   "why": "Source only confirms venue, not timing \"later this year\""
+  },
+  {
+   "part": "Pro wrestling",
+   "was": "AEW’s Continental Classic is just around the corner, and Dragunov’s request suggests he’ll be lobbying for a place as the field takes shape.",
+   "now": "AEW’s Continental Classic is just around the corner, and Dragunov has expressed interest in participating.",
+   "why": "Source does not mention lobbying or field shaping"
+  }
+ ],
+ "groq_tokens": {
+  "openai/gpt-oss-120b": 48222
+ },
+ "minutes": 5.6,
+ "weather": {
+  "place": "St Leonards",
+  "top": 27.9,
+  "low": 15.7,
+  "rain_chance": 89,
+  "rain_mm": 3.7,
+  "uv": 7.95,
+  "gusts": 55.1
+ },
+ "fpl": {
+  "team": "Arrow Sport XI",
+  "gameweek": 8,
+  "finished": true,
+  "points": 68,
+  "rank": 6239253,
+  "deadline": "2026-10-31T22:00:00+11:00",
+  "deadline_hours": 16,
+  "next_gameweek": 9,
+  "pending_transfers_visible": false,
+  "flags": [
+   "Calafiori (ARS), starter: Hip injury - 75% chance of playing (75% chance of playing)",
+   "João Pedro (CHE), bench: Thigh injury - Unknown return date (0% chance of playing)"
+  ],
+  "focus": [
+   "Deadline reminder for gameweek 9: when it is, in one or two sentences. Don't talk through his players or their fixtures: FPL hides transfers made since the last deadline, so the squad in the facts may already be out of date. Only mention a player if his team has a blank or double gameweek."
+  ]
+ },
+ "results": {
+  "leagues": {
+   "Premier League": 0,
+   "La Liga": 0,
+   "Serie A": 2,
+   "Bundesliga": 0,
+   "Ligue 1": 0,
+   "Champions League": 0,
+   "Europa League": 0,
+   "Conference League": 0,
+   "A-League Men": 1,
+   "Nations League": 0,
+   "NFL": 1,
+   "NBA": 3
+  },
+  "new_results": 7
+ },
+ "feeds": [
+  {
+   "section": "news",
+   "feed": "ABC Top Stories",
+   "url": "https://www.abc.net.au/news/feed/10719986/rss.xml",
+   "ok": true,
+   "kept": 25,
+   "skipped": 0,
+   "old": 0,
+   "newest_hours": 7.0
+  },
+  {
+   "section": "news",
+   "feed": "ABC Just In",
+   "url": "https://www.abc.net.au/news/feed/10719976/rss.xml",
+   "ok": true,
+   "kept": 24,
+   "skipped": 1,
+   "old": 0,
+   "newest_hours": 0.1
+  },
+  {
+   "section": "news",
+   "feed": "ABC World",
+   "url": "https://www.abc.net.au/news/feed/104217382/rss.xml",
+   "ok": true,
+   "kept": 4,
+   "skipped": 0,
+   "old": 0,
+   "newest_hours": 22.2
+  },
+  {
+   "section": "news",
+   "feed": "Guardian Australia",
+   "url": "https://www.theguardian.com/australia-news/rss",
+   "ok": true,
+   "kept": 7,
+   "skipped": 2,
+   "old": 11,
+   "newest_hours": 5.0
+  },
+  {
+   "section": "news",
+   "feed": "SBS News",
+   "url": "https://www.sbs.com.au/news/topic/latest/feed",
+   "ok": true,
+   "kept": 11,
+   "skipped": 0,
+   "old": 14,
+   "newest_hours": 8.9
+  },
+  {
+   "section": "news",
+   "feed": "BBC World",
+   "url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+   "ok": true,
+   "kept": 25,
+   "skipped": 0,
+   "old": 0,
+   "newest_hours": 0.7
+  },
+  {
+   "section": "news",
+   "feed": "Guardian World",
+   "url": "https://www.theguardian.com/world/rss",
+   "ok": true,
+   "kept": 18,
+   "skipped": 1,
+   "old": 6,
+   "newest_hours": 1.3
+  },
+  {
+   "section": "news",
+   "feed": "Al Jazeera",
+   "url": "https://www.aljazeera.com/xml/rss/all.xml",
+   "ok": true,
+   "kept": 24,
+   "skipped": 1,
+   "old": 0,
+   "newest_hours": 0.4
+  },
+  {
+   "section": "payments",
+   "feed": "Payments Dive",
+   "url": "https://www.paymentsdive.com/feeds/news/",
+   "ok": true,
+   "kept": 2,
+   "skipped": 0,
+   "old": 8,
+   "newest_hours": 4.7
+  },
+  {
+   "section": "payments",
+   "feed": "Finextra",
+   "url": "https://www.finextra.com/rss/headlines.aspx",
+   "ok": true,
+   "kept": 15,
+   "skipped": 0,
+   "old": 10,
+   "newest_hours": 0.7
+  },
+  {
+   "section": "payments",
+   "feed": "PYMNTS",
+   "url": "https://www.pymnts.com/feed/",
+   "ok": true,
+   "kept": 10,
+   "skipped": 0,
+   "old": 0,
+   "newest_hours": 0.3
+  },
+  {
+   "section": "payments",
+   "feed": "Google News (AU payments)",
+   "url": "https://news.google.com/rss/search?q=(Visa+OR+Mastercard+OR+Amex+OR+Adyen+OR+Stripe+OR+Tyro+OR+eftpos+OR+surcharging)+-immigration+-migration+-%22student+visa%22+-%22visa+holders%22+-%22visa+grants%22+-%22visa+applications%22+-%22working+holiday%22+-%22Home+Affairs%22+-%22Amex+Stadium%22+-%22Tip-Off%22+when:2d&hl=en-AU&gl=AU&ceid=AU:en",
+   "ok": true,
+   "kept": 1,
+   "skipped": 0,
+   "old": 24,
+   "newest_hours": 20.8
+  },
+  {
+   "section": "sport",
+   "feed": "BBC Football",
+   "url": "https://feeds.bbci.co.uk/sport/football/rss.xml",
+   "ok": true,
+   "kept": 21,
+   "skipped": 1,
+   "old": 3,
+   "newest_hours": 1.4
+  },
+  {
+   "section": "sport",
+   "feed": "Guardian Football",
+   "url": "https://www.theguardian.com/football/rss",
+   "ok": true,
+   "kept": 15,
+   "skipped": 0,
+   "old": 10,
+   "newest_hours": 2.0
+  },
+  {
+   "section": "sport",
+   "feed": "Guardian A-League",
+   "url": "https://www.theguardian.com/football/a-league/rss",
+   "ok": true,
+   "kept": 0,
+   "skipped": 0,
+   "old": 20,
+   "newest_hours": 29.0
+  },
+  {
+   "section": "sport",
+   "feed": "Guardian Australia Sport",
+   "url": "https://www.theguardian.com/sport/australia-sport/rss",
+   "ok": true,
+   "kept": 3,
+   "skipped": 1,
+   "old": 8,
+   "newest_hours": 2.2
+  },
+  {
+   "section": "sport",
+   "feed": "Sky Sports Football",
+   "url": "https://www.skysports.com/rss/11095",
+   "ok": true,
+   "kept": 14,
+   "skipped": 0,
+   "old": 6,
+   "newest_hours": 2.0
+  },
+  {
+   "section": "sport",
+   "feed": "ABC Sport",
+   "url": "https://www.abc.net.au/news/feed/103728570/rss.xml",
+   "ok": true,
+   "kept": 4,
+   "skipped": 0,
+   "old": 0,
+   "newest_hours": 17.4
+  },
+  {
+   "section": "sport",
+   "feed": "BBC Sport",
+   "url": "https://feeds.bbci.co.uk/sport/rss.xml",
+   "ok": true,
+   "kept": 24,
+   "skipped": 1,
+   "old": 0,
+   "newest_hours": 0.3
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Dinamo Zagreb",
+   "url": "https://news.google.com/rss/search?q=%22Dinamo+Zagreb%22+when:2d&hl=en-AU&gl=AU&ceid=AU:en",
+   "ok": true,
+   "kept": 4,
+   "skipped": 5,
+   "old": 5,
+   "newest_hours": 5.9
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Croatian football",
+   "url": "https://news.google.com/rss/search?q=Dinamo+OR+Hajduk+OR+HNL+OR+reprezentacija+when:2d&hl=hr&gl=HR&ceid=HR:hr",
+   "ok": true,
+   "kept": 6,
+   "skipped": 5,
+   "old": 8,
+   "newest_hours": 0.9
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Croatia national team",
+   "url": "https://news.google.com/rss/search?q=%22Croatia%22+football+OR+Modric+OR+Gvardiol+when:2d&hl=en-AU&gl=AU&ceid=AU:en",
+   "ok": true,
+   "kept": 9,
+   "skipped": 0,
+   "old": 10,
+   "newest_hours": 0.7
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Kansas City Chiefs",
+   "url": "https://news.google.com/rss/search?q=%22Kansas+City+Chiefs%22+when:2d&hl=en-US&gl=US&ceid=US:en",
+   "ok": true,
+   "kept": 18,
+   "skipped": 5,
+   "old": 2,
+   "newest_hours": 1.5
+  },
+  {
+   "section": "teams",
+   "feed": "Guardian NFL",
+   "url": "https://www.theguardian.com/sport/nfl/rss",
+   "ok": true,
+   "kept": 3,
+   "skipped": 0,
+   "old": 17,
+   "newest_hours": 3.5
+  },
+  {
+   "section": "teams",
+   "feed": "CBS Sports NFL",
+   "url": "https://www.cbssports.com/rss/headlines/nfl/",
+   "ok": true,
+   "kept": 19,
+   "skipped": 6,
+   "old": 0,
+   "newest_hours": 0.2
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Boston Celtics",
+   "url": "https://news.google.com/rss/search?q=%22Boston+Celtics%22+when:2d&hl=en-US&gl=US&ceid=US:en",
+   "ok": true,
+   "kept": 17,
+   "skipped": 7,
+   "old": 1,
+   "newest_hours": 0.5
+  },
+  {
+   "section": "teams",
+   "feed": "CelticsBlog",
+   "url": "https://www.celticsblog.com/rss/current.xml",
+   "ok": true,
+   "kept": 6,
+   "skipped": 0,
+   "old": 4,
+   "newest_hours": 0.7
+  },
+  {
+   "section": "teams",
+   "feed": "Yahoo Sports NBA",
+   "url": "https://sports.yahoo.com/nba/rss.xml",
+   "ok": true,
+   "kept": 23,
+   "skipped": 2,
+   "old": 0,
+   "newest_hours": 1.4
+  },
+  {
+   "section": "teams",
+   "feed": "CBS Sports NBA",
+   "url": "https://www.cbssports.com/rss/headlines/nba/",
+   "ok": true,
+   "kept": 7,
+   "skipped": 5,
+   "old": 13,
+   "newest_hours": 0.6
+  },
+  {
+   "section": "teams",
+   "feed": "BBC Man City",
+   "url": "https://feeds.bbci.co.uk/sport/football/teams/manchester-city/rss.xml",
+   "ok": true,
+   "kept": 2,
+   "skipped": 0,
+   "old": 22,
+   "newest_hours": 4.0
+  },
+  {
+   "section": "teams",
+   "feed": "Guardian Man City",
+   "url": "https://www.theguardian.com/football/manchestercity/rss",
+   "ok": true,
+   "kept": 1,
+   "skipped": 0,
+   "old": 19,
+   "newest_hours": 18.9
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: St George Dragons",
+   "url": "https://news.google.com/rss/search?q=%22St+George+Illawarra%22+OR+%22Dragons%22+NRL+when:2d&hl=en-AU&gl=AU&ceid=AU:en",
+   "ok": true,
+   "kept": 13,
+   "skipped": 0,
+   "old": 12,
+   "newest_hours": 0.9
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Eurovision",
+   "url": "https://news.google.com/rss/search?q=Eurovision+when:2d&hl=en-AU&gl=AU&ceid=AU:en",
+   "ok": true,
+   "kept": 22,
+   "skipped": 0,
+   "old": 3,
+   "newest_hours": 0.1
+  },
+  {
+   "section": "teams",
+   "feed": "ESCXtra (Eurovision)",
+   "url": "https://escxtra.com/feed/",
+   "ok": true,
+   "kept": 0,
+   "skipped": 0,
+   "old": 10,
+   "newest_hours": 53.4
+  },
+  {
+   "section": "teams",
+   "feed": "Eurovoix (Eurovision)",
+   "url": "https://eurovoix.com/feed/",
+   "ok": true,
+   "kept": 2,
+   "skipped": 0,
+   "old": 13,
+   "newest_hours": 1.9
+  },
+  {
+   "section": "wrestling",
+   "feed": "Reddit r/SquaredCircle (top today)",
+   "url": "https://www.reddit.com/r/SquaredCircle/top/.rss?t=day&limit=25",
+   "ok": true,
+   "kept": 24,
+   "skipped": 1,
+   "old": 0,
+   "newest_hours": 0.6
+  },
+  {
+   "section": "wrestling",
+   "feed": "F4W / Wrestling Observer",
+   "url": "https://www.f4wonline.com/feed/",
+   "ok": true,
+   "kept": 25,
+   "skipped": 0,
+   "old": 0,
+   "newest_hours": 0.9
+  },
+  {
+   "section": "wrestling",
+   "feed": "POST Wrestling",
+   "url": "https://www.postwrestling.com/feed/",
+   "ok": true,
+   "kept": 10,
+   "skipped": 0,
+   "old": 10,
+   "newest_hours": 1.5
+  },
+  {
+   "section": "wrestling",
+   "feed": "PWTorch",
+   "url": "https://www.pwtorch.com/site/feed/",
+   "ok": true,
+   "kept": 5,
+   "skipped": 6,
+   "old": 14,
+   "newest_hours": 0.8
+  },
+  {
+   "section": "wrestling",
+   "feed": "Wrestling Inc",
+   "url": "https://www.wrestlinginc.com/feed/",
+   "ok": true,
+   "kept": 20,
+   "skipped": 0,
+   "old": 0,
+   "newest_hours": 2.4
+  },
+  {
+   "section": "wrestling",
+   "feed": "Wrestleview",
+   "url": "https://www.wrestleview.com/feed/",
+   "ok": true,
+   "kept": 8,
+   "skipped": 0,
+   "old": 2,
+   "newest_hours": 3.1
+  }
+ ],
+ "private_sections": {
+  "clients": {
+   "feeds_ok": 5,
+   "feeds": 5,
+   "stories": 1
+  }
+ },
+ "candidates": {
+  "news": [
+   {
+    "title": "Evacuation begins from ravaged Russian-controlled Ukrainian city",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories",
+     "Al Jazeera",
+     "Guardian World"
+    ],
+    "score": 5.5,
+    "covered": false
+   },
+   {
+    "title": "Two Australians unaccounted-for after Spain rail disaster",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories",
+     "BBC World"
+    ],
+    "score": 4.673,
+    "covered": false
+   },
+   {
+    "title": "Police probe Andrew's stay with Epstein at king's castle",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories",
+     "Al Jazeera"
+    ],
+    "score": 4.548,
+    "covered": false
+   },
+   {
+    "title": "US inmate Christa Pike says she woke up 'confused and in pain' after failed execution",
+    "sources": [
+     "ABC Just In",
+     "BBC World"
+    ],
+    "score": 3.429,
+    "covered": false
+   },
+   {
+    "title": "Australia facing monster chase to win series after Mulder, Rickelton tons",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 3.423,
+    "covered": false
+   },
+   {
+    "title": "Christmas remained key part of school event, premier told by department",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 2.968,
+    "covered": false
+   },
+   {
+    "title": "War of words erupts over Christian group's omission from NT Christmas pageant",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 2.936,
+    "covered": false
+   },
+   {
+    "title": "Australians stranded in Cambodia after cruise ship suspends operations",
+    "sources": [
+     "ABC Top Stories",
+     "SBS News"
+    ],
+    "score": 2.891,
+    "covered": false
+   },
+   {
+    "title": "Queensland Land Court approves proposed $1b coal mine",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 2.776,
+    "covered": false
+   },
+   {
+    "title": "Crypto giant Binance attempting to recover $6.3bn stolen in hack linked to North Korea",
+    "sources": [
+     "BBC World"
+    ],
+    "score": 2.494,
+    "covered": false
+   },
+   {
+    "title": "Record number of purges as Xi emphasises 'party discipline' at China political gathering",
+    "sources": [
+     "BBC World",
+     "Guardian World"
+    ],
+    "score": 2.449,
+    "covered": false
+   },
+   {
+    "title": "Experts warn AI copyright changes could breach Australian constitution and spark huge compensation rights case",
+    "sources": [
+     "Guardian Australia",
+     "Guardian World"
+    ],
+    "score": 2.439,
+    "covered": false
+   }
+  ],
+  "payments": [
+   {
+    "title": "PE firm CD&R targets buyout of $40bn Global Payments - FT",
+    "sources": [
+     "Finextra",
+     "PYMNTS"
+    ],
+    "score": 2.288,
+    "covered": false
+   },
+   {
+    "title": "Amex nabs new risk chief",
+    "sources": [
+     "Payments Dive"
+    ],
+    "score": 1.563,
+    "covered": false
+   },
+   {
+    "title": "AI agents won’t pay the way you do",
+    "sources": [
+     "Payments Dive"
+    ],
+    "score": 1.55,
+    "covered": false
+   },
+   {
+    "title": "How Younger Customers Are Spearheading the Rise of the ‘Switchable Middle’",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.438,
+    "covered": false
+   },
+   {
+    "title": "Kipp acquired by LTVCo-led investor group for US push",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.42,
+    "covered": false
+   },
+   {
+    "title": "ECB picks digital euro network service providers",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.407,
+    "covered": false
+   },
+   {
+    "title": "Sustainable Finance Live: Wonky Harvest and Lloyds Banking Group win 2026 Hackathon",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.392,
+    "covered": false
+   },
+   {
+    "title": "Tupelo St. Jude Dream Home Giveaway: Final Chance Prize ($2,500 VISA gift card) winner announced - WTVA",
+    "sources": [
+     "Google News (AU payments)"
+    ],
+    "score": 1.385,
+    "covered": false
+   },
+   {
+    "title": "Apple Pay and Google Pay launch in Uzbekistan",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.377,
+    "covered": false
+   },
+   {
+    "title": "ACI Worldwide and Circle collaborate on LatAm payments",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.371,
+    "covered": false
+   },
+   {
+    "title": "Singahi issues business continuity guide for Indian banks",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.369,
+    "covered": false
+   },
+   {
+    "title": "Goldman Sachs joins DLT sec finance platform",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.363,
+    "covered": false
+   }
+  ],
+  "sport": [
+   {
+    "title": "Arteta warns Dowman 'we are not in Disneyland' after red card",
+    "sources": [
+     "BBC Football",
+     "BBC Sport",
+     "Guardian Football",
+     "Sky Sports Football"
+    ],
+    "score": 5.288,
+    "covered": false
+   },
+   {
+    "title": "What Howe could bring to Man Utd - and what are the challenges?",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 3.43,
+    "covered": false
+   },
+   {
+    "title": "Fears Chelsea's Lacroix could be out until January",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 3.284,
+    "covered": false
+   },
+   {
+    "title": "Britain's first £100m man facing defining moment",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 3.279,
+    "covered": false
+   },
+   {
+    "title": "Why has Caf abandoned plans to hold Afcon every four years?",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 3.26,
+    "covered": false
+   },
+   {
+    "title": "Spurs' Maddison fit to face Palace - De Zerbi",
+    "sources": [
+     "BBC Football",
+     "Sky Sports Football"
+    ],
+    "score": 3.177,
+    "covered": false
+   },
+   {
+    "title": "Ronaldo closes in on 1,000th goal with hat-trick",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 2.972,
+    "covered": false
+   },
+   {
+    "title": "Time to invest in Bournemouth? - FPL gameweek nine dilemmas",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 2.73,
+    "covered": false
+   },
+   {
+    "title": "How to follow the Premier League on the BBC this weekend",
+    "sources": [
+     "BBC Football",
+     "Guardian Football"
+    ],
+    "score": 2.707,
+    "covered": false
+   },
+   {
+    "title": "How talking about Man Utd's cycle of doom became an industry",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 2.649,
+    "covered": false
+   },
+   {
+    "title": "Are Liverpool in the title race? Their match against Arsenal will tell us a lot",
+    "sources": [
+     "Guardian Football",
+     "Sky Sports Football"
+    ],
+    "score": 2.494,
+    "covered": false
+   },
+   {
+    "title": "O'Neill agrees with McGregor about Celtic issues",
+    "sources": [
+     "BBC Football"
+    ],
+    "score": 2.14,
+    "covered": false
+   }
+  ],
+  "teams": [
+   {
+    "title": "Four eye-popping stats that tell the story of Celtics' strong start - NBC Sports Boston",
+    "sources": [
+     "CelticsBlog",
+     "Google News: Boston Celtics"
+    ],
+    "score": 2.288,
+    "covered": false
+   },
+   {
+    "title": "Joe Mazzulla explains how, why he uses AI as Celtics coach - Boston Herald",
+    "sources": [
+     "CelticsBlog",
+     "Google News: Boston Celtics"
+    ],
+    "score": 2.262,
+    "covered": false
+   },
+   {
+    "title": "Watch Dinamo Zagreb vs NEC - TOD",
+    "sources": [
+     "Google News: Croatia national team",
+     "Google News: Dinamo Zagreb"
+    ],
+    "score": 2.201,
+    "covered": false
+   },
+   {
+    "title": "Sunderland - Dinamo Zagreb - Flashscore.com",
+    "sources": [
+     "Google News: Croatian football",
+     "Google News: Dinamo Zagreb"
+    ],
+    "score": 2.141,
+    "covered": false
+   },
+   {
+    "title": "Use DraftKings promo code to get $200 bonus, free NBA League Pass for Knicks-76ers, NBA, UCF-Baylor on Friday",
+    "sources": [
+     "CBS Sports NBA",
+     "CBS Sports NFL"
+    ],
+    "score": 1.765,
+    "covered": false
+   },
+   {
+    "title": "'I still think he's a good guy' - Maresca on Grealish",
+    "sources": [
+     "BBC Man City"
+    ],
+    "score": 1.576,
+    "covered": false
+   },
+   {
+    "title": "Britain's first £100m man facing defining moment",
+    "sources": [
+     "BBC Man City"
+    ],
+    "score": 1.553,
+    "covered": false
+   },
+   {
+    "title": "Boston Celtics Daily Links 10/30/26 - CelticsBlog",
+    "sources": [
+     "Google News: Boston Celtics"
+    ],
+    "score": 1.488,
+    "covered": false
+   },
+   {
+    "title": "Why crushed Jillaroos icon refused invite to join World Cup camp - The Daily Telegraph",
+    "sources": [
+     "Google News: St George Dragons"
+    ],
+    "score": 1.485,
+    "covered": false
+   },
+   {
+    "title": "NRL draw whispers: Bruno blocks Broncos, Bears return revealed - CODE Sports",
+    "sources": [
+     "Google News: St George Dragons"
+    ],
+    "score": 1.485,
+    "covered": false
+   },
+   {
+    "title": "Wollongong heartbreak as England's Cup hopes suffer brutal blow despite win - Illawarra Mercury",
+    "sources": [
+     "Google News: St George Dragons"
+    ],
+    "score": 1.468,
+    "covered": false
+   },
+   {
+    "title": "Here are 4 free agent WRs Kansas City Chiefs should consider signing - Yahoo Sports",
+    "sources": [
+     "Google News: Kansas City Chiefs"
+    ],
+    "score": 1.467,
+    "covered": false
+   }
+  ],
+  "wrestling": [
+   {
+    "title": "WWE Crown Jewel 2019 Revisited | Pollock & Thurston",
+    "sources": [
+     "F4W / Wrestling Observer",
+     "POST Wrestling",
+     "PWTorch",
+     "Reddit r/SquaredCircle (top today)",
+     "Wrestleview",
+     "Wrestling Inc"
+    ],
+    "score": 6.538,
+    "covered": false
+   },
+   {
+    "title": "WWE Hall of Famer Tammy ‘Sunny’ Sytch attempting to have conviction thrown out",
+    "sources": [
+     "F4W / Wrestling Observer",
+     "Wrestleview"
+    ],
+    "score": 2.729,
+    "covered": false
+   },
+   {
+    "title": "Tatum Paxley set for WWE NXT Halloween Havoc role",
+    "sources": [
+     "F4W / Wrestling Observer",
+     "Wrestling Inc"
+    ],
+    "score": 2.712,
+    "covered": false
+   },
+   {
+    "title": "Ilja Dragunov wants to be in AEW’s Continental Classic",
+    "sources": [
+     "F4W / Wrestling Observer",
+     "Wrestling Inc"
+    ],
+    "score": 2.712,
+    "covered": false
+   },
+   {
+    "title": "TNA Impact viewership and 18-49 demo rating down",
+    "sources": [
+     "F4W / Wrestling Observer"
+    ],
+    "score": 1.782,
+    "covered": false
+   },
+   {
+    "title": "Wrestling Weekly: Joe Dombrowski talks new Maxx Payne documentary that shows a slice of life from the WWF of the mid-90s",
+    "sources": [
+     "F4W / Wrestling Observer"
+    ],
+    "score": 1.78,
+    "covered": false
+   },
+   {
+    "title": "Rusev gives status update on WWE TV return",
+    "sources": [
+     "F4W / Wrestling Observer"
+    ],
+    "score": 1.779,
+    "covered": false
+   },
+   {
+    "title": "LJ Cleary to undergo surgery and to be out for “9-12 months”",
+    "sources": [
+     "POST Wrestling"
+    ],
+    "score": 1.771,
+    "covered": false
+   },
+   {
+    "title": "Judge dismisses motion by Tammy Sytch to revisit her 17-year prison sentence",
+    "sources": [
+     "POST Wrestling"
+    ],
+    "score": 1.747,
+    "covered": false
+   },
+   {
+    "title": "WWE Crown Jewel 2026 tickets back on sale",
+    "sources": [
+     "F4W / Wrestling Observer"
+    ],
+    "score": 1.744,
+    "covered": false
+   },
+   {
+    "title": "NXT star says Shawn Michaels changed his life and WWE career: ‘Whatever he needs, I’m like a soldier now’",
+    "sources": [
+     "F4W / Wrestling Observer"
+    ],
+    "score": 1.74,
+    "covered": false
+   },
+   {
+    "title": "Grayson Waller opens up about backstage role and influence in NXT",
+    "sources": [
+     "F4W / Wrestling Observer"
+    ],
+    "score": 1.724,
+    "covered": false
+   }
+  ]
+ },
+ "picks": [
+  {
+   "section": "news",
+   "label": "Two Australians unaccounted for after Spain rail disaster",
+   "why": "Australians missing after Spain crash",
+   "picked_by": "editor",
+   "sources": [
+    "ABC Just In",
+    "ABC Top Stories",
+    "BBC World"
+   ],
+   "url": "https://www.abc.net.au/news/2026-10-30/dfat-confirming-welfare-of-2-australians-in-spain/107330458"
+  },
+  {
+   "section": "news",
+   "label": "Evacuation begins from ravaged Ukrainian city",
+   "why": "Humanitarian evacuation in Ukraine",
+   "picked_by": "editor",
+   "sources": [
+    "ABC Just In",
+    "ABC Top Stories",
+    "Al Jazeera",
+    "Guardian World"
+   ],
+   "url": "https://www.abc.net.au/news/2026-10-30/oleshky-evacuation-russian-controlled-city-ukrainian-war/107330652"
+  },
+  {
+   "section": "payments",
+   "label": "CD&R eyes $40bn Global Payments buyout",
+   "why": "Global Payments buyout target",
+   "picked_by": "editor",
+   "sources": [
+    "Finextra",
+    "PYMNTS"
+   ],
+   "url": "https://www.finextra.com/newsarticle/48681/pe-firm-cdr-targets-buyout-of-40bn-global-payments---ft?utm_medium=rssfinextra&utm_source=finextrafeed"
+  },
+  {
+   "section": "payments",
+   "label": "Amex nabs new risk chief",
+   "why": "Amex appoints new risk chief",
+   "picked_by": "editor",
+   "sources": [
+    "Payments Dive"
+   ],
+   "url": "https://www.paymentsdive.com/news/amex-us-bank-risk-chief-departs-richard-compliance-banking/873293/"
+  },
+  {
+   "section": "sport",
+   "label": "Arteta warns Dowman ‘not in Disneyland’ after red card",
+   "why": "Arteta slams red‑card incident",
+   "picked_by": "editor",
+   "sources": [
+    "BBC Football",
+    "BBC Sport",
+    "Guardian Football",
+    "Sky Sports Football"
+   ],
+   "url": "https://www.bbc.co.uk/sport/football/articles/c875p940g5v2o?at_medium=RSS&at_campaign=rss"
+  },
+  {
+   "section": "sport",
+   "label": "Ronaldo closes in on 1,000th goal with hat‑trick",
+   "why": "Ronaldo nears 1,000th goal",
+   "picked_by": "editor",
+   "sources": [
+    "BBC Football",
+    "BBC Sport"
+   ],
+   "url": "https://www.bbc.co.uk/sport/football/articles/cmkgqprr44gzo?at_medium=RSS&at_campaign=rss"
+  },
+  {
+   "section": "teams",
+   "label": "Four eye‑popping stats tell Celtics’ strong start",
+   "why": "Celtics strong start stats",
+   "picked_by": "editor",
+   "sources": [
+    "CelticsBlog",
+    "Google News: Boston Celtics"
+   ],
+   "url": "https://www.nbcsportsboston.com/nba/boston-celtics/four-stats-strong-start-jayson-tatum-chris-forsberg/810319/"
+  },
+  {
+   "section": "teams",
+   "label": "Four free‑agent WRs Chiefs should consider",
+   "why": "Chiefs free‑agent WR options",
+   "picked_by": "editor",
+   "sources": [
+    "Google News: Kansas City Chiefs"
+   ],
+   "url": "https://sports.yahoo.com/articles/4-free-agent-wrs-kansas-085856322.html"
+  },
+  {
+   "section": "wrestling",
+   "label": "WWE Crown Jewel 2019 revisited podcast",
+   "why": "Crown Jewel podcast discussion",
+   "picked_by": "editor",
+   "sources": [
+    "F4W / Wrestling Observer",
+    "POST Wrestling",
+    "PWTorch",
+    "Reddit r/SquaredCircle (top today)",
+    "Wrestleview",
+    "Wrestling Inc"
+   ],
+   "url": "https://www.postwrestling.com/2026/10/29/wwe-crown-jewel-2019-revisited-location-change-in-saudi-pollock-thurston-live-at-8-p-m-et/"
+  },
+  {
+   "section": "wrestling",
+   "label": "Tammy ‘Sunny’ Sytch attempts conviction throwout",
+   "why": "Tammy Sytch seeks conviction reversal",
+   "picked_by": "editor",
+   "sources": [
+    "F4W / Wrestling Observer",
+    "Wrestleview"
+   ],
+   "url": "https://www.f4wonline.com/news/wwe/wwe-hall-of-famer-tammy-sunny-sytch-attempting-to-have-conviction-thrown-out/"
+  },
+  {
+   "section": "wrestling",
+   "label": "Tatum Paxley set for NXT Halloween Havoc",
+   "why": "Paxley returns for NXT Halloween",
+   "picked_by": "editor",
+   "sources": [
+    "F4W / Wrestling Observer",
+    "Wrestling Inc"
+   ],
+   "url": "https://www.f4wonline.com/news/nxt/tatum-paxley-set-for-wwe-nxt-halloween-havoc-role/"
+  },
+  {
+   "section": "wrestling",
+   "label": "Ilja Dragunov wants AEW Continental Classic spot",
+   "why": "Dragunov eyes AEW Continental Classic",
+   "picked_by": "editor",
+   "sources": [
+    "F4W / Wrestling Observer",
+    "Wrestling Inc"
+   ],
+   "url": "https://www.f4wonline.com/news/aew/ilja-dragunov-wants-to-be-in-aews-continental-classic/"
+  }
+ ]
+}

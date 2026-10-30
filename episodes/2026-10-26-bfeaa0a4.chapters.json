@@ -1,0 +1,33 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 23° top, 39% chance of showers"
+  },
+  {
+   "startTime": 17.14,
+   "title": "Childcare worker assaults captured on CCTV"
+  },
+  {
+   "startTime": 58.17,
+   "title": "Mass protests in France spark 1,300 arrests"
+  },
+  {
+   "startTime": 97.65,
+   "title": "57% of Large Firms Report Bot or Agent Incidents or Losses"
+  },
+  {
+   "startTime": 137.8,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 361.61,
+   "title": "Football and sport"
+  },
+  {
+   "startTime": 441.76,
+   "title": "Pro wrestling"
+  }
+ ]
+}
