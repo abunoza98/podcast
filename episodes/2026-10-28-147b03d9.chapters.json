@@ -1,0 +1,41 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 24° top, rain likely"
+  },
+  {
+   "startTime": 15.73,
+   "title": "News"
+  },
+  {
+   "startTime": 134.03,
+   "title": "American Express joins Home Bargains"
+  },
+  {
+   "startTime": 148.51,
+   "title": "USDA adds chip to EBT cards"
+  },
+  {
+   "startTime": 176.27,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 236.12,
+   "title": "Carrick stays at Man Utd for Chelsea"
+  },
+  {
+   "startTime": 264.96,
+   "title": "Putellas wins third Ballon d’Or"
+  },
+  {
+   "startTime": 302.29,
+   "title": "Your FPL team: new injury news"
+  },
+  {
+   "startTime": 335.49,
+   "title": "Pro wrestling"
+  }
+ ]
+}

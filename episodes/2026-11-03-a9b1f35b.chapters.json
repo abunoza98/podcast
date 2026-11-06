@@ -1,0 +1,37 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 24° top, storms likely"
+  },
+  {
+   "startTime": 17.28,
+   "title": "News"
+  },
+  {
+   "startTime": 111.93,
+   "title": "Mastercard expands partnership in India"
+  },
+  {
+   "startTime": 121.37,
+   "title": "BNPL survey shows holiday budget boost"
+  },
+  {
+   "startTime": 135.49,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 176.41,
+   "title": "Arsenal clinch rare Anfield victory"
+  },
+  {
+   "startTime": 195.97,
+   "title": "Kimi Antonelli sets F1 world champion records"
+  },
+  {
+   "startTime": 237.68,
+   "title": "Pro wrestling"
+  }
+ ]
+}

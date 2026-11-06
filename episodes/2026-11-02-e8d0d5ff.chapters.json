@@ -1,0 +1,33 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 23° top, rain likely"
+  },
+  {
+   "startTime": 16.26,
+   "title": "Australia nears largest property downturn in 40 years"
+  },
+  {
+   "startTime": 50.31,
+   "title": "Judge dismisses Trump lawsuit against Wall Street Journal"
+  },
+  {
+   "startTime": 82.08,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 259.02,
+   "title": "Bellingham & Mbappe score as Real Madrid earn statement win"
+  },
+  {
+   "startTime": 280.86,
+   "title": "Chelsea beat 10-man Man Utd to pile pressure"
+  },
+  {
+   "startTime": 316.39,
+   "title": "Pro wrestling"
+  }
+ ]
+}

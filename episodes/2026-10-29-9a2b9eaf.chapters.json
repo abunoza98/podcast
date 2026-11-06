@@ -1,0 +1,49 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 21° top"
+  },
+  {
+   "startTime": 12.73,
+   "title": "News"
+  },
+  {
+   "startTime": 109.15,
+   "title": "Visa adapts to tech innovations"
+  },
+  {
+   "startTime": 122.16,
+   "title": "DTCC tokenisation service goes live"
+  },
+  {
+   "startTime": 135.86,
+   "title": "Company news"
+  },
+  {
+   "startTime": 165.17,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 242.36,
+   "title": "Burnley appoint ex‑Basel boss Celestini"
+  },
+  {
+   "startTime": 266.8,
+   "title": "Liverpool gamble on Jacquet paying off"
+  },
+  {
+   "startTime": 299.64,
+   "title": "Dinamo Zagreb vs Rijeka match statistics"
+  },
+  {
+   "startTime": 306.84,
+   "title": "Chiefs sign former Ravens kicker Justin Tucker"
+  },
+  {
+   "startTime": 316.56,
+   "title": "Pro wrestling"
+  }
+ ]
+}
