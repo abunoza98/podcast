@@ -30,6 +30,18 @@ Everything lives in `config.toml`. Edit it on GitHub with the pencil icon; the n
 - **Cover:** replace `cover.png` with any square image. It's resized for Apple automatically and gets a new file name, so the app picks up the change.
 - **Time:** the `cron` line in `.github/workflows/daily-episode.yml` (UTC).
 
+## Football Pyramids stats (Mondays)
+
+Monday's episode ends with about 45 seconds on how footballpyramids.com did the week before: visits and page views against the previous week, the busiest day, top pages, where visitors came from and where they are. The numbers come from Cloudflare Web Analytics, which only counts real browsers, so bots are left out. If Monday's episode misses it, Tuesday's or Wednesday's picks it up.
+
+It needs one more secret:
+
+1. Cloudflare dashboard → *My Profile* → *API Tokens* → *Create Token* → *Create Custom Token*. Name it `podcast`. Under Permissions pick **Account → Account Analytics → Read**. Under Account Resources pick your account. *Continue to summary* → *Create Token* and copy it.
+2. Here: Settings → Secrets and variables → Actions → *New repository secret*, named `CLOUDFLARE_API_TOKEN`, with the token as the value.
+3. Run the workflow in `probe` mode. Its summary page ends with a line showing last week's visits if the token works.
+
+Settings are in the `[site_stats]` block of `config.toml`. Set `enabled = false` to turn it off.
+
 ## Checking a run
 
 Actions tab → click a run. The summary page lists the stories picked, why, the episode length, which voice was used, any feeds that failed, and the full script. GitHub emails you if a scheduled run fails.

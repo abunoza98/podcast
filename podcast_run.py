@@ -1145,6 +1145,9 @@ def words(n: float) -> str:
     if n < 1000:
         rest = n % 100
         return _ONES[n // 100] + " hundred" + ("" if rest == 0 else " and " + words(rest))
+    if n < 1_000_000:
+        thousands, rest = divmod(n, 1000)
+        return words(thousands) + " thousand" + ("" if rest == 0 else (" and " if rest < 100 else " ") + words(rest))
     return str(n)
 
 
@@ -1834,6 +1837,262 @@ def fpl_segment(cfg: dict, today: dt.date, now: dt.datetime, fstate: dict) -> tu
     return script, "Your FPL team: " + ", ".join(bullet_bits), info
 
 
+# ------------------------------------------------------- Football Pyramids stats
+# Last week's traffic for Adrian's own website, from Cloudflare Web Analytics (real browsers only,
+# bots left out). Needs a CLOUDFLARE_API_TOKEN secret with Account Analytics Read; no secret = off.
+
+CF_GRAPHQL = os.environ.get("CF_GRAPHQL", "https://api.cloudflare.com/client/v4/graphql")
+_RUM_FILTER = "filter: {siteTag: $site, datetime_geq: $start, datetime_lt: $end, bot: 0}"
+SITE_STATS_QUERY = f"""query($account: string!, $site: string!, $start: Time!, $end: Time!) {{
+  viewer {{ accounts(filter: {{accountTag: $account}}) {{
+    total: rumPageloadEventsAdaptiveGroups(limit: 1, {_RUM_FILTER}) {{ count sum {{ visits }} }}
+    hours: rumPageloadEventsAdaptiveGroups(limit: 200, {_RUM_FILTER}, orderBy: [datetimeHour_ASC]) {{
+      count sum {{ visits }} dimensions {{ datetimeHour }} }}
+    pages: rumPageloadEventsAdaptiveGroups(limit: 6, {_RUM_FILTER}, orderBy: [count_DESC]) {{
+      count sum {{ visits }} dimensions {{ requestPath }} }}
+    sources: rumPageloadEventsAdaptiveGroups(limit: 15, {_RUM_FILTER}, orderBy: [sum_visits_DESC]) {{
+      count sum {{ visits }} dimensions {{ refererHost }} }}
+    countries: rumPageloadEventsAdaptiveGroups(limit: 8, {_RUM_FILTER}, orderBy: [sum_visits_DESC]) {{
+      count sum {{ visits }} dimensions {{ countryName }} }}
+    devices: rumPageloadEventsAdaptiveGroups(limit: 4, {_RUM_FILTER}, orderBy: [sum_visits_DESC]) {{
+      count sum {{ visits }} dimensions {{ deviceType }} }}
+    workers: workersInvocationsAdaptive(limit: 10, filter: {{datetime_geq: $start, datetime_lt: $end}}) {{
+      sum {{ requests errors }} dimensions {{ scriptName }} }}
+  }} }}
+}}"""
+
+SOURCE_NAMES = {"google": "Google", "bing": "Bing", "duckduckgo": "DuckDuckGo", "yahoo": "Yahoo",
+                "ecosia": "Ecosia", "instagram": "Instagram", "facebook": "Facebook", "reddit": "Reddit",
+                "youtube": "YouTube", "linkedin": "LinkedIn", "tiktok": "TikTok", "whatsapp": "WhatsApp",
+                "chatgpt": "ChatGPT", "perplexity": "Perplexity", "github": "GitHub"}
+COUNTRY_NAMES = dict(x.split(":") for x in (
+    "AU:Australia|NZ:New Zealand|US:the United States|CA:Canada|GB:the UK|IE:Ireland|DE:Germany|"
+    "FR:France|ES:Spain|IT:Italy|PT:Portugal|NL:the Netherlands|BE:Belgium|LU:Luxembourg|CH:Switzerland|"
+    "AT:Austria|HR:Croatia|SI:Slovenia|RS:Serbia|BA:Bosnia and Herzegovina|ME:Montenegro|MK:North Macedonia|"
+    "AL:Albania|GR:Greece|CY:Cyprus|TR:Turkey|PL:Poland|CZ:Czechia|SK:Slovakia|HU:Hungary|RO:Romania|"
+    "BG:Bulgaria|SE:Sweden|NO:Norway|DK:Denmark|FI:Finland|IS:Iceland|EE:Estonia|LV:Latvia|LT:Lithuania|"
+    "UA:Ukraine|BY:Belarus|RU:Russia|GE:Georgia|AM:Armenia|AZ:Azerbaijan|KZ:Kazakhstan|IL:Israel|"
+    "AE:the UAE|SA:Saudi Arabia|QA:Qatar|IQ:Iraq|IR:Iran|JO:Jordan|LB:Lebanon|EG:Egypt|MA:Morocco|"
+    "DZ:Algeria|TN:Tunisia|NG:Nigeria|GH:Ghana|KE:Kenya|ET:Ethiopia|ZA:South Africa|BW:Botswana|"
+    "CM:Cameroon|SN:Senegal|IN:India|PK:Pakistan|BD:Bangladesh|LK:Sri Lanka|NP:Nepal|CN:China|"
+    "HK:Hong Kong|TW:Taiwan|JP:Japan|KR:South Korea|SG:Singapore|MY:Malaysia|ID:Indonesia|TH:Thailand|"
+    "VN:Vietnam|PH:the Philippines|BR:Brazil|AR:Argentina|CL:Chile|CO:Colombia|PE:Peru|UY:Uruguay|"
+    "EC:Ecuador|VE:Venezuela|BO:Bolivia|PY:Paraguay|MX:Mexico|CR:Costa Rica|JM:Jamaica|DO:the Dominican Republic"
+).split("|"))
+WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+
+
+def cf_site_week(token: str, account: str, site: str, start: dt.datetime, end: dt.datetime) -> dict:
+    """One window of Cloudflare Web Analytics for the site, plus the account's Worker totals."""
+    def utc(t: dt.datetime) -> str:
+        return t.astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    r = requests.post(CF_GRAPHQL, headers={"Authorization": f"Bearer {token}"}, timeout=30, json={
+        "query": SITE_STATS_QUERY,
+        "variables": {"account": account, "site": site, "start": utc(start), "end": utc(end)}})
+    if r.status_code in (401, 403):
+        raise RuntimeError(f"Cloudflare refused the token (HTTP {r.status_code}); it needs Account Analytics Read")
+    r.raise_for_status()
+    body = r.json()
+    if body.get("errors"):
+        raise RuntimeError("Cloudflare: " + "; ".join(str(e.get("message", e))[:120] for e in body["errors"]))
+    accounts = ((body.get("data") or {}).get("viewer") or {}).get("accounts") or []
+    if not accounts:
+        raise RuntimeError("Cloudflare returned no data for that account; check account_id in config.toml")
+    return accounts[0]
+
+
+def cf_rows(data: dict, key: str, dim: str = "") -> list[tuple[str, int, int]]:
+    """(dimension value, page views, visits) for each row of one breakdown."""
+    rows = []
+    for g in data.get(key) or []:
+        rows.append((str((g.get("dimensions") or {}).get(dim) or "") if dim else "",
+                     int(g.get("count") or 0), int((g.get("sum") or {}).get("visits") or 0)))
+    return rows
+
+
+def last_full_week(today: dt.date, tz: ZoneInfo, weeks_back: int = 1) -> tuple[dt.datetime, dt.datetime]:
+    """Midnight Monday to midnight Monday, local time, for the Monday-to-Sunday week before this one."""
+    monday = today - dt.timedelta(days=today.weekday() + 7 * (weeks_back - 1))
+    return (dt.datetime.combine(monday - dt.timedelta(days=7), dt.time(), tz),
+            dt.datetime.combine(monday, dt.time(), tz))
+
+
+def source_name(host: str) -> str:
+    h = host.lower().removeprefix("www.")
+    if not h:
+        return "no referrer (typed in, bookmarks, or links shared in messaging apps)"
+    if h in ("t.co", "x.com", "twitter.com", "mobile.twitter.com"):
+        return "X"
+    return next((name for key, name in SOURCE_NAMES.items() if key in h), h)
+
+
+def page_name(path: str) -> str:
+    """'/france/club/nantes/' -> 'Nantes club page', '/england/2024-25/' -> 'England page, 2024-25 season'."""
+    parts = [p for p in path.strip("/").split("/") if p]
+    if not parts:
+        return "home page"
+
+    def nice(slug: str) -> str:
+        return " ".join(w.capitalize() for w in slug.replace("-", " ").split())
+
+    if "club" in parts and parts.index("club") + 1 < len(parts):
+        return f"{nice(parts[parts.index('club') + 1])} club page"
+    season = next((p for p in parts if re.fullmatch(r"\d{4}(-\d{2,4})?", p)), "")
+    name = " ".join(nice(p) for p in parts if p != season) + " page"
+    return f"{name}, {season} season" if season else name
+
+
+def pct_change(now_n: int, before_n: int) -> str:
+    if before_n <= 0:
+        return "no figure for the week before"
+    pct = round((now_n - before_n) / before_n * 100)
+    if pct == 0:
+        return f"about the same as the week before ({before_n:,})"
+    return f"{'up' if pct > 0 else 'down'} {abs(pct)}% on the week before ({before_n:,})"
+
+
+def site_stats_facts(s: dict, cur: dict, prev: dict, start: dt.datetime, end: dt.datetime,
+                     tz: ZoneInfo) -> tuple[str, dict]:
+    """The week's numbers as a facts block for the writer, plus the totals."""
+    name, domain = s.get("name", "the website"), s.get("domain", "").lower()
+    views, visits = next(((v, n) for _, v, n in cf_rows(cur, "total")), (0, 0))
+    pviews, pvisits = next(((v, n) for _, v, n in cf_rows(prev, "total")), (0, 0))
+    last_day = (end - dt.timedelta(days=1)).date()
+    lines = [
+        f"{name}{f' ({domain})' if domain else ''} is the listener's own website. Its traffic last week, "
+        f"{nice_date(start.date())} to {nice_date(last_day)}, Sydney time, from Cloudflare Web Analytics "
+        f"with bots left out. The figures are sampled estimates, so treat them as approximate.",
+        f"- Visits: {visits:,}, {pct_change(visits, pvisits)}",
+        f"- Page views: {views:,}, {pct_change(views, pviews)}",
+    ]
+    by_day: dict[dt.date, int] = {}
+    for hour, _, n in cf_rows(cur, "hours", "datetimeHour"):
+        day = dt.datetime.fromisoformat(hour.replace("Z", "+00:00")).astimezone(tz).date()
+        by_day[day] = by_day.get(day, 0) + n
+    if by_day and max(by_day.values()) > 0:
+        top = max(by_day.values())
+        best = [nice_date(d) for d in sorted(by_day) if by_day[d] == top]
+        if len(best) == 1:
+            lines.append(f"- Busiest day: {best[0]}, {top:,} visits")
+        elif len(best) <= 3:  # sampled numbers tie often; more than three tied days isn't worth saying
+            lines.append(f"- Busiest days, tied: {'; '.join(best)}, {top:,} visits each")
+    pages = [f"{page_name(p)} ({v:,}; {n:,})" for p, v, n in cf_rows(cur, "pages", "requestPath")[:5] if v]
+    if pages:
+        lines.append("- Most viewed pages (page views; visits that started on that page): " + ", ".join(pages))
+    sources: dict[str, int] = {}
+    for host, _, n in cf_rows(cur, "sources", "refererHost"):
+        if n and not (domain and host.lower().removeprefix("www.").endswith(domain)):
+            sources[source_name(host)] = sources.get(source_name(host), 0) + n
+    if sources:
+        lines.append("- Where visits came from: " + ", ".join(
+            f"{k} {v:,}" for k, v in sorted(sources.items(), key=lambda kv: -kv[1])[:5]))
+    countries = [(COUNTRY_NAMES[c], n) for c, _, n in cf_rows(cur, "countries", "countryName") if n and c in COUNTRY_NAMES]
+    if countries:
+        lines.append("- Visits by country: " + ", ".join(f"{c} {n:,}" for c, n in countries[:5]))
+    devices = [f"{d} {n:,}" for d, _, n in cf_rows(cur, "devices", "deviceType") if n and d]
+    if devices:
+        lines.append("- Visits by device: " + ", ".join(devices))
+    errors = sum(int((g.get("sum") or {}).get("errors") or 0) for g in cur.get("workers") or [])
+    requests_ = sum(int((g.get("sum") or {}).get("requests") or 0) for g in cur.get("workers") or [])
+    if errors:
+        lines.append(f"- The site's Cloudflare Workers (including live scores) logged {errors:,} errors "
+                     f"from {requests_:,} requests")
+    top_source = max(sources, key=sources.get) if sources else ""
+    return "\n".join(lines), {"visits": visits, "page_views": views, "prev_visits": pvisits,
+                              "prev_page_views": pviews, "worker_errors": errors, "top_source": top_source}
+
+
+def site_stats_fallback(name: str, t: dict) -> str:
+    """Built straight from the totals, for when the writer model isn't available."""
+    line = f"On {name} last week, about {words(t['visits'])} visits and {words(t['page_views'])} page views"
+    if t["prev_visits"] > 0:
+        diff = t["visits"] - t["prev_visits"]
+        line += (", up on" if diff > 0 else ", down on" if diff < 0 else ", level with") + \
+            f" {words(t['prev_visits'])} visits the week before"
+    return line + "."
+
+
+def site_stats_segment(cfg: dict, today: dt.date, sstate: dict) -> tuple[str, str | None, dict]:
+    """Returns (script, chapter title, info). Plays once a week, on the configured day, or on one of
+    the next two days if that day's episode missed it. sstate (kept in state.json) remembers which
+    week has been read out."""
+    s = cfg.get("site_stats", {})
+    if not s.get("enabled"):
+        return "", None, {}
+    name = s.get("name", "Your website")
+    tz = ZoneInfo(cfg["show"]["timezone"])
+    start, end = last_full_week(today, tz)
+    week = start.date().isoformat()
+    day = WEEKDAYS.index(str(s.get("day", "Monday")).lower())
+    redo = sstate.get("reported_on") == today.isoformat()  # remaking today's episode
+    if not redo and ((today.weekday() - day) % 7 > 2 or sstate.get("reported_week") == week):
+        return "", None, {"played": False, "why": "not due today"}
+    token = os.environ.get(s.get("token_secret", "CLOUDFLARE_API_TOKEN"), "").strip()
+    if not token:
+        log(f"  {name}: no CLOUDFLARE_API_TOKEN secret, so no website stats today")
+        return "", None, {"played": False, "why": "no CLOUDFLARE_API_TOKEN secret"}
+    try:
+        cur = cf_site_week(token, s["account_id"], s["site_tag"], start, end)
+        prev_start, _ = last_full_week(today, tz, weeks_back=2)
+        prev = cf_site_week(token, s["account_id"], s["site_tag"], prev_start, start)
+        facts, totals = site_stats_facts(s, cur, prev, start, end, tz)
+    except Exception as e:  # noqa: BLE001 - website stats never stop the episode
+        warn(f"{name} stats skipped today: {str(e)[:150]}")
+        return "", None, {"played": False, "why": "Cloudflare request failed"}
+    info = {"played": False, "week": week, "visits": totals["visits"], "page_views": totals["page_views"]}
+    if not totals["visits"] and not totals["page_views"]:
+        warn(f"{name} stats skipped today: Cloudflare recorded no visits last week (check site_tag)")
+        return "", None, info
+    log(f"  {name}: {totals['visits']:,} visits, {totals['page_views']:,} page views in the week from {week}")
+    target = int(s.get("segment_chars", 650))
+    prompt = f"""Write a short segment about how the listener's own website, {name}, went last week, for \
+today's episode ({nice_date(today)}). It comes after other stories, so its first sentence should make the \
+shift to his website obvious naturally, without announcing a segment.
+
+Lead with visits and page views and how they compare with the week before, then the busiest day. Then \
+pick the two or three other things most worth knowing from the facts: a page that stood out, where \
+visits came from, where visitors are. Don't read out every number. They're sampled estimates, so round \
+them the way people talk ("about a hundred and ninety visits") and don't make much of small changes. \
+Never give a reason for a rise or fall, and never add a number, page, source or country that isn't in \
+the facts. Only mention the Workers if the facts list errors. Aim for about {target:,} characters of \
+spoken text. Write all numbers in words.
+
+FACTS
+{facts}
+---
+Return only the script for this part."""
+    try:
+        messages = [{"role": "system", "content": WRITER_SYSTEM}, {"role": "user", "content": prompt}]
+        script = fact_check(clean_script(groq_chat(messages, cfg, max_tokens=4000)), facts, cfg, name)
+        if spoken_len(script) < 80:
+            raise LLMError("the writer returned almost nothing")
+    except LLMError as e:
+        warn(f"{name} stats read as totals only today: {str(e)[:150]}")
+        script = site_stats_fallback(name, totals)
+    log(f"  {name}: {spoken_len(script):,} chars")
+    sstate["reported_week"], sstate["reported_on"] = week, today.isoformat()
+    info["played"] = True
+    return script, f"{name}: last week", info
+
+
+def site_stats_probe(cfg: dict, today: dt.date) -> str:
+    """One line for probe mode: is the token there, and can it read last week's numbers?"""
+    s = cfg["site_stats"]
+    token = os.environ.get(s.get("token_secret", "CLOUDFLARE_API_TOKEN"), "").strip()
+    if not token:
+        return "❌ no CLOUDFLARE_API_TOKEN secret, so the segment is off"
+    tz = ZoneInfo(cfg["show"]["timezone"])
+    start, end = last_full_week(today, tz)
+    try:
+        data = cf_site_week(token, s["account_id"], s["site_tag"], start, end)
+    except Exception as e:  # noqa: BLE001
+        return f"❌ {str(e)[:150]}"
+    views, visits = next(((v, n) for _, v, n in cf_rows(data, "total")), (0, 0))
+    return (f"✅ week from {nice_date(start.date())}: {visits:,} visits, {views:,} page views. "
+            f"Plays on {str(s.get('day', 'Monday')).capitalize()}s.")
+
+
 # ---------------------------------------------------------------------- audio
 
 def split_for_tts(script: str, limit: int = ELEVEN_MAX_CHARS) -> list[str]:
@@ -2243,6 +2502,9 @@ def probe(cfg: dict, now: dt.datetime) -> None:
         summary("\n## Weather\n")
         script, title, _ = weather_segment(cfg, now.date())
         summary(f"✅ {title}: {script}" if script else "❌ couldn't get the forecast (see warnings)")
+    if cfg.get("site_stats", {}).get("enabled"):
+        summary(f"\n## {cfg['site_stats'].get('name', 'Website')} stats\n")
+        summary(site_stats_probe(cfg, now.date()))
     set_output(publish="false")
 
 
@@ -2322,8 +2584,11 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
                                         for p in picks if p["section"] in after_ids and not is_private(cfg, p["section"])])
     fpl_script, fpl_bullet, fpl_info = fpl_segment(cfg, today, now, state.setdefault("fpl", {}))
     fpl_after = cfg.get("fpl", {}).get("after_section", "sport")
+    site_script, site_title, site_info = site_stats_segment(cfg, today, state.setdefault("site_stats", {}))
+    site_after = cfg.get("site_stats", {}).get("after_section", "")
     res_chapter = {"title": "Scores roundup", "text": res_script} if res_script else None
     fpl_chapter = {"title": fpl_bullet or "Your FPL team", "text": fpl_script} if fpl_script else None
+    site_chapter = {"title": site_title, "text": site_script} if site_script else None
     for section in cfg["sections"]:
         if res_chapter and section["id"] == res_before:
             chapters.append(res_chapter)
@@ -2344,10 +2609,15 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
         if fpl_chapter and section["id"] == fpl_after:
             chapters.append(fpl_chapter)
             fpl_chapter = None
+        if site_chapter and section["id"] == site_after:
+            chapters.append(site_chapter)
+            site_chapter = None
     if res_chapter:
         chapters.append(res_chapter)
     if fpl_chapter:  # its section was missing today: play it at the end
         chapters.append(fpl_chapter)
+    if site_chapter:  # likewise, or no after_section set: just before the sign-off
+        chapters.append(site_chapter)
     if not written:
         raise SystemExit("No section could be written — check the run log.")
     picks = written
@@ -2431,7 +2701,7 @@ def make_episode(cfg: dict, site: Path, now: dt.datetime, force: bool) -> None:
         "fact_check_fixes": [f for f in FACT_FIXES if f["part"] not in private_names],
         "groq_tokens": GROQ_USAGE, "minutes": round(minutes_running(), 1),
         "weather": weather_info,
-        "fpl": fpl_info, "results": res_info,
+        "fpl": fpl_info, "results": res_info, "site_stats": site_info,
         "feeds": [r for r in report if r["section"] not in private_ids],
         "private_sections": {sid: {"feeds_ok": sum(1 for r in report if r["section"] == sid and r.get("ok")),
                                    "feeds": sum(1 for r in report if r["section"] == sid),

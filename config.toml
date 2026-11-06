@@ -291,6 +291,22 @@ transfer_min_gain = 1.5                  # how much better a replacement must be
 transfer_min_minutes = 270               # ignore players who've barely played this season
 
 # ---------------------------------------------------------------------------
+# Football Pyramids: last week's traffic (Monday to Sunday, Sydney time) from
+# Cloudflare Web Analytics, real browsers only, read out once a week. Needs a
+# repository secret named CLOUDFLARE_API_TOKEN: a Cloudflare API token with
+# Account → Account Analytics → Read. No secret = segment off.
+# ---------------------------------------------------------------------------
+[site_stats]
+enabled = true
+name = "Football Pyramids"               # what it's called on air
+domain = "footballpyramids.com"          # clicks from the site's own pages aren't counted as a source
+account_id = "72b63370c8132f8b7f743e2dac649683"
+site_tag = "b8c859623fa24e54b62e95b3e9081ce6"   # Cloudflare → Web Analytics → the site
+day = "Monday"                           # plays on this day (or the next two, if that day's episode missed it)
+after_section = "wrestling"              # plays straight after this section: the last one means just before the sign-off
+segment_chars = 650                      # about forty-five seconds
+
+# ---------------------------------------------------------------------------
 # Scores roundup: results of games finished since the last episode, read out
 # just before the football stories. mode = "all" reads every result,
 # "notable" only big ones, "teams" only games involving follow_teams.
