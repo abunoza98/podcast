@@ -1,0 +1,37 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 21° top, rain likely"
+  },
+  {
+   "startTime": 17.84,
+   "title": "Bondi terror attack sparks national concern"
+  },
+  {
+   "startTime": 82.96,
+   "title": "Trump defends Iran war despite losses"
+  },
+  {
+   "startTime": 139.29,
+   "title": "Revolut valuation jumps to $115bn"
+  },
+  {
+   "startTime": 174.73,
+   "title": "Block settles DOJ with $964M payment"
+  },
+  {
+   "startTime": 202.09,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 271.3,
+   "title": "Football and sport"
+  },
+  {
+   "startTime": 362.88,
+   "title": "Pro wrestling"
+  }
+ ]
+}

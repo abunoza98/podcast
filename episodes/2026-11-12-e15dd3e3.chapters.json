@@ -1,0 +1,41 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 23° top, 27% chance of showers"
+  },
+  {
+   "startTime": 21.4,
+   "title": "Woodside's $30bn gas project may struggle"
+  },
+  {
+   "startTime": 89.53,
+   "title": "Ukraine and Russia agree major prisoner swap"
+  },
+  {
+   "startTime": 161.6,
+   "title": "Fiserv readies debit network sale"
+  },
+  {
+   "startTime": 195.33,
+   "title": "Alta secures $47.5m blockchain funding"
+  },
+  {
+   "startTime": 230.78,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 267.12,
+   "title": "Man City thrash Inter for first CL win"
+  },
+  {
+   "startTime": 286.15,
+   "title": "Harry Kane's fairytale England record"
+  },
+  {
+   "startTime": 323.22,
+   "title": "Pro wrestling"
+  }
+ ]
+}

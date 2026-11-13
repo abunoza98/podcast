@@ -1,0 +1,37 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 23° top, rain likely"
+  },
+  {
+   "startTime": 16.4,
+   "title": "Australia suffers horror Test defeat"
+  },
+  {
+   "startTime": 31.69,
+   "title": "US approves 500 Patriot missiles to Ukraine"
+  },
+  {
+   "startTime": 60.44,
+   "title": "Payments"
+  },
+  {
+   "startTime": 145.24,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 235.67,
+   "title": "Martinez's red card hurts Man United"
+  },
+  {
+   "startTime": 279.01,
+   "title": "Harry Kane beats Mbappe for Ballon d'Or"
+  },
+  {
+   "startTime": 337.48,
+   "title": "Pro wrestling"
+  }
+ ]
+}
