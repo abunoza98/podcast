@@ -1,0 +1,45 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 22° top, rain likely"
+  },
+  {
+   "startTime": 19.12,
+   "title": "US flights halted by telecom outage"
+  },
+  {
+   "startTime": 80.7,
+   "title": "US floats NATO for Ukraine"
+  },
+  {
+   "startTime": 139.6,
+   "title": "ChatGPT Wallet enables AI payments"
+  },
+  {
+   "startTime": 179.75,
+   "title": "Alexa shopping now in 15 countries"
+  },
+  {
+   "startTime": 220.22,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 299.27,
+   "title": "Tuchel reminds England of anti‑racism rules"
+  },
+  {
+   "startTime": 340.57,
+   "title": "Le Tissier stars as Man Utd win"
+  },
+  {
+   "startTime": 364.65,
+   "title": "Former wonderkid Cardoso Varela benched"
+  },
+  {
+   "startTime": 376.25,
+   "title": "Pro wrestling"
+  }
+ ]
+}

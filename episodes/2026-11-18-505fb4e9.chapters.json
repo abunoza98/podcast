@@ -1,0 +1,37 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 22° top"
+  },
+  {
+   "startTime": 16.27,
+   "title": "News"
+  },
+  {
+   "startTime": 135.25,
+   "title": "Visa, Mastercard face possible trial"
+  },
+  {
+   "startTime": 161.45,
+   "title": "Fed to boost payment service fees"
+  },
+  {
+   "startTime": 177.6,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 203.42,
+   "title": "Rooney says he considered suicide"
+  },
+  {
+   "startTime": 236.2,
+   "title": "Blackburn boss steps back"
+  },
+  {
+   "startTime": 265.45,
+   "title": "Pro wrestling"
+  }
+ ]
+}

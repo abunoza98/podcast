@@ -1,0 +1,41 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 26° top, 45% chance of showers"
+  },
+  {
+   "startTime": 20.12,
+   "title": "Sydney counter‑terror raids underway"
+  },
+  {
+   "startTime": 69.21,
+   "title": "ICJ rules Myanmar genocide"
+  },
+  {
+   "startTime": 121.51,
+   "title": "Payments"
+  },
+  {
+   "startTime": 180.17,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 218.26,
+   "title": "Pochettino's priorities at Manchester United"
+  },
+  {
+   "startTime": 267.91,
+   "title": "England fined for anti‑Catholic chants"
+  },
+  {
+   "startTime": 311.29,
+   "title": "Your FPL team: gameweek 11 deadline"
+  },
+  {
+   "startTime": 343.62,
+   "title": "Pro wrestling"
+  }
+ ]
+}

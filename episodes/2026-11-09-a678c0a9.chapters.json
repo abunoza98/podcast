@@ -1,0 +1,37 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 18° top, rain likely"
+  },
+  {
+   "startTime": 16.03,
+   "title": "Police officer’s suicide exposes force issues"
+  },
+  {
+   "startTime": 65.54,
+   "title": "Train collision kills seven in Egypt"
+  },
+  {
+   "startTime": 115.84,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 277.64,
+   "title": "Russo double gives Arsenal win over Liverpool"
+  },
+  {
+   "startTime": 330.13,
+   "title": "Kangaroos cruise into World Cup final"
+  },
+  {
+   "startTime": 374.16,
+   "title": "Pro wrestling"
+  },
+  {
+   "startTime": 436.26,
+   "title": "Football Pyramids: last week"
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 26° top, rain likely"
+  },
+  {
+   "startTime": 15.38,
+   "title": "Qantas announces layoffs amid AI impact"
+  },
+  {
+   "startTime": 53.93,
+   "title": "Ukraine-Russia talks resume with US involvement"
+  },
+  {
+   "startTime": 90.81,
+   "title": "US states push new card fee relief bills"
+  },
+  {
+   "startTime": 104.1,
+   "title": "Block to hand over data to FTC"
+  },
+  {
+   "startTime": 115.62,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 173.03,
+   "title": "Man United consider Carrick's future"
+  },
+  {
+   "startTime": 210.93,
+   "title": "Kompany recovering after collapse, back training"
+  },
+  {
+   "startTime": 254.27,
+   "title": "Pro wrestling"
+  }
+ ]
+}

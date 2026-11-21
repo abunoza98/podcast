@@ -1,0 +1,41 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 24° top"
+  },
+  {
+   "startTime": 16.21,
+   "title": "Albanese appears with Putin, warns Russia"
+  },
+  {
+   "startTime": 60.66,
+   "title": "Israeli ground operation in Gaza"
+  },
+  {
+   "startTime": 111.48,
+   "title": "Klarna launches AI ‘concierge’"
+  },
+  {
+   "startTime": 134.05,
+   "title": "World Bank partners Citi and Circle on stablecoins"
+  },
+  {
+   "startTime": 155.75,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 206.51,
+   "title": "Football and sport"
+  },
+  {
+   "startTime": 302.7,
+   "title": "Celtics eye $87M trade target"
+  },
+  {
+   "startTime": 320.58,
+   "title": "Pro wrestling"
+  }
+ ]
+}

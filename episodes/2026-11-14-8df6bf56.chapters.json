@@ -1,0 +1,37 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 30° top, rain likely"
+  },
+  {
+   "startTime": 21.2,
+   "title": "Ex-NSW Liberal MP convicted of rape"
+  },
+  {
+   "startTime": 81.08,
+   "title": "Microsoft fixes global Teams and Outlook outage"
+  },
+  {
+   "startTime": 151.23,
+   "title": "Stripe prepares Tempo blockchain rollout"
+  },
+  {
+   "startTime": 177.75,
+   "title": "PayPal explores owning a bank"
+  },
+  {
+   "startTime": 199.5,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 277.65,
+   "title": "Football and sport"
+  },
+  {
+   "startTime": 404.95,
+   "title": "Pro wrestling"
+  }
+ ]
+}
