@@ -1,0 +1,1160 @@
+{
+ "date": "2026-11-28",
+ "ran_at": "2026-11-28T12:28:26+11:00",
+ "engine": "elevenlabs",
+ "duration": "6:54",
+ "spoken_chars": 6889,
+ "warnings": [],
+ "fact_check_fixes": [
+  {
+   "part": "Scores roundup",
+   "was": "Adrian’s quarterback threw two touchdowns and the defence held the Chiefs to ten points, keeping the Bills in the hunt for the playoffs.",
+   "now": "(removed)",
+   "why": "Details not in source"
+  },
+  {
+   "part": "Scores roundup",
+   "was": "Pittsburgh Steelers thrashed Denver Broncos twenty‑seven‑five, with a late safety sealing the win.",
+   "now": "Pittsburgh Steelers thrashed Denver Broncos twenty‑seven‑five.",
+   "why": "Safety not mentioned in source"
+  },
+  {
+   "part": "Scores roundup",
+   "was": "Leeds and Man United drew one‑all.",
+   "now": "(removed)",
+   "why": "Match not in source"
+  },
+  {
+   "part": "Scores roundup",
+   "was": "Brighton thrashed Palace five‑nil.",
+   "now": "(removed)",
+   "why": "Match not in source"
+  },
+  {
+   "part": "Payments",
+   "was": "The Champions League league phase has sparked a fresh legal tussle in payments.",
+   "now": "(removed)",
+   "why": "No source support; unrelated football claim"
+  },
+  {
+   "part": "Football and sport",
+   "was": "Fernandes remains a doubt for the match, and manager Mauricio Pochettino said they will assess him during the day and only field him if he is fully recovered.",
+   "now": "Fernandes is a doubt for Saturday's Premier League encounter with Brentford after returning from the Champions League trip to Sporting with a virus, and manager Mauricio Pochettino said they will assess him during the day.",
+   "why": "Added claim not in source"
+  },
+  {
+   "part": "Football and sport",
+   "was": "The Dutchwoman was first appointed on an interim basis in October twenty‑twenty‑four and made the role permanent three months later, guiding the women’s side to their second Champions League title in May twenty‑twenty‑five and the inaugural FIFA Women’s Champions Cup in February twenty‑twenty‑six.",
+   "now": "The Dutchwoman was first appointed on an interim basis in October twenty‑twenty‑four and made the role permanent three months later, guiding the women’s side to their second Women’s Champions League title in May twenty‑twenty‑five and the inaugural FIFA Women’s Champions Cup in February twenty‑twenty‑six.",
+   "why": "Missing \"Women’s\" qualifier"
+  },
+  {
+   "part": "Pro wrestling",
+   "was": "In AEW, the Collision review suggests the Bandido‑Takeshita clash could spark further Blue League matchups as the promotion builds toward its next televised events.",
+   "now": "(removed)",
+   "why": "Speculation not in source"
+  }
+ ],
+ "groq_tokens": {
+  "openai/gpt-oss-120b": 34264
+ },
+ "minutes": 3.9,
+ "weather": {
+  "place": "St Leonards",
+  "top": 26.4,
+  "low": 20.6,
+  "rain_chance": 100,
+  "rain_mm": 13.9,
+  "uv": 6.15,
+  "gusts": 56.5
+ },
+ "fpl": {
+  "team": "Arrow Sport XI",
+  "gameweek": 12,
+  "finished": false,
+  "points": 1,
+  "rank": 6504945,
+  "deadline": "2026-12-02T05:30:00+11:00",
+  "deadline_hours": 89,
+  "next_gameweek": 13,
+  "pending_transfers_visible": false,
+  "flags": [
+   "João Pedro (CHE), starter: Thigh injury - Unknown return date (0% chance of playing)"
+  ],
+  "focus": []
+ },
+ "results": {
+  "leagues": {
+   "Premier League": 1,
+   "La Liga": 1,
+   "Serie A": 1,
+   "Bundesliga": 1,
+   "Ligue 1": 1,
+   "Champions League": 0,
+   "Europa League": 0,
+   "Conference League": 0,
+   "A-League Men": 1,
+   "Nations League": 0,
+   "NFL": 2,
+   "NBA": 0
+  },
+  "new_results": 8
+ },
+ "site_stats": {
+  "played": false,
+  "why": "not due today"
+ },
+ "feeds": [
+  {
+   "section": "news",
+   "feed": "ABC Top Stories",
+   "url": "https://www.abc.net.au/news/feed/10719986/rss.xml",
+   "ok": true,
+   "kept": 25,
+   "skipped": 0,
+   "old": 0,
+   "newest_hours": 1.0
+  },
+  {
+   "section": "news",
+   "feed": "ABC Just In",
+   "url": "https://www.abc.net.au/news/feed/10719976/rss.xml",
+   "ok": true,
+   "kept": 25,
+   "skipped": 0,
+   "old": 0,
+   "newest_hours": 0.9
+  },
+  {
+   "section": "news",
+   "feed": "ABC World",
+   "url": "https://www.abc.net.au/news/feed/104217382/rss.xml",
+   "ok": true,
+   "kept": 3,
+   "skipped": 0,
+   "old": 1,
+   "newest_hours": 13.8
+  },
+  {
+   "section": "news",
+   "feed": "Guardian Australia",
+   "url": "https://www.theguardian.com/australia-news/rss",
+   "ok": false,
+   "error": "403 Client Error: Forbidden for url: https://www.theguardian.com/australia-news/rss"
+  },
+  {
+   "section": "news",
+   "feed": "SBS News",
+   "url": "https://www.sbs.com.au/news/topic/latest/feed",
+   "ok": true,
+   "kept": 10,
+   "skipped": 0,
+   "old": 15,
+   "newest_hours": 1.2
+  },
+  {
+   "section": "news",
+   "feed": "BBC World",
+   "url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+   "ok": true,
+   "kept": 19,
+   "skipped": 0,
+   "old": 3,
+   "newest_hours": 0.5
+  },
+  {
+   "section": "news",
+   "feed": "Guardian World",
+   "url": "https://www.theguardian.com/world/rss",
+   "ok": false,
+   "error": "403 Client Error: Forbidden for url: https://www.theguardian.com/world/rss"
+  },
+  {
+   "section": "news",
+   "feed": "Al Jazeera",
+   "url": "https://www.aljazeera.com/xml/rss/all.xml",
+   "ok": true,
+   "kept": 25,
+   "skipped": 0,
+   "old": 0,
+   "newest_hours": 0.5
+  },
+  {
+   "section": "payments",
+   "feed": "Payments Dive",
+   "url": "https://www.paymentsdive.com/feeds/news/",
+   "ok": true,
+   "kept": 0,
+   "skipped": 0,
+   "old": 10,
+   "newest_hours": 57.4
+  },
+  {
+   "section": "payments",
+   "feed": "Finextra",
+   "url": "https://www.finextra.com/rss/headlines.aspx",
+   "ok": true,
+   "kept": 9,
+   "skipped": 0,
+   "old": 16,
+   "newest_hours": 7.3
+  },
+  {
+   "section": "payments",
+   "feed": "PYMNTS",
+   "url": "https://www.pymnts.com/feed/",
+   "ok": true,
+   "kept": 9,
+   "skipped": 1,
+   "old": 0,
+   "newest_hours": 2.6
+  },
+  {
+   "section": "payments",
+   "feed": "Google News (AU payments)",
+   "url": "https://news.google.com/rss/search?q=(Visa+OR+Mastercard+OR+Amex+OR+Adyen+OR+Stripe+OR+Tyro+OR+eftpos+OR+surcharging)+-immigration+-migration+-%22student+visa%22+-%22visa+holders%22+-%22visa+grants%22+-%22visa+applications%22+-%22working+holiday%22+-%22Home+Affairs%22+-%22Amex+Stadium%22+-%22Tip-Off%22+when:2d&hl=en-AU&gl=AU&ceid=AU:en",
+   "ok": true,
+   "kept": 2,
+   "skipped": 0,
+   "old": 23,
+   "newest_hours": 14.1
+  },
+  {
+   "section": "sport",
+   "feed": "BBC Football",
+   "url": "https://feeds.bbci.co.uk/sport/football/rss.xml",
+   "ok": true,
+   "kept": 19,
+   "skipped": 2,
+   "old": 4,
+   "newest_hours": 2.5
+  },
+  {
+   "section": "sport",
+   "feed": "Guardian Football",
+   "url": "https://www.theguardian.com/football/rss",
+   "ok": false,
+   "error": "403 Client Error: Forbidden for url: https://www.theguardian.com/football/rss"
+  },
+  {
+   "section": "sport",
+   "feed": "Guardian A-League",
+   "url": "https://www.theguardian.com/football/a-league/rss",
+   "ok": false,
+   "error": "403 Client Error: Forbidden for url: https://www.theguardian.com/football/a-league/rss"
+  },
+  {
+   "section": "sport",
+   "feed": "Guardian Australia Sport",
+   "url": "https://www.theguardian.com/sport/australia-sport/rss",
+   "ok": false,
+   "error": "403 Client Error: Forbidden for url: https://www.theguardian.com/sport/australia-sport/rss"
+  },
+  {
+   "section": "sport",
+   "feed": "Sky Sports Football",
+   "url": "https://www.skysports.com/rss/11095",
+   "ok": true,
+   "kept": 19,
+   "skipped": 0,
+   "old": 1,
+   "newest_hours": 1.8
+  },
+  {
+   "section": "sport",
+   "feed": "ABC Sport",
+   "url": "https://www.abc.net.au/news/feed/103728570/rss.xml",
+   "ok": true,
+   "kept": 3,
+   "skipped": 0,
+   "old": 1,
+   "newest_hours": 2.9
+  },
+  {
+   "section": "sport",
+   "feed": "BBC Sport",
+   "url": "https://feeds.bbci.co.uk/sport/rss.xml",
+   "ok": true,
+   "kept": 24,
+   "skipped": 1,
+   "old": 0,
+   "newest_hours": 2.5
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Dinamo Zagreb",
+   "url": "https://news.google.com/rss/search?q=%22Dinamo+Zagreb%22+when:2d&hl=en-AU&gl=AU&ceid=AU:en",
+   "ok": true,
+   "kept": 4,
+   "skipped": 1,
+   "old": 20,
+   "newest_hours": 5.9
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Croatian football",
+   "url": "https://news.google.com/rss/search?q=Dinamo+OR+Hajduk+OR+HNL+OR+reprezentacija+when:2d&hl=hr&gl=HR&ceid=HR:hr",
+   "ok": true,
+   "kept": 9,
+   "skipped": 5,
+   "old": 11,
+   "newest_hours": 3.1
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Croatia national team",
+   "url": "https://news.google.com/rss/search?q=%22Croatia%22+football+OR+Modric+OR+Gvardiol+when:2d&hl=en-AU&gl=AU&ceid=AU:en",
+   "ok": true,
+   "kept": 4,
+   "skipped": 1,
+   "old": 4,
+   "newest_hours": 1.4
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Kansas City Chiefs",
+   "url": "https://news.google.com/rss/search?q=%22Kansas+City+Chiefs%22+when:2d&hl=en-US&gl=US&ceid=US:en",
+   "ok": true,
+   "kept": 24,
+   "skipped": 0,
+   "old": 1,
+   "newest_hours": 2.6
+  },
+  {
+   "section": "teams",
+   "feed": "Guardian NFL",
+   "url": "https://www.theguardian.com/sport/nfl/rss",
+   "ok": false,
+   "error": "403 Client Error: Forbidden for url: https://www.theguardian.com/sport/nfl/rss"
+  },
+  {
+   "section": "teams",
+   "feed": "CBS Sports NFL",
+   "url": "https://www.cbssports.com/rss/headlines/nfl/",
+   "ok": true,
+   "kept": 15,
+   "skipped": 10,
+   "old": 0,
+   "newest_hours": 1.2
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Boston Celtics",
+   "url": "https://news.google.com/rss/search?q=%22Boston+Celtics%22+when:2d&hl=en-US&gl=US&ceid=US:en",
+   "ok": true,
+   "kept": 18,
+   "skipped": 7,
+   "old": 0,
+   "newest_hours": 0.2
+  },
+  {
+   "section": "teams",
+   "feed": "CelticsBlog",
+   "url": "https://www.celticsblog.com/rss/current.xml",
+   "ok": true,
+   "kept": 4,
+   "skipped": 0,
+   "old": 6,
+   "newest_hours": 3.5
+  },
+  {
+   "section": "teams",
+   "feed": "Yahoo Sports NBA",
+   "url": "https://sports.yahoo.com/nba/rss.xml",
+   "ok": true,
+   "kept": 20,
+   "skipped": 5,
+   "old": 0,
+   "newest_hours": 1.2
+  },
+  {
+   "section": "teams",
+   "feed": "CBS Sports NBA",
+   "url": "https://www.cbssports.com/rss/headlines/nba/",
+   "ok": true,
+   "kept": 4,
+   "skipped": 2,
+   "old": 19,
+   "newest_hours": 1.4
+  },
+  {
+   "section": "teams",
+   "feed": "BBC Man City",
+   "url": "https://feeds.bbci.co.uk/sport/football/teams/manchester-city/rss.xml",
+   "ok": true,
+   "kept": 5,
+   "skipped": 0,
+   "old": 19,
+   "newest_hours": 8.9
+  },
+  {
+   "section": "teams",
+   "feed": "Guardian Man City",
+   "url": "https://www.theguardian.com/football/manchestercity/rss",
+   "ok": false,
+   "error": "403 Client Error: Forbidden for url: https://www.theguardian.com/football/manchestercity/rss"
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: St George Dragons",
+   "url": "https://news.google.com/rss/search?q=%22St+George+Illawarra%22+OR+%22Dragons%22+NRL+when:2d&hl=en-AU&gl=AU&ceid=AU:en",
+   "ok": true,
+   "kept": 20,
+   "skipped": 0,
+   "old": 5,
+   "newest_hours": 1.3
+  },
+  {
+   "section": "teams",
+   "feed": "Google News: Eurovision",
+   "url": "https://news.google.com/rss/search?q=Eurovision+when:2d&hl=en-AU&gl=AU&ceid=AU:en",
+   "ok": true,
+   "kept": 19,
+   "skipped": 0,
+   "old": 6,
+   "newest_hours": 5.5
+  },
+  {
+   "section": "teams",
+   "feed": "ESCXtra (Eurovision)",
+   "url": "https://escxtra.com/feed/",
+   "ok": true,
+   "kept": 1,
+   "skipped": 0,
+   "old": 9,
+   "newest_hours": 7.0
+  },
+  {
+   "section": "teams",
+   "feed": "Eurovoix (Eurovision)",
+   "url": "https://eurovoix.com/feed/",
+   "ok": true,
+   "kept": 2,
+   "skipped": 0,
+   "old": 13,
+   "newest_hours": 7.3
+  },
+  {
+   "section": "wrestling",
+   "feed": "Reddit r/SquaredCircle (top today)",
+   "url": "https://www.reddit.com/r/SquaredCircle/top/.rss?t=day&limit=25",
+   "ok": false,
+   "error": "404 Client Error: Not Found for url: https://www.reddit.com/r/SquaredCircle/top/.rss?t=day&limit=25"
+  },
+  {
+   "section": "wrestling",
+   "feed": "F4W / Wrestling Observer",
+   "url": "https://www.f4wonline.com/feed/",
+   "ok": true,
+   "kept": 24,
+   "skipped": 1,
+   "old": 0,
+   "newest_hours": 0.9
+  },
+  {
+   "section": "wrestling",
+   "feed": "POST Wrestling",
+   "url": "https://www.postwrestling.com/feed/",
+   "ok": true,
+   "kept": 8,
+   "skipped": 1,
+   "old": 11,
+   "newest_hours": 0.6
+  },
+  {
+   "section": "wrestling",
+   "feed": "PWTorch",
+   "url": "https://www.pwtorch.com/site/feed/",
+   "ok": true,
+   "kept": 2,
+   "skipped": 4,
+   "old": 19,
+   "newest_hours": 0.3
+  },
+  {
+   "section": "wrestling",
+   "feed": "Wrestling Inc",
+   "url": "https://www.wrestlinginc.com/feed/",
+   "ok": true,
+   "kept": 16,
+   "skipped": 1,
+   "old": 3,
+   "newest_hours": 0.7
+  },
+  {
+   "section": "wrestling",
+   "feed": "Wrestleview",
+   "url": "https://www.wrestleview.com/feed/",
+   "ok": true,
+   "kept": 6,
+   "skipped": 0,
+   "old": 4,
+   "newest_hours": 0.7
+  }
+ ],
+ "private_sections": {
+  "clients": {
+   "feeds_ok": 5,
+   "feeds": 5,
+   "stories": 0
+  }
+ },
+ "candidates": {
+  "news": [
+   {
+    "title": "Victorian Liberal costings reveal unannounced plan to scrap first home owner grant",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 3.599,
+    "covered": false
+   },
+   {
+    "title": "Nathan Lyon axed as Australia names Test squad",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 3.507,
+    "covered": false
+   },
+   {
+    "title": "Unoccupied house collapses in Mornington Peninsula landslide",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 3.255,
+    "covered": false
+   },
+   {
+    "title": "'Everything is on the table' as inquiry into military sexual violence kicks off",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 3.121,
+    "covered": false
+   },
+   {
+    "title": "Australia selling more wine than it is making but huge glut persists",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 2.968,
+    "covered": false
+   },
+   {
+    "title": "Mixed emotions as buffel grass not named weed of national significance",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 2.968,
+    "covered": false
+   },
+   {
+    "title": "With the Top End rocked by several strong quakes, we look at the risk",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 2.949,
+    "covered": false
+   },
+   {
+    "title": "Bomb scare email distribution blasted as 'irresponsible' by criminologist",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 2.94,
+    "covered": false
+   },
+   {
+    "title": "Police link substance release to robbery attempts at concert",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 2.94,
+    "covered": false
+   },
+   {
+    "title": "Tasmania's cave explorers still finding new worlds underground",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 2.914,
+    "covered": false
+   },
+   {
+    "title": "F1 driver runs over mechanic's foot in Qatar",
+    "sources": [
+     "ABC Just In",
+     "ABC Top Stories"
+    ],
+    "score": 2.903,
+    "covered": false
+   },
+   {
+    "title": "Kenyan doomsday cult leader convicted over further 123 deaths",
+    "sources": [
+     "Al Jazeera",
+     "BBC World"
+    ],
+    "score": 2.894,
+    "covered": false
+   }
+  ],
+  "payments": [
+   {
+    "title": "Truelayer and Papa John’s transact AI-powered agentic Pay by Bank payment",
+    "sources": [
+     "Finextra",
+     "PYMNTS"
+    ],
+    "score": 2.257,
+    "covered": false
+   },
+   {
+    "title": "Second-home visa proposals should not just be for Britons - connexionfrance",
+    "sources": [
+     "Google News (AU payments)"
+    ],
+    "score": 1.517,
+    "covered": false
+   },
+   {
+    "title": "IBM visa sponsorship cuts force relocation decisions - Cybernews",
+    "sources": [
+     "Google News (AU payments)"
+    ],
+    "score": 1.484,
+    "covered": false
+   },
+   {
+    "title": "Intermex sues Western Union over merger agreement termination",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.378,
+    "covered": false
+   },
+   {
+    "title": "Sweden to join Eurosystem's T2 RTGS system",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.317,
+    "covered": false
+   },
+   {
+    "title": "Lloyds app goes down",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.304,
+    "covered": false
+   },
+   {
+    "title": "Deutsche Börse cleared to complete Allfunds acquistion",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.295,
+    "covered": false
+   },
+   {
+    "title": "SAP may cut 10,000 jobs to make room for AI",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.286,
+    "covered": false
+   },
+   {
+    "title": "Binance withdrawals back online after $6.3 bn loss in cyberattack",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.278,
+    "covered": false
+   },
+   {
+    "title": "BBVA modernises its banking platform with Finastra Universal Banking",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.265,
+    "covered": false
+   },
+   {
+    "title": "Paysafe partners with The5ers to expand presence in prop trading space",
+    "sources": [
+     "Finextra"
+    ],
+    "score": 1.244,
+    "covered": false
+   },
+   {
+    "title": "Hackers Hit US Air Force and FIFA While Lloyds and UK Agency Report Outages",
+    "sources": [
+     "PYMNTS"
+    ],
+    "score": 1.142,
+    "covered": false
+   }
+  ],
+  "sport": [
+   {
+    "title": "'You're not welcome here' - Chelsea fans turn on Fofana",
+    "sources": [
+     "BBC Football",
+     "BBC Sport",
+     "Sky Sports Football"
+    ],
+    "score": 4.391,
+    "covered": false
+   },
+   {
+    "title": "Gibbs-White scores twice as Forest beat struggling Chelsea",
+    "sources": [
+     "BBC Football",
+     "BBC Sport",
+     "Sky Sports Football"
+    ],
+    "score": 4.295,
+    "covered": false
+   },
+   {
+    "title": "Man Utd trigger Fernandes' one-year contract extension",
+    "sources": [
+     "BBC Football",
+     "BBC Sport",
+     "Sky Sports Football"
+    ],
+    "score": 4.041,
+    "covered": false
+   },
+   {
+    "title": "Head coach Slegers leaves Arsenal 18 months after Champions League win",
+    "sources": [
+     "BBC Football",
+     "BBC Sport",
+     "Sky Sports Football"
+    ],
+    "score": 4.015,
+    "covered": false
+   },
+   {
+    "title": "'I am not a magician' - what can Maresca's Man City learn from watertight Arsenal?",
+    "sources": [
+     "BBC Football",
+     "BBC Sport",
+     "Sky Sports Football"
+    ],
+    "score": 3.65,
+    "covered": false
+   },
+   {
+    "title": "Wilshere v Ramsey - Arsenal legends treading similar managerial paths",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 3.382,
+    "covered": false
+   },
+   {
+    "title": "Champions League to be a factor in Paz move - Saturday's gossip",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 3.013,
+    "covered": false
+   },
+   {
+    "title": "What happens now for Bayern Munich and Musiala?",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 2.744,
+    "covered": false
+   },
+   {
+    "title": "Glasner praises 'smart' Igor Jesus after Chelsea win",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 2.707,
+    "covered": false
+   },
+   {
+    "title": "Chelsea must stick together in 'difficult moment' - Alonso",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 2.706,
+    "covered": false
+   },
+   {
+    "title": "Bremen fight back to earn draw in six-goal thriller",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 2.703,
+    "covered": false
+   },
+   {
+    "title": "Man City owners should be forced to sell, say clubs",
+    "sources": [
+     "BBC Football",
+     "BBC Sport"
+    ],
+    "score": 2.623,
+    "covered": false
+   }
+  ],
+  "teams": [
+   {
+    "title": "Dinamo Zagreb 0-2 Leverkusen (27 Nov, 2026) Final Score - ESPN Singapore",
+    "sources": [
+     "Google News: Boston Celtics",
+     "Google News: Croatian football",
+     "Google News: Dinamo Zagreb"
+    ],
+    "score": 3.096,
+    "covered": false
+   },
+   {
+    "title": "Boston Celtics Daily Links 11/27/26 - Yahoo Sports",
+    "sources": [
+     "CelticsBlog",
+     "Google News: Boston Celtics",
+     "Yahoo Sports NBA"
+    ],
+    "score": 3.059,
+    "covered": false
+   },
+   {
+    "title": "Estonia: Listen to the songs for Eesti Laul 2027 - Eurovisionworld",
+    "sources": [
+     "ESCXtra (Eurovision)",
+     "Eurovoix (Eurovision)",
+     "Google News: Eurovision"
+    ],
+    "score": 2.707,
+    "covered": false
+   },
+   {
+    "title": "Celtics will be without key player against Hawks - CelticsBlog",
+    "sources": [
+     "CelticsBlog",
+     "Google News: Boston Celtics"
+    ],
+    "score": 2.242,
+    "covered": false
+   },
+   {
+    "title": "Croatia FC 27 Ratings – Best 100 Players | All Football - 懂球帝",
+    "sources": [
+     "Google News: Croatia national team",
+     "Google News: Dinamo Zagreb"
+    ],
+    "score": 2.202,
+    "covered": false
+   },
+   {
+    "title": "Dion Beljo transfer update as Everton part of heated race for striker - Yahoo",
+    "sources": [
+     "Google News: Croatian football",
+     "Google News: Dinamo Zagreb"
+    ],
+    "score": 2.192,
+    "covered": false
+   },
+   {
+    "title": "Flekken urges Leverkusen to 'go on the attack' despite Dinamo win - beIN SPORTS",
+    "sources": [
+     "Google News: Croatian football",
+     "Google News: Dinamo Zagreb"
+    ],
+    "score": 2.088,
+    "covered": false
+   },
+   {
+    "title": "Former NBA lottery pick Rob Dillingham gets punched by Wizards rookie Felix Okpara during G League game",
+    "sources": [
+     "CBS Sports NBA",
+     "Yahoo Sports NBA"
+    ],
+    "score": 2.052,
+    "covered": false
+   },
+   {
+    "title": "🇨🇾 Cyprus: Eurovision 2027 National Final on February 6 - Eurovoix",
+    "sources": [
+     "Eurovoix (Eurovision)",
+     "Google News: Eurovision"
+    ],
+    "score": 1.947,
+    "covered": false
+   },
+   {
+    "title": "Derrick White influence making imprint on CU Buffs men’s basketball - Daily Camera",
+    "sources": [
+     "Google News: Boston Celtics"
+    ],
+    "score": 1.493,
+    "covered": false
+   },
+   {
+    "title": "'I'm not a magician' - Maresca",
+    "sources": [
+     "BBC Man City"
+    ],
+    "score": 1.488,
+    "covered": false
+   },
+   {
+    "title": "Carter carries Maine Celtics to victory - Maine Celtics",
+    "sources": [
+     "Google News: Boston Celtics"
+    ],
+    "score": 1.485,
+    "covered": false
+   }
+  ],
+  "wrestling": [
+   {
+    "title": "Bronson Reed passes away at 38 years old",
+    "sources": [
+     "F4W / Wrestling Observer",
+     "PWTorch",
+     "Wrestleview",
+     "Wrestling Inc"
+    ],
+    "score": 4.675,
+    "covered": false
+   },
+   {
+    "title": "WWE Elimination Chamber expected to take place in New Jersey",
+    "sources": [
+     "F4W / Wrestling Observer",
+     "POST Wrestling",
+     "Wrestleview"
+    ],
+    "score": 3.699,
+    "covered": false
+   },
+   {
+    "title": "Bandido vs. Takeshita: AEW Collision 11/26/26 Review",
+    "sources": [
+     "POST Wrestling",
+     "PWTorch"
+    ],
+    "score": 2.336,
+    "covered": false
+   },
+   {
+    "title": "WWE SmackDown live results: Survivor Series go-home show",
+    "sources": [
+     "F4W / Wrestling Observer",
+     "Wrestleview",
+     "Wrestling Inc"
+    ],
+    "score": 2.223,
+    "covered": true
+   },
+   {
+    "title": "Bronson Reed (Jermaine Haley) dies at 38 due to “medical complications”",
+    "sources": [
+     "POST Wrestling"
+    ],
+    "score": 1.788,
+    "covered": false
+   },
+   {
+    "title": "ROH Black Friday live results: Survival of the Fittest qualifiers, women’s TV title tournament",
+    "sources": [
+     "F4W / Wrestling Observer"
+    ],
+    "score": 1.775,
+    "covered": false
+   },
+   {
+    "title": "I’m fine never seeing another WWE WarGames match again | Opinion",
+    "sources": [
+     "F4W / Wrestling Observer"
+    ],
+    "score": 1.771,
+    "covered": false
+   },
+   {
+    "title": "Daily Update: Weekend show previews, Mercedes Mone vs. AZM, Bandido",
+    "sources": [
+     "F4W / Wrestling Observer"
+    ],
+    "score": 1.759,
+    "covered": false
+   },
+   {
+    "title": "New Level praise AEW creative environment",
+    "sources": [
+     "F4W / Wrestling Observer"
+    ],
+    "score": 1.719,
+    "covered": false
+   },
+   {
+    "title": "FREE WOL: The right finish for WarGames, Rock rumors heat up, Continental Classic delivers",
+    "sources": [
+     "F4W / Wrestling Observer"
+    ],
+    "score": 1.713,
+    "covered": false
+   },
+   {
+    "title": "Our Biggest Sale of the Year: Join F4W for Just 99 Cents or Save $50 on an Annual Subscription",
+    "sources": [
+     "F4W / Wrestling Observer"
+    ],
+    "score": 1.69,
+    "covered": false
+   },
+   {
+    "title": "Bryan Alvarez’s AEW Collision November 26 report for subscribers",
+    "sources": [
+     "F4W / Wrestling Observer"
+    ],
+    "score": 1.689,
+    "covered": false
+   }
+  ]
+ },
+ "picks": [
+  {
+   "section": "news",
+   "label": "House collapses in Mornington Peninsula landslide",
+   "why": "Mornington Peninsula landslide warning",
+   "picked_by": "editor",
+   "sources": [
+    "ABC Just In",
+    "ABC Top Stories"
+   ],
+   "url": "https://www.abc.net.au/news/2026-11-28/landslide-mccrae-mornington-peninsula-warning/107437814"
+  },
+  {
+   "section": "news",
+   "label": "Kenyan doomsday cult leader convicted",
+   "why": "Cult leader convicted globally",
+   "picked_by": "editor",
+   "sources": [
+    "Al Jazeera",
+    "BBC World"
+   ],
+   "url": "https://www.bbc.co.uk/news/articles/cmy49de4xx1zo?at_medium=RSS&at_campaign=rss"
+  },
+  {
+   "section": "payments",
+   "label": "Intermex sues Western Union over merger termination",
+   "why": "Intermex sues Western Union over merger",
+   "picked_by": "editor",
+   "sources": [
+    "Finextra"
+   ],
+   "url": "https://www.finextra.com/newsarticle/48831/intermex-sues-western-union-over-merger-agreement-termination?utm_medium=rssfinextra&utm_source=finextrafeed"
+  },
+  {
+   "section": "payments",
+   "label": "Binance withdrawals back online after $6.3bn loss",
+   "why": "Binance restores withdrawals after hack",
+   "picked_by": "editor",
+   "sources": [
+    "Finextra"
+   ],
+   "url": "https://www.finextra.com/newsarticle/48826/binance-withdrawals-back-online-after-63-bn-loss-in-cyberattack?utm_medium=rssfinextra&utm_source=finextrafeed"
+  },
+  {
+   "section": "sport",
+   "label": "Man United activate Fernandes contract extension",
+   "why": "United extend Fernandes contract",
+   "picked_by": "editor",
+   "sources": [
+    "BBC Football",
+    "BBC Sport",
+    "Sky Sports Football"
+   ],
+   "url": "https://www.bbc.co.uk/sport/football/articles/c6d91j5geepqo?at_medium=RSS&at_campaign=rss"
+  },
+  {
+   "section": "sport",
+   "label": "Arsenal head coach Slegers leaves after Champions League win",
+   "why": "Arsenal part ways with coach",
+   "picked_by": "editor",
+   "sources": [
+    "BBC Football",
+    "BBC Sport",
+    "Sky Sports Football"
+   ],
+   "url": "https://www.bbc.co.uk/sport/football/articles/cmy49d5kpw78o?at_medium=RSS&at_campaign=rss"
+  },
+  {
+   "section": "wrestling",
+   "label": "Bronson Reed passes away at 38",
+   "why": "Bronson Reed dies at 38",
+   "picked_by": "editor",
+   "sources": [
+    "F4W / Wrestling Observer",
+    "PWTorch",
+    "Wrestleview",
+    "Wrestling Inc"
+   ],
+   "url": "https://www.f4wonline.com/news/wwe/bronson-reed-passes-away-at-38-years-old/"
+  },
+  {
+   "section": "wrestling",
+   "label": "WWE Elimination Chamber expected in New Jersey",
+   "why": "Elimination Chamber location teased",
+   "picked_by": "editor",
+   "sources": [
+    "F4W / Wrestling Observer",
+    "POST Wrestling",
+    "Wrestleview"
+   ],
+   "url": "https://www.postwrestling.com/2026/11/27/wwe-elimination-chamber-expected-to-take-place-in-new-jersey/"
+  },
+  {
+   "section": "wrestling",
+   "label": "Bandido vs Takeshita on AEW Collision review",
+   "why": "AEW Collision Thanksgiving review",
+   "picked_by": "editor",
+   "sources": [
+    "POST Wrestling",
+    "PWTorch"
+   ],
+   "url": "https://www.postwrestling.com/2026/11/26/bandido-vs-takeshita-aew-collision-11-26-26-review-live-1015pm-et/"
+  },
+  {
+   "section": "wrestling",
+   "label": "WWE SmackDown live results: Survivor Series go‑home show",
+   "why": "Survivor Series go‑home SmackDown results",
+   "picked_by": "editor",
+   "sources": [
+    "F4W / Wrestling Observer",
+    "Wrestleview",
+    "Wrestling Inc"
+   ],
+   "url": "https://www.f4wonline.com/news/wwe/results/wwe-smackdown-live-results-survivor-series-go-home-show-3/"
+  }
+ ]
+}

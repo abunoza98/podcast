@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:podcast="https://podcastindex.org/namespace/1.0">
+  <channel>
+    <title>Adrian's Daily Brief</title>
+    <link>https://abunoza98.github.io/podcast/</link>
+    <atom:link href="https://abunoza98.github.io/podcast/feed.xml" rel="self" type="application/rss+xml"/>
+    <language>en-au</language>
+    <description>A private daily brief: Australian and world news, football, and pro wrestling.</description>
+    <itunes:author>Adrian</itunes:author>
+    <itunes:owner><itunes:name>Adrian</itunes:name></itunes:owner>
+    <itunes:image href="https://abunoza98.github.io/podcast/cover-45b60ba3.jpg"/>
+    <image><url>https://abunoza98.github.io/podcast/cover-45b60ba3.jpg</url><title>Adrian's Daily Brief</title><link>https://abunoza98.github.io/podcast/</link></image>
+    <itunes:category text="News"><itunes:category text="Daily News"/></itunes:category>
+    <itunes:explicit>false</itunes:explicit>
+    <itunes:type>episodic</itunes:type>
+    <lastBuildDate>Sat, 28 Nov 2026 01:28:26 +0000</lastBuildDate>
+    <item>
+      <title>Saturday, 28 November</title>
+      <description>0:00 Weather: 26° top, storms likely
+0:21 House collapses in Mornington Peninsula landslide
+1:16 Kenyan doomsday cult leader convicted
+2:26 Intermex sues Western Union over merger termination
+2:50 Binance withdrawals back online after $6.3bn loss
+3:13 Scores roundup
+4:16 Man United activate Fernandes contract extension
+4:57 Arsenal head coach Slegers leaves after Champions League win
+5:39 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Weather: 26° top, storms likely<br>0:21 House collapses in Mornington Peninsula landslide<br>1:16 Kenyan doomsday cult leader convicted<br>2:26 Intermex sues Western Union over merger termination<br>2:50 Binance withdrawals back online after $6.3bn loss<br>3:13 Scores roundup<br>4:16 Man United activate Fernandes contract extension<br>4:57 Arsenal head coach Slegers leaves after Champions League win<br>5:39 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Sat, 28 Nov 2026 01:28:26 +0000</pubDate>
+      <guid isPermaLink="false">2026-11-28-0b5871d6</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-11-28-0b5871d6.mp3" length="6620905" type="audio/mpeg"/>
+      <itunes:duration>6:54</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-11-28-0b5871d6.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Friday, 27 November</title>
+      <description>0:00 Weather: 25° top, rain likely
+0:19 Melbourne Cup part seized by police
+0:43 US Thanksgiving storms flood Virginia, Maryland
+1:18 MoonPay, Highnote apply for national bank charters
+1:42 NBX partners Visa for stablecoin card
+2:07 Scores roundup
+3:27 Bournemouth fans book Europa League final hotels
+4:07 Calvert‑Lewin signs new Leeds deal
+4:41 Your FPL team: gameweek 12 deadline
+5:02 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Weather: 25° top, rain likely<br>0:19 Melbourne Cup part seized by police<br>0:43 US Thanksgiving storms flood Virginia, Maryland<br>1:18 MoonPay, Highnote apply for national bank charters<br>1:42 NBX partners Visa for stablecoin card<br>2:07 Scores roundup<br>3:27 Bournemouth fans book Europa League final hotels<br>4:07 Calvert‑Lewin signs new Leeds deal<br>4:41 Your FPL team: gameweek 12 deadline<br>5:02 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Fri, 27 Nov 2026 01:45:10 +0000</pubDate>
+      <guid isPermaLink="false">2026-11-27-89a643a3</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-11-27-89a643a3.mp3" length="6301236" type="audio/mpeg"/>
+      <itunes:duration>6:34</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-11-27-89a643a3.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Thursday, 26 November</title>
+      <description>0:00 Weather: 24° top, 43% chance of showers
+0:13 News
+1:46 California fines Afterpay $2.7M
+2:17 Aussie fintech Safewill raises A$15m
+2:48 Scores roundup
+4:52 Raheem Sterling sentenced to suspended jail term
+5:14 Isak nets double as Liverpool beat Brugge
+5:31 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Weather: 24° top, 43% chance of showers<br>0:13 News<br>1:46 California fines Afterpay $2.7M<br>2:17 Aussie fintech Safewill raises A$15m<br>2:48 Scores roundup<br>4:52 Raheem Sterling sentenced to suspended jail term<br>5:14 Isak nets double as Liverpool beat Brugge<br>5:31 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Thu, 26 Nov 2026 01:47:22 +0000</pubDate>
+      <guid isPermaLink="false">2026-11-26-7cf5aeeb</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-11-26-7cf5aeeb.mp3" length="6637878" type="audio/mpeg"/>
+      <itunes:duration>6:55</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-11-26-7cf5aeeb.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Wednesday, 25 November</title>
+      <description>0:00 Weather: 21° top, rain likely
+0:14 Weight‑loss drugs risk fractures
+1:17 Wall Street AI sell‑off hits ASX
+2:17 Adyen co‑founder steps down
+2:30 Payoneer gets conditional trust approval
+2:51 Company news
+4:12 Scores roundup
+4:57 Football and sport
+6:38 Dinamo vs Leverkusen preview
+7:03 Your FPL team: gameweek 11 recap, transfer ideas
+8:18 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Weather: 21° top, rain likely<br>0:14 Weight‑loss drugs risk fractures<br>1:17 Wall Street AI sell‑off hits ASX<br>2:17 Adyen co‑founder steps down<br>2:30 Payoneer gets conditional trust approval<br>2:51 Company news<br>4:12 Scores roundup<br>4:57 Football and sport<br>6:38 Dinamo vs Leverkusen preview<br>7:03 Your FPL team: gameweek 11 recap, transfer ideas<br>8:18 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Tue, 24 Nov 2026 20:27:12 +0000</pubDate>
+      <guid isPermaLink="false">2026-11-25-5707488a</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-11-25-5707488a.mp3" length="8840399" type="audio/mpeg"/>
+      <itunes:duration>9:12</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-11-25-5707488a.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Tuesday, 24 November</title>
+      <description>0:00 Weather: 25° top, rain likely
+0:20 Underworld killer set for parole
+0:49 Israel bombardment turns Gaza toxic
+1:29 Adyen co‑CEO retires
+2:06 PayPal hires CFO with $30m package
+2:30 Scores roundup
+4:55 Janelt stuns as Brentford beat Everton
+5:08 Simeone sets La Liga victory record
+5:30 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Weather: 25° top, rain likely<br>0:20 Underworld killer set for parole<br>0:49 Israel bombardment turns Gaza toxic<br>1:29 Adyen co‑CEO retires<br>2:06 PayPal hires CFO with $30m package<br>2:30 Scores roundup<br>4:55 Janelt stuns as Brentford beat Everton<br>5:08 Simeone sets La Liga victory record<br>5:30 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Tue, 24 Nov 2026 03:58:13 +0000</pubDate>
+      <guid isPermaLink="false">2026-11-24-2cd6a5fe</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-11-24-2cd6a5fe.mp3" length="7502299" type="audio/mpeg"/>
+      <itunes:duration>7:49</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-11-24-2cd6a5fe.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Monday, 23 November</title>
+      <description>0:00 Molly Meldrum dies aged 83
+0:44 COP31 ends without deal
+1:39 Mexico relaxes card fee rules
+2:25 GTCR weighs Global Payments acquisition
+3:18 Scores roundup
+7:29 Football and sport
+8:28 Pro wrestling
+10:11 Football Pyramids: last week</description>
+      <content:encoded><![CDATA[<p>0:00 Molly Meldrum dies aged 83<br>0:44 COP31 ends without deal<br>1:39 Mexico relaxes card fee rules<br>2:25 GTCR weighs Global Payments acquisition<br>3:18 Scores roundup<br>7:29 Football and sport<br>8:28 Pro wrestling<br>10:11 Football Pyramids: last week</p>]]></content:encoded>
+      <pubDate>Sun, 22 Nov 2026 23:38:35 +0000</pubDate>
+      <guid isPermaLink="false">2026-11-23-825abe92</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-11-23-825abe92.mp3" length="10418242" type="audio/mpeg"/>
+      <itunes:duration>10:51</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-11-23-825abe92.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Sunday, 22 November</title>
+      <description>0:00 Weather: 31° top, rain likely
+0:19 News
+2:34 Paysafe hires Altimetrik to boost reliability
+3:15 Polish BNPL firm PayPo eyes Warsaw IPO
+3:56 Scores roundup
+6:36 Evanilson scores as Bournemouth beat Forest
+7:08 Leeds stun Chelsea with first Stamford Bridge win
+7:27 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Weather: 31° top, rain likely<br>0:19 News<br>2:34 Paysafe hires Altimetrik to boost reliability<br>3:15 Polish BNPL firm PayPo eyes Warsaw IPO<br>3:56 Scores roundup<br>6:36 Evanilson scores as Bournemouth beat Forest<br>7:08 Leeds stun Chelsea with first Stamford Bridge win<br>7:27 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Sat, 21 Nov 2026 23:19:45 +0000</pubDate>
+      <guid isPermaLink="false">2026-11-22-7d16e308</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-11-22-7d16e308.mp3" length="8508244" type="audio/mpeg"/>
+      <itunes:duration>8:52</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-11-22-7d16e308.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Saturday, 21 November</title>
+      <description>0:00 Weather: 28° top, rain likely
+0:16 Parent murderer recording released
+0:52 Trump vows tax on overseas data centres
+1:26 Bill sells to TPG, Corpay for $6B
+1:42 PayPal CEO remakes leadership team
+1:54 Company news
+2:15 Scores roundup
+3:48 Football and sport
+5:44 Dani Rodríguez comeback at Dinamo
+5:50 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Weather: 28° top, rain likely<br>0:16 Parent murderer recording released<br>0:52 Trump vows tax on overseas data centres<br>1:26 Bill sells to TPG, Corpay for $6B<br>1:42 PayPal CEO remakes leadership team<br>1:54 Company news<br>2:15 Scores roundup<br>3:48 Football and sport<br>5:44 Dani Rodríguez comeback at Dinamo<br>5:50 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Sat, 21 Nov 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">2026-11-21-1063bd70</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-11-21-1063bd70.mp3" length="6790580" type="audio/mpeg"/>
+      <itunes:duration>7:04</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-11-21-1063bd70.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Friday, 20 November</title>
+      <description>0:00 Weather: 26° top, 45% chance of showers
+0:20 Sydney counter‑terror raids underway
+1:09 ICJ rules Myanmar genocide
+2:02 Payments
+3:00 Scores roundup
+3:38 Pochettino's priorities at Manchester United
+4:28 England fined for anti‑Catholic chants
+5:11 Your FPL team: gameweek 11 deadline
+5:44 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Weather: 26° top, 45% chance of showers<br>0:20 Sydney counter‑terror raids underway<br>1:09 ICJ rules Myanmar genocide<br>2:02 Payments<br>3:00 Scores roundup<br>3:38 Pochettino&#x27;s priorities at Manchester United<br>4:28 England fined for anti‑Catholic chants<br>5:11 Your FPL team: gameweek 11 deadline<br>5:44 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Fri, 20 Nov 2026 00:38:43 +0000</pubDate>
+      <guid isPermaLink="false">2026-11-20-1b0d5803</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-11-20-1b0d5803.mp3" length="7112831" type="audio/mpeg"/>
+      <itunes:duration>7:24</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-11-20-1b0d5803.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Thursday, 19 November</title>
+      <description>0:00 Weather: 24° top
+0:16 Albanese appears with Putin, warns Russia
+1:01 Israeli ground operation in Gaza
+1:51 Klarna launches AI ‘concierge’
+2:14 World Bank partners Citi and Circle on stablecoins
+2:36 Scores roundup
+3:27 Football and sport
+5:03 Celtics eye $87M trade target
+5:21 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Weather: 24° top<br>0:16 Albanese appears with Putin, warns Russia<br>1:01 Israeli ground operation in Gaza<br>1:51 Klarna launches AI ‘concierge’<br>2:14 World Bank partners Citi and Circle on stablecoins<br>2:36 Scores roundup<br>3:27 Football and sport<br>5:03 Celtics eye $87M trade target<br>5:21 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Thu, 19 Nov 2026 00:24:46 +0000</pubDate>
+      <guid isPermaLink="false">2026-11-19-6a0f02c2</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-11-19-6a0f02c2.mp3" length="6957269" type="audio/mpeg"/>
+      <itunes:duration>7:15</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-11-19-6a0f02c2.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Wednesday, 18 November</title>
+      <description>0:00 Weather: 22° top
+0:16 News
+2:15 Visa, Mastercard face possible trial
+2:41 Fed to boost payment service fees
+2:58 Scores roundup
+3:23 Rooney says he considered suicide
+3:56 Blackburn boss steps back
+4:25 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Weather: 22° top<br>0:16 News<br>2:15 Visa, Mastercard face possible trial<br>2:41 Fed to boost payment service fees<br>2:58 Scores roundup<br>3:23 Rooney says he considered suicide<br>3:56 Blackburn boss steps back<br>4:25 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Tue, 17 Nov 2026 19:15:37 +0000</pubDate>
+      <guid isPermaLink="false">2026-11-18-505fb4e9</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-11-18-505fb4e9.mp3" length="4453965" type="audio/mpeg"/>
+      <itunes:duration>6:11</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-11-18-505fb4e9.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Tuesday, 17 November</title>
+      <description>0:00 Weather: 21° top, rain likely
+0:20 Australia backs Trump AI alliance
+1:34 Pattinson named new James Bond
+2:31 Mastercard pilots AI travel purchases
+2:50 Checkouts built for speed, fraud risk
+3:07 Scores roundup
+5:02 Frank to rebuild Palace reputation
+5:55 Trafford replaces Pickford as England No 1
+6:53 Your FPL team: new injury news
+7:27 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Weather: 21° top, rain likely<br>0:20 Australia backs Trump AI alliance<br>1:34 Pattinson named new James Bond<br>2:31 Mastercard pilots AI travel purchases<br>2:50 Checkouts built for speed, fraud risk<br>3:07 Scores roundup<br>5:02 Frank to rebuild Palace reputation<br>5:55 Trafford replaces Pickford as England No 1<br>6:53 Your FPL team: new injury news<br>7:27 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Mon, 16 Nov 2026 19:11:20 +0000</pubDate>
+      <guid isPermaLink="false">2026-11-17-b9a473cf</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-11-17-b9a473cf.mp3" length="6790451" type="audio/mpeg"/>
+      <itunes:duration>9:26</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-11-17-b9a473cf.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Monday, 16 November</title>
+      <description>0:00 Weather: 18° top, rain likely
+0:23 Jordan sentences three men to death
+0:36 Australia super nest egg tops $5 trillion
+1:22 Scores roundup
+1:53 Football and sport
+4:13 Pro wrestling
+5:35 Football Pyramids: last week</description>
+      <content:encoded><![CDATA[<p>0:00 Weather: 18° top, rain likely<br>0:23 Jordan sentences three men to death<br>0:36 Australia super nest egg tops $5 trillion<br>1:22 Scores roundup<br>1:53 Football and sport<br>4:13 Pro wrestling<br>5:35 Football Pyramids: last week</p>]]></content:encoded>
+      <pubDate>Sun, 15 Nov 2026 18:58:54 +0000</pubDate>
+      <guid isPermaLink="false">2026-11-16-a25faafa</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-11-16-a25faafa.mp3" length="4731280" type="audio/mpeg"/>
+      <itunes:duration>6:34</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-11-16-a25faafa.chapters.json" type="application/json+chapters"/>
+    </item>
+    <item>
+      <title>Sunday, 15 November</title>
+      <description>0:00 Weather: 22° top, rain likely
+0:19 US flights halted by telecom outage
+1:21 US floats NATO for Ukraine
+2:20 ChatGPT Wallet enables AI payments
+3:00 Alexa shopping now in 15 countries
+3:40 Scores roundup
+4:59 Tuchel reminds England of anti‑racism rules
+5:41 Le Tissier stars as Man Utd win
+6:05 Former wonderkid Cardoso Varela benched
+6:16 Pro wrestling</description>
+      <content:encoded><![CDATA[<p>0:00 Weather: 22° top, rain likely<br>0:19 US flights halted by telecom outage<br>1:21 US floats NATO for Ukraine<br>2:20 ChatGPT Wallet enables AI payments<br>3:00 Alexa shopping now in 15 countries<br>3:40 Scores roundup<br>4:59 Tuchel reminds England of anti‑racism rules<br>5:41 Le Tissier stars as Man Utd win<br>6:05 Former wonderkid Cardoso Varela benched<br>6:16 Pro wrestling</p>]]></content:encoded>
+      <pubDate>Sat, 14 Nov 2026 18:57:42 +0000</pubDate>
+      <guid isPermaLink="false">2026-11-15-9eb04f22</guid>
+      <enclosure url="https://abunoza98.github.io/podcast/episodes/2026-11-15-9eb04f22.mp3" length="5559584" type="audio/mpeg"/>
+      <itunes:duration>7:43</itunes:duration>
+      <itunes:episodeType>full</itunes:episodeType>
+      <itunes:explicit>false</itunes:explicit>
+      <podcast:chapters url="https://abunoza98.github.io/podcast/episodes/2026-11-15-9eb04f22.chapters.json" type="application/json+chapters"/>
+    </item>
+  </channel>
+</rss>

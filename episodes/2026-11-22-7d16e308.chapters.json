@@ -1,0 +1,37 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 31° top, rain likely"
+  },
+  {
+   "startTime": 18.77,
+   "title": "News"
+  },
+  {
+   "startTime": 153.96,
+   "title": "Paysafe hires Altimetrik to boost reliability"
+  },
+  {
+   "startTime": 195.25,
+   "title": "Polish BNPL firm PayPo eyes Warsaw IPO"
+  },
+  {
+   "startTime": 235.52,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 395.93,
+   "title": "Evanilson scores as Bournemouth beat Forest"
+  },
+  {
+   "startTime": 427.66,
+   "title": "Leeds stun Chelsea with first Stamford Bridge win"
+  },
+  {
+   "startTime": 446.94,
+   "title": "Pro wrestling"
+  }
+ ]
+}

@@ -1,0 +1,33 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 18° top, rain likely"
+  },
+  {
+   "startTime": 23.03,
+   "title": "Jordan sentences three men to death"
+  },
+  {
+   "startTime": 36.18,
+   "title": "Australia super nest egg tops $5 trillion"
+  },
+  {
+   "startTime": 82.18,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 112.7,
+   "title": "Football and sport"
+  },
+  {
+   "startTime": 253.1,
+   "title": "Pro wrestling"
+  },
+  {
+   "startTime": 334.83,
+   "title": "Football Pyramids: last week"
+  }
+ ]
+}

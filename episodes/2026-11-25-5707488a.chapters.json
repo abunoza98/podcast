@@ -1,0 +1,49 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 21° top, rain likely"
+  },
+  {
+   "startTime": 13.57,
+   "title": "Weight‑loss drugs risk fractures"
+  },
+  {
+   "startTime": 77.1,
+   "title": "Wall Street AI sell‑off hits ASX"
+  },
+  {
+   "startTime": 137.2,
+   "title": "Adyen co‑founder steps down"
+  },
+  {
+   "startTime": 150.07,
+   "title": "Payoneer gets conditional trust approval"
+  },
+  {
+   "startTime": 170.61,
+   "title": "Company news"
+  },
+  {
+   "startTime": 252.49,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 296.89,
+   "title": "Football and sport"
+  },
+  {
+   "startTime": 398.23,
+   "title": "Dinamo vs Leverkusen preview"
+  },
+  {
+   "startTime": 422.57,
+   "title": "Your FPL team: gameweek 11 recap, transfer ideas"
+  },
+  {
+   "startTime": 498.14,
+   "title": "Pro wrestling"
+  }
+ ]
+}

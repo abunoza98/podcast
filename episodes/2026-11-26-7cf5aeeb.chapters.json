@@ -1,0 +1,37 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 24° top, 43% chance of showers"
+  },
+  {
+   "startTime": 13.43,
+   "title": "News"
+  },
+  {
+   "startTime": 105.99,
+   "title": "California fines Afterpay $2.7M"
+  },
+  {
+   "startTime": 136.69,
+   "title": "Aussie fintech Safewill raises A$15m"
+  },
+  {
+   "startTime": 167.54,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 292.0,
+   "title": "Raheem Sterling sentenced to suspended jail term"
+  },
+  {
+   "startTime": 313.65,
+   "title": "Isak nets double as Liverpool beat Brugge"
+  },
+  {
+   "startTime": 331.12,
+   "title": "Pro wrestling"
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+ "version": "1.2.0",
+ "chapters": [
+  {
+   "startTime": 0.0,
+   "title": "Weather: 26° top, storms likely"
+  },
+  {
+   "startTime": 20.72,
+   "title": "House collapses in Mornington Peninsula landslide"
+  },
+  {
+   "startTime": 76.36,
+   "title": "Kenyan doomsday cult leader convicted"
+  },
+  {
+   "startTime": 145.93,
+   "title": "Intermex sues Western Union over merger termination"
+  },
+  {
+   "startTime": 169.72,
+   "title": "Binance withdrawals back online after $6.3bn loss"
+  },
+  {
+   "startTime": 193.46,
+   "title": "Scores roundup"
+  },
+  {
+   "startTime": 255.55,
+   "title": "Man United activate Fernandes contract extension"
+  },
+  {
+   "startTime": 297.36,
+   "title": "Arsenal head coach Slegers leaves after Champions League win"
+  },
+  {
+   "startTime": 339.25,
+   "title": "Pro wrestling"
+  }
+ ]
+}
